@@ -2,6 +2,19 @@
 require("Package.php");
 $Chp = "2";
 $Clf = $_GET['Clf'];
+$nccf = $_POST['nccf'];
+$cnccf = $_POST['cnccf'];
+$ope = $_POST['ope'];
+$nm = $_POST['nm'];
+$prnm = $_POST['prnm'];
+$sx = $_POST['sx'];
+$dtns = $_POST['dtns'];
+$adrs = $_POST['adrs'];
+$twn = $_POST['twn'];
+$cpst = $_POST['cpst'];
+$mail = $_POST['mail'];
+$hobbi = $_POST['hobbi'];
+$aprop = $_POST['aprop'];
 $bModif = false;
 if(!Empty($Clf))
 {   // Connexion

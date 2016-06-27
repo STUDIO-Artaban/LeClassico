@@ -2,6 +2,14 @@
 require("Package.php");
 $Chp = "15";
 $Clf = $_GET['Clf'];
+$eveid = $_POST['eveid'];
+$evenm = $_POST['evenm'];
+$evedate = $_POST['evedate'];
+$evelieu = $_POST['evelieu'];
+$evermk = $_POST['evermk'];
+$evefly = $_POST['evefly'];
+$ope = $_POST['ope'];
+$evechgf = $_POST['evechgf'];
 $iStatus = 0;
 /* ERROR MESSAGE (iStatus):
    2 - Clef vide (non connecté)

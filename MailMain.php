@@ -2,6 +2,9 @@
 require("Package.php");
 $Chp = "6";
 $Clf = $_GET['Clf'];
+$ope = $_POST['ope'];
+$msgdt = $_POST['msgdt'];
+$msgtm = $_POST['msgtm'];
 $CntNew = 0;
 $CntRead = 0;
 $CntWrite = 0;

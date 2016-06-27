@@ -1,6 +1,23 @@
 <?php
 require("Package.php");
 $Clf = $_GET['Clf'];
+$file = $_GET['file'];
+$art = $_GET['art'];
+$alb = $_GET['alb'];
+$mrc = $_GET['mrc'];
+$psd = $_GET['psd'];
+$src = $_GET['src'];
+$cls = $_GET['cls'];
+$nt = $_GET['nt'];
+$prv = $_GET['prv'];
+$nxt = $_GET['nxt'];
+$lp = $_GET['lp'];
+$otp = $_GET['otp'];
+$trcfg = $_GET['trcfg'];
+$man = $_GET['man'];
+$mid = $_GET['mid'];
+$stt = $_GET['stt'];
+$htr = $_GET['htr'];
 $aSearch = array("<",">","\"","'");
 $aReplace = array("&lt;","&gt;","&quot;","&#39;");
 //

@@ -2,6 +2,9 @@
 require("Package.php");
 $Chp = "6";
 $Clf = $_GET['Clf'];
+$msgtpe = $_GET['msgtpe'];
+$msgdt = $_GET['msgdt'];
+$msgtm = $_GET['msgtm'];
 $Objet = "";
 $Pseudo = "Camarade...";
 if(!Empty($Clf))

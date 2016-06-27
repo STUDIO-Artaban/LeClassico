@@ -18,8 +18,12 @@ if(!Empty($Clf))
         if($aRow = mysql_fetch_array($Result))
         {   if($aRow["CAM_Admin"] == 1)
             {   mysql_free_result($Result);
+                $ope = $_POST['ope'];
                 if(!Empty($ope))
-                {    // Opération d'ajout //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                {    $npsd = $_POST['npsd'];
+                     $nccf = $_POST['nccf'];
+                     $cnccf = $_POST['cnccf'];
+                     // Opération d'ajout //////////////////////////////////////////////////////////////////////////////////////////////////////////////
                      if(!strcmp(trim($npsd),""))
                      {   mysql_close($Link);
                          $Msg = "Pseudo non saisi!";

@@ -2,6 +2,8 @@
 require("Package.php");
 $Chp = "15";
 $Clf = $_GET['Clf'];
+$eveid = $_POST['eveid'];
+$ope = $_POST['ope'];
 $aSearch = array("<",">");
 $aReplace = array("&lt;","&gt;");
 if(!Empty($Clf))

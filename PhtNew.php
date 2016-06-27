@@ -2,6 +2,9 @@
 require("Package.php");
 $Chp = "9";
 $Clf = $_GET['Clf'];
+$albnm = $_POST['albnm'];
+$pht = $_POST['pht'];
+$ope = $_POST['ope'];
 $iStatus = 0;
 /* ERROR MESSAGE (iStatus):
    2 - Clef vide (non connecté)

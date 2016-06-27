@@ -2,6 +2,7 @@
 require("Package.php");
 $Chp = "9";
 $Clf = $_GET['Clf'];
+$res = $_GET['res'];
 /* ERROR MESSAGE (res):
    0 - Prêt
    1 - Transfert en cours

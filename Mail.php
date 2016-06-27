@@ -2,6 +2,14 @@
 require("Package.php");
 $Chp = "6";
 $Clf = $_GET['Clf'];
+$msgtpe = $_GET['msgtpe'];
+$msgdt = $_GET['msgdt'];
+$msgtm = $_GET['msgtm'];
+$msgcntt = $_POST['msgcntt'];
+$msgstk = $_POST['msgstk'];
+$msgpsd = $_POST['msgpsd'];
+$msgobj = $_POST['msgobj'];
+$ope = $_POST['Clf'];
 $aSearch = array("<",">");
 $aReplace = array("&lt;","&gt;");
 $Message = "Echec durant la lecture du message...";

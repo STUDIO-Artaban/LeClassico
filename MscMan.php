@@ -1,8 +1,16 @@
 <?php
 require("Package.php");
+$Clf = $_GET['Clf'];
+$art = $_POST['art'];
+$tri = $_POST['tri'];
+$alb = $_POST['alb'];
+$mor = $_POST['mor'];
+$locfile = $_POST['locfile'];
+$file = $_POST['file'];
+$mng = $_POST['mng'];
+$ope = $_POST['ope'];
 $iResult = 0;
 $SelFile = "";
-$Clf = $_GET['Clf'];
 if(!Empty($Clf))
 {   $Camarade = DistUserKeyId($Clf);
     if(!Empty($ope))

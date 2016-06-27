@@ -2,6 +2,7 @@
 require("Package.php");
 $Chp = "6";
 $Clf = $_GET['Clf'];
+$msgtpe = $_GET['msgtpe'];
 $Title = "Nouveau Message";
 if(!Empty($msgtpe))
 {   if($msgtpe == 1) $Title = "Message Re&ccedil;u";

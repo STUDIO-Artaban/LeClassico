@@ -2,6 +2,18 @@
 require("Package.php");
 $Chp = "4";
 $Clf = $_GET['Clf'];
+$rpsd = $_POST['rpsd'];
+$rprnm = $_POST['rprnm'];
+$rnm = $_POST['rnm'];
+$rsx = $_POST['rsx'];
+$rendt = $_POST['rendt'];
+$retdt = $_POST['retdt'];
+$radrs = $_POST['radrs'];
+$rvill = $_POST['rvill'];
+$rpriv = $_POST['rpriv'];
+$ope = $_POST['ope'];
+$rqu = $_POST['rqu'];
+$vwu = $_POST['vwu'];
 $bWhere = false;
 $iResCnt = 0;
 $aSearch = array("<",">");

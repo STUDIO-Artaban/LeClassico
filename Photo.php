@@ -2,6 +2,25 @@
 require("Package.php");
 $Chp = "7";
 $Clf = $_GET['Clf'];
+$albvwu = $_POST['albvwu'];
+$albtri = $_POST['albtri'];
+$albnm = $_POST['albnm'];
+$pht = $_POST['pht'];
+$vwpht = $_POST['vwpht'];
+$vwu = $_POST['vwu'];
+$ope = $_POST['ope'];
+$cmmt = $_POST['cmmt'];
+$pht1 = $_POST['pht1'];
+$vtpht1 = $_POST['vtpht1'];
+$pht2 = $_POST['pht2'];
+$vtpht2 = $_POST['vtpht2'];
+$pht3 = $_POST['pht3'];
+$vtpht3 = $_POST['vtpht3'];
+$pht4 = $_POST['pht4'];
+$vtpht4 = $_POST['vtpht4'];
+$pht5 = $_POST['pht5'];
+$vtpht5 = $_POST['vtpht5'];
+$vwpht = $_POST['vwpht'];
 $aSearch = array("<",">");
 $aReplace = array("&lt;","&gt;");
 if(!Empty($Clf))
@@ -21,6 +40,7 @@ if(!Empty($Clf))
         {   $aRow = mysql_fetch_array($Result);
             $Camarade = stripslashes($aRow["CAM_Pseudo"]);
             mysql_free_result($Result);
+            $albnm = $_POST['albnm'];
             if(Empty($albnm))
             {   mysql_close($Link);
                 $Msg = "Album non s&eacute;lectionn&eacute;!!!!...?";

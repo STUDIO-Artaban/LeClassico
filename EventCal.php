@@ -2,6 +2,9 @@
 require("Package.php");
 $Chp = "14";
 $Clf = $_GET['Clf'];
+$dy = $_GET['dy'];
+$mn = $_GET['mn'];
+$yr = $_GET['yr'];
 if(!Empty($Clf))
 {   // Connexion
     $Link = @mysql_connect(GetMySqlLocalhost(),GetMySqlUser(),GetMySqlPassword());

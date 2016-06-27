@@ -2,6 +2,9 @@
 require("Package.php");
 $Chp = "5";
 $Clf = $_GET['Clf'];
+$frmsg = $_POST['frmsg'];
+$ope = $_POST['ope'];
+$md = $_POST['md'];
 $aSearch = array("<",">");
 $aReplace = array("&lt;","&gt;");
 if(!Empty($Clf))

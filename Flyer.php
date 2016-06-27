@@ -2,6 +2,11 @@
 require("Package.php");
 $Chp = "14";
 $Clf = $_GET['Clf'];
+$fly = $_GET['fly'];
+$sr = $_GET['sr'];
+$dy = $_GET['dy'];
+$mn = $_GET['mn'];
+$yr = $_GET['yr'];
 $aSearch = array("<",">");
 $aReplace = array("&lt;","&gt;");
 ?>

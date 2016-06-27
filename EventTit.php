@@ -2,6 +2,9 @@
 require("Package.php");
 $Chp = "14";
 $Clf = $_GET['Clf'];
+$dy = $_GET['dy'];
+$mn = $_GET['mn'];
+$yr = $_GET['yr'];
 $aJour = array("Dimanche","Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi");
 $aMois = array("Janvier","F&eacute;vrier","Mars","Avril","Mai","Juin","Juillet","Ao&ucirc;t","Septembre","Octobre","Novembre","D&eacute;cembre");
 $aMonth = array("January","February","March","April","May","June","July","August","September","October","November","December");

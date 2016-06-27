@@ -2,6 +2,8 @@
 require("Package.php");
 $Chp = "7";
 $Clf = $_GET['Clf'];
+$trcfg = $_GET['trcfg'];
+$vwu = $_GET['vwu'];
 $Tri = 0;
 $iResCnt = 0;
 $aSearch = array("<",">");

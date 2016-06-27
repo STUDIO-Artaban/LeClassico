@@ -2,6 +2,8 @@
 require("Package.php");
 $Chp = "15";
 $Clf = $_GET['Clf'];
+$res = $_GET['res'];
+if(!Empty($res)) $res = intval($res);
 /* ERROR MESSAGE (res):
    0 - Prêt
    1 - Transfert en cours

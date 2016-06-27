@@ -22,8 +22,14 @@ if(!Empty($Clf))
             $Camarade = stripslashes($aRow["CAM_Pseudo"]);
             $aDate = getdate();
             mysql_free_result($Result);
+            $ope = $_POST['ope'];
             if(!Empty($ope))
-            {   if((!Empty($albnm))&&(strcmp(trim($albnm),"")))
+            {   $albnm = $_POST['albnm'];
+                $alblnm = $_POST['alblnm'];
+                $albshrd = $_POST['albshrd'];
+                $albevnt = $_POST['albevnt'];
+                $albrmk = $_POST['albrmk'];
+                if((!Empty($albnm))&&(strcmp(trim($albnm),"")))
                 {   switch($ope)
                     {   case 1: // Ajoute un album /////////////////////////////////////////////////////////////////////////////
                         {   $Query = "SELECT 'X' FROM Albums WHERE UPPER(ALB_Nom) = UPPER('".trim($albnm)."')";

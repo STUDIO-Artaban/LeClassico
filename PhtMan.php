@@ -2,6 +2,13 @@
 require("Package.php");
 $Chp = "9";
 $Clf = $_GET['Clf'];
+$phtpth = $_GET['phtpth'];
+$shrd = $_GET['shrd'];
+$albnm = $_POST['albnm'];
+$pht = $_POST['pht'];
+$ope = $_POST['ope'];
+if(Empty($albnm)) $albnm = $_GET['albnm'];
+if(Empty($ope)) $ope = $_GET['ope'];
 $iSuppRes = 0;
 $iAjoutRes = 0;
 $aSearch = array("<",">");

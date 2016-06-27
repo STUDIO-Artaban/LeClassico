@@ -2,6 +2,14 @@
 require("Package.php");
 $Chp = "10";
 $Clf = $_GET['Clf'];
+$man = $_GET['man'];
+$file = $_GET['file'];
+$trcfg = $_GET['trcfg'];
+$loop = $_GET['loop'];
+$auto = $_GET['auto'];
+$file = $_GET['file'];
+$resope = $_GET['resope'];
+$qry = $_GET['qry'];
 $Tri = 0;
 $SelFile = "";
 $Extension = "";

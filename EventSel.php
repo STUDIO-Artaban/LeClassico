@@ -3,6 +3,11 @@ require("Package.php");
 $aMonth = array("January","February","March","April","May","June","July","August","September","October","November","December");
 $Chp = "14";
 $Clf = $_GET['Clf'];
+$dy = $_GET['dy'];
+$mn = $_GET['mn'];
+$yr = $_GET['yr'];
+$evnt = $_POST['evnt'];
+$ope = $_POST['ope'];
 $aSearch = array("<",">");
 $aReplace = array("&lt;","&gt;");
 if(!Empty($Clf))

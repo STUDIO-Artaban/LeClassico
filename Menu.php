@@ -2,6 +2,7 @@
 require("Package.php");
 $Chp = $_GET['Chp'];
 $Clf = $_GET['Clf'];
+$Mnu = $_GET['Mnu'];
 $iMenu = 0;
 $bAdmin = false;
 if(!Empty($Clf))
