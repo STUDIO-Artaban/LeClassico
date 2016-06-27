@@ -38,12 +38,11 @@ if(!Empty($Clf))
 else
 {   // Connexion
     $Link = @mysql_connect(GetMySqlLocalhost(),GetMySqlUser(),GetMySqlPassword());
-    if(Empty($Link))
+    if((Empty($Link))||(!mysql_select_db(GetMySqlDB(),$Link)))
     {   $Msg = "Connexion au serveur impossible!";
         include("Message.php");
         die();
     }
-    mysql_select_db(GetMySqlDB(),$Link);
     //$Msg = "Tu n'est pas connect&eacute;!";
     //include("Message.php");
     //die();
@@ -95,12 +94,12 @@ function ChgSharedAlbList()
         {   document.getElementById("PrgShdAdd").innerHTML=sPrgShdAdd+"<?php
             $Query = "SELECT COUNT(*) AS PHT_AddCnt FROM Photos WHERE UPPER(PHT_Album) = UPPER('".trim($aRow["ALB_Nom"])."')";
             $Query .= " AND UPPER(PHT_Pseudo) <> UPPER('".addslashes($Camarade)."')";
-            $Count = mysql_result(mysql_query(trim($Query),$Link),"PHT_AddCnt");
+            $Count = mysql_result(mysql_query(trim($Query),$Link),0,"PHT_AddCnt");
             echo $Count;
             ?></font></font>";
             document.getElementById("PrgShdTotal").innerHTML=sPrgShdTotal+"<?php
             $Query = "SELECT COUNT(*) AS PHT_TotalCnt FROM Photos WHERE UPPER(PHT_Album) = UPPER('".trim($aRow["ALB_Nom"])."')";
-            $Count = mysql_result(mysql_query(trim($Query),$Link),"PHT_TotalCnt");
+            $Count = mysql_result(mysql_query(trim($Query),$Link),0,"PHT_TotalCnt");
             echo $Count;
             ?></font></font>";
             break;
@@ -134,7 +133,7 @@ function ChgNewAlbList()
         {   document.getElementById("PrgNewFrom").innerHTML=sPrgNewFrom+"<?php echo trim($aRow["ALB_Pseudo"]); ?></font></font>";
             document.getElementById("PrgNewPht").innerHTML=sPrgNewPht+"<?php
             $Query = "SELECT COUNT(*) AS PHT_TotalCnt FROM Photos WHERE UPPER(PHT_Album) = UPPER('".addslashes($aRow["ALB_Nom"])."')";
-            $Count = mysql_result(mysql_query(trim($Query),$Link),"PHT_TotalCnt");
+            $Count = mysql_result(mysql_query(trim($Query),$Link),0,"PHT_TotalCnt");
             echo $Count;
             ?></font></font>";
             document.getElementById("PrgNewDate").innerHTML=sPrgNewDate+"<?php
@@ -277,7 +276,7 @@ $PhtIndex = 0;
 $PhtVot = 0;
 $PhtFirst = true;
 $Query = "SELECT COUNT(*) AS PHT_Count FROM Photos";
-$iPhtCnt = mysql_result(mysql_query(trim($Query),$Link),"PHT_Count");
+$iPhtCnt = mysql_result(mysql_query(trim($Query),$Link),0,"PHT_Count");
 $Query = "SELECT SUM(VOT_Note)+SUM(VOT_Total) AS VOT_Pos,VOT_Fichier FROM Votes WHERE VOT_Type = 0 GROUP BY VOT_Fichier ORDER BY VOT_Pos DESC";
 $Result = mysql_query(trim($Query),$Link);
 if(mysql_num_rows($Result) != 0)
@@ -769,7 +768,7 @@ if(!Empty($Clf))
         mysql_free_result($Result);
         $Query = "SELECT COUNT(*) AS MSG_WriteCnt FROM Messagerie";
         $Query .= " WHERE UPPER(MSG_From) = UPPER('".addslashes($Camarade)."') AND MSG_WriteStk = 1";
-        $CntWrite = mysql_result(mysql_query(trim($Query),$Link),"MSG_WriteCnt");
+        $CntWrite = mysql_result(mysql_query(trim($Query),$Link),0,"MSG_WriteCnt");
         ?>
         <table border=0 width="100%" cellspacing=0 cellpadding=0>
         <tr>

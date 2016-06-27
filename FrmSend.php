@@ -39,11 +39,11 @@ if(!Empty($Clf))
                     {   // Supprime le dernier message
                         $Query = "SELECT MIN(FRM_Date) AS LASTDATE FROM Forum";
                         $Result = mysql_query(trim($Query),$Link);
-                        $LastDate = mysql_result($Result,"LASTDATE");
+                        $LastDate = mysql_result($Result,0,"LASTDATE");
                         mysql_free_result($Result);
                         $Query = "SELECT MIN(FRM_Time) AS LASTTIME FROM Forum WHERE FRM_Date = '$LastDate'";
                         $Result = mysql_query(trim($Query),$Link);
-                        $LastTime = mysql_result($Result,"LASTTIME");
+                        $LastTime = mysql_result($Result,0,"LASTTIME");
                         mysql_free_result($Result);
                         $Query = "DELETE FROM Forum WHERE FRM_Date = '$LastDate' AND FRM_Time = '$LastTime'";
                         $Result = mysql_query(trim($Query),$Link);

@@ -244,7 +244,7 @@ $Status = "<font ID='Status'>Pr&ecirc;t</font>";
                 }
             }
             $Query = "SELECT COUNT(*) AS MSC_Count FROM Music";
-            $iMscCnt = mysql_result(mysql_query(trim($Query),$Link),"MSC_Count");
+            $iMscCnt = mysql_result(mysql_query(trim($Query),$Link),0,"MSC_Count");
             $Query = "SELECT SUM(VOT_Note)+SUM(VOT_Total) AS VOT_Pos,VOT_Fichier FROM Votes WHERE VOT_Type = 1 GROUP BY VOT_Fichier ORDER BY VOT_Pos DESC";
             $Result = mysql_query(trim($Query),$Link);
             if(mysql_num_rows($Result) != 0)
