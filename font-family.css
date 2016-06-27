@@ -1,0 +1,18 @@
+/* TITLE */
+@font-face {
+    font-family: Cursive;
+    src: url(http://www.leclassico.fr/Fonts/Curlz___.TTF);
+}
+
+/* MENU */
+@font-face {
+    font-family: Impact;
+    src: url(http://www.leclassico.fr/Fonts/impact.ttf);
+}
+
+/* CONTENT */
+@font-face {
+    font-family: Verdana;
+    src: url(http://www.leclassico.fr/Fonts/verdana.ttf);
+}
+
