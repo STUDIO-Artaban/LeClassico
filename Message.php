@@ -1,5 +1,7 @@
 <?php
 //require("Package.php");
+$Chp = $_GET['Chp'];
+$Clf = $_GET['Clf'];
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/transitional.dtd">
 <html>

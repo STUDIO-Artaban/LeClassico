@@ -1,6 +1,7 @@
 <?php
 require("Package.php");
 $Chp = "14";
+$Clf = $_GET['Clf'];
 $aSearch = array("<",">");
 $aReplace = array("&lt;","&gt;");
 ?>

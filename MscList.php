@@ -1,6 +1,7 @@
 <?php
 require("Package.php");
 $Chp = "10";
+$Clf = $_GET['Clf'];
 $Tri = 0;
 $SelFile = "";
 $SelLock = false;

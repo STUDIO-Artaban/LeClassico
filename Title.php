@@ -1,5 +1,6 @@
 <?php
 require("Package.php");
+$Clf = $_GET['Clf'];
 $aSearch = array("<",">");
 $aReplace = array("&lt;","&gt;");
 if(!Empty($Clf))

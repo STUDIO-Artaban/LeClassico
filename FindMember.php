@@ -1,6 +1,7 @@
 <?php
 require("Package.php");
 $Chp = "4";
+$Clf = $_GET['Clf'];
 $bWhere = false;
 $iResCnt = 0;
 $aSearch = array("<",">");

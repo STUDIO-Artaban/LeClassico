@@ -1,6 +1,7 @@
 <?php
 require("Package.php");
 $Chp = "5";
+$Clf = $_GET['Clf'];
 $LogDate = "";
 if(!Empty($Clf))
 {   // Connexion

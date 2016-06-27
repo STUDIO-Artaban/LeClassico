@@ -2,6 +2,7 @@
 require("Package.php");
 $iResult = 0;
 $SelFile = "";
+$Clf = $_GET['Clf'];
 if(!Empty($Clf))
 {   $Camarade = DistUserKeyId($Clf);
     if(!Empty($ope))

@@ -1,6 +1,7 @@
 <?php
 require("Package.php");
 $Chp = "6";
+$Clf = $_GET['Clf'];
 $Objet = "";
 $Pseudo = "Camarade...";
 if(!Empty($Clf))

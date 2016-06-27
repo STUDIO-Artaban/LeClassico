@@ -1,6 +1,7 @@
 <?php
 require("Package.php");
 $Chp = "6";
+$Clf = $_GET['Clf'];
 $CntNew = 0;
 $CntRead = 0;
 $CntWrite = 0;

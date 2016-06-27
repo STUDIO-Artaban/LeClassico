@@ -1,5 +1,6 @@
 <?php
 require("Package.php");
+$Clf = $_GET['Clf'];
 if(!Empty($Clf))
 {   // Connexion
     $Link = @mysql_connect(GetMySqlLocalhost(),GetMySqlUser(),GetMySqlPassword());

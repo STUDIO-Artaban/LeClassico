@@ -1,6 +1,7 @@
 <?php
 require("Package.php");
 $Chp = "1";
+$Clf = $_GET['Clf'];
 $LogDate = "";
 $aSearch = array("<",">");
 $aReplace = array("&lt;","&gt;");

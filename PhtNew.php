@@ -1,6 +1,7 @@
 <?php
 require("Package.php");
 $Chp = "9";
+$Clf = $_GET['Clf'];
 $iStatus = 0;
 /* ERROR MESSAGE (iStatus):
    2 - Clef vide (non connecté)

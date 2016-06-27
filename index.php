@@ -1,5 +1,7 @@
 <?php
 require("Package.php");
+$Chp = $_GET['Chp'];
+$Clf = $_GET['Clf'];
 $bRes = true;
 if(Empty($Clf))
 {  if((Empty($psd))||(Empty($ccf)))
@@ -143,6 +145,7 @@ else
 ?>
 <meta name="Description" content="Site officiel du Classico">
 <meta name="Keywords" content="classico; music; deep; country; nashville; amis; amies">
+<link rel="icon" href="http://www.leclassico.fr/Images/LeClassico.ico" />
 <frameset border=0 rows="174,*,131">
         <frameset border=0 cols="180,31,574,*">
                 <frame src="Ball.html" frameborder="no" scrolling="no" noresize>

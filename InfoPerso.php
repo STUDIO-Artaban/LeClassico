@@ -1,6 +1,7 @@
 <?php
 require("Package.php");
 $Chp = "2";
+$Clf = $_GET['Clf'];
 $bModif = false;
 if(!Empty($Clf))
 {   // Connexion

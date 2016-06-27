@@ -2,6 +2,7 @@
 require("Package.php");
 $iRefresh = 1;
 $Chp = "5";
+$Clf = $_GET['Clf'];
 if(!Empty($Clf))
 {   // Connexion
     $Link = @mysql_connect(GetMySqlLocalhost(),GetMySqlUser(),GetMySqlPassword());

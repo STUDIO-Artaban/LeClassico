@@ -1,6 +1,7 @@
 <?php
 require("Package.php");
 $Chp = "6";
+$Clf = $_GET['Clf'];
 $aSearch = array("<",">");
 $aReplace = array("&lt;","&gt;");
 $Message = "Echec durant la lecture du message...";
