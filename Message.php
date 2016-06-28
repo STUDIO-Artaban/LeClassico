@@ -179,7 +179,7 @@ if(strcmp($Chp,"6"))
                         else if(!strcmp($Chp,"15")) echo "AddEvent.php?Clf=$Clf\">";
                         else echo "Accueil.php?Clf=$Clf\">";
                 }
-                else echo "Accueil.php?Clf=$Clf\">";
+                else echo "Home.php?Clf=$Clf\">";
                 ////////////////////////////////
                 ?>Retour</a></td>
                 </tr>

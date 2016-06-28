@@ -39,11 +39,12 @@ if(!Empty($Clf))
 else
 {   // Connexion
     $Link = @mysql_connect(GetMySqlLocalhost(),GetMySqlUser(),GetMySqlPassword());
-    if((Empty($Link))||(!mysql_select_db(GetMySqlDB(),$Link)))
+    if(Empty($Link))
     {   $Msg = "Connexion au serveur impossible!";
         include("Message.php");
         die();
     }
+    mysql_select_db(GetMySqlDB(),$Link);
     //$Msg = "Tu n'est pas connect&eacute;!";
     //include("Message.php");
     //die();
