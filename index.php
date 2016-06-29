@@ -2,6 +2,8 @@
 require("Package.php");
 $Chp = $_GET['Chp'];
 $Clf = $_GET['Clf'];
+$psd = $_POST['psd'];
+$ccf = $_POST['ccf'];
 $bRes = true;
 if(Empty($Clf))
 {  if((Empty($psd))||(Empty($ccf)))
@@ -213,7 +215,7 @@ else
                 {   // Forum
                 ?>
                 <frameset border=0 rows="15,32,*<?php if((!Empty($Clf))&&(strcmp($Clf,""))) echo ",81"; ?>,10">
-                        <frame src="Top.html" frameborder="no" scrolling="no" noresize>
+                        <frame src="ScrollTop.html" frameborder="no" scrolling="no" noresize>
                         <frame src="FrmTitle.php?Clf=<?php echo $Clf; ?>" frameborder="no" scrolling="no" noresize>
                         <frame src="FrmMsg.php?Clf=<?php echo $Clf; ?>#EndMsg" frameborder="no" scrolling="yes" style="overflow-x: auto">
                         <?php
@@ -223,7 +225,7 @@ else
                              // Connecté
                         }
                         ?>
-                        <frame src="Bottom.html" frameborder="no" scrolling="no" noresize>
+                        <frame src="ScrollBot.html" frameborder="no" scrolling="no" noresize>
                 </frameset>
                 <?php
                 }
@@ -233,12 +235,12 @@ else
                     {   // Gestion des Photos
                 ?>
                 <frameset border=0 rows="15,51,10,180,*">
-                        <frame src="Top.html" frameborder="no" scrolling="no" noresize>
+                        <frame src="ScrollTop.html" frameborder="no" scrolling="no" noresize>
                         <frameset border=0 cols="*,16">
                                 <frame src="PhtTitle.php?Clf=<?php echo $Clf; ?>" frameborder="no">
                                 <frame src="White.html" frameborder="no" scrolling="no" noresize>
                         </frameset>
-                        <frame src="Bottom.html" frameborder="no" scrolling="no" noresize>
+                        <frame src="ScrollBot.html" frameborder="no" scrolling="no" noresize>
                         <frame name="PhtManager" src="PhtMan.php?Clf=<?php echo $Clf; ?>" frameborder="no">
                         <frameset border=0 cols="60%,40%">
                                 <frameset border=0 rows="10,*,10">
@@ -266,7 +268,7 @@ else
                                 <frame name="EvntCal" src="EventCal.php?Clf=<?php echo $Clf; ?>" frameborder="no" scrolling="no" noresize>
                                 <frameset border=0 rows="39,140,25">
                                         <frame name="EvntTitle" src="EventTit.php" frameborder="no" scrolling="no" noresize>
-                                        <frameset border=0 cols="7,*,33">
+                                        <frameset border=0 cols="7,*,17">
                                                 <frame src="EventLef.html" frameborder="no" scrolling="no" noresize>
                                                 <frame name="EvntSelect" src="EventSel.php?Clf=<?php echo $Clf; ?>" frameborder="no" scrolling="yes" style="overflow-x: auto">
                                                 <frame src="EventRig.html" frameborder="no" scrolling="no" noresize>

@@ -418,7 +418,7 @@ function AfficherEvent(iViewYear,iViewMnth,iViewDay,sKey)
     <td width=100 valign="top">
         <table border=0 width=100 cellspacing=0 cellpadding=0>
         <tr>
-        <td><font ID="Title">Le&nbsp;<font color="#ffff00"><?php
+        <td><font ID="Title" style="font-size: 10pt">Le&nbsp;<font color="#ffff00"><?php
         echo substr($aRow["EVE_Date"],8,10)."/".substr($aRow["EVE_Date"],5,2)."/".substr($aRow["EVE_Date"],0,4);
         ?></font></font></td>
         </tr>

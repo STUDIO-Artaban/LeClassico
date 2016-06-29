@@ -387,7 +387,7 @@ mysql_close($Link);
 <body bgcolor="#ffffff" style="margin-top: 0; margin-left: 10px" onload="Initialize()">
 <table border=0 width="100%" height="100%" cellspacing=0 cellpadding=0>
 <tr height="100%">
-<td width="100%" valign="top">
+<td valign="top">
 <!-- ****************************************************************************************************************************** ALBUM MANAGER -->
 <table border=0 width="100%" cellspacing=0 cellpadding=0>
 <tr>
@@ -395,7 +395,7 @@ mysql_close($Link);
     <table border=0 width="100%" cellspacing=0 cellpadding=0>
     <tr>
     <td>
-        <table border=0 cellspacing=0 cellpadding=0>
+        <table border=0 width="100%" cellspacing=0 cellpadding=0>
         <tr>
         <td><img src="<?php echo GetFolder(); ?>/Images/TitConHG.jpg"></td>
         </tr>
@@ -456,12 +456,16 @@ mysql_close($Link);
     </tr>
     </table>
 </td>
-</tr>
-</table><br>
+<td rowspan=2 valign="top"><img src="<?php echo GetFolder(); ?>/Images/Projo.jpg"></td></tr>
+<tr>
+<td><br>
 <font face="Verdana,Lucida,Courier" size=2>Tu as des photos aux formats <b>JPEG</b> (<b>*.jpg</b>), <b>GIF</b> (<b>*.gif</b>) ou <b>PNG</b>
  (<b>*.png</b>)...Fais nous en profiter!!! Crées un album et ajoutes y tes photos via le menu
- <a href="<?php echo GetFolder(); ?>/index.php?Chp=9&Clf=<?php echo $Clf; ?>" style="font-size: 10pt" target="_top">Ajouter/Supprimer 1 Photo</a>.<br><br></font>
-<table border=0 width="100%" cellspacing=0 cellpadding=0 bgcolor="#ff0000">
+ <a href="<?php echo GetFolder(); ?>/index.php?Chp=9&Clf=<?php echo $Clf; ?>" style="font-size: 10pt" target="_top">Ajouter/Supprimer 1 Photo</a>.</font>
+</td>
+</tr>
+</table>
+<table border=0 width="100%" cellspacing=0 cellpadding=0 bgcolor="#ff0000" style="margin-top: 20px">
 <tr>
 <td width=52>
     <table border=0 cellspacing=0 cellpadding=0>
@@ -1302,7 +1306,6 @@ mysql_close($Link);
  supprimer. Vu ?!?</font>
 <!-- *********************************************************************************************************************************************** -->
 </td>
-<td valign="top"><img src="<?php echo GetFolder(); ?>/Images/Projo.jpg"></td>
 </tr>
 </table>
 </body>

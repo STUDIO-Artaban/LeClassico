@@ -74,13 +74,6 @@ $aMonth = array("January","February","March","April","May","June","July","August
     </tr>
     </table>
 </td>
-<td width=16 bgcolor="#e4e4e4">
-    <table border=0 width=16 cellspacing=0 cellpadding=0>
-    <tr>
-    <td><img src="<?php echo GetFolder(); ?>/Images/nopic.gif"></td>
-    </tr>
-    </table>
-</td>
 </tr>
 </table>
 <!-- ************************************************************************************************************************************************ -->

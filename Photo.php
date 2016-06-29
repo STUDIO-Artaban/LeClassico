@@ -2,12 +2,17 @@
 require("Package.php");
 $Chp = "7";
 $Clf = $_GET['Clf'];
-$albvwu = $_POST['albvwu'];
-$albtri = $_POST['albtri'];
-$albnm = $_POST['albnm'];
+$albvwu = $_GET['albvwu'];
+$vwpht = $_GET['vwpht'];
+$albtri = $_GET['albtri'];
+$albnm = $_GET['albnm'];
+$vwu = $_GET['vwu'];
+if(Empty($albvwu)) $albvwu = $_POST['albvwu'];
+if(Empty($albtri)) $albtri = $_POST['albtri'];
+if(Empty($albnm)) $albnm = $_POST['albnm'];
+if(Empty($vwu)) $vwu = $_POST['vwu'];
+if(Empty($vwpht)) $vwpht = $_POST['vwpht'];
 $pht = $_POST['pht'];
-$vwpht = $_POST['vwpht'];
-$vwu = $_POST['vwu'];
 $ope = $_POST['ope'];
 $cmmt = $_POST['cmmt'];
 $pht1 = $_POST['pht1'];
@@ -20,7 +25,6 @@ $pht4 = $_POST['pht4'];
 $vtpht4 = $_POST['vtpht4'];
 $pht5 = $_POST['pht5'];
 $vtpht5 = $_POST['vtpht5'];
-$vwpht = $_POST['vwpht'];
 $aSearch = array("<",">");
 $aReplace = array("&lt;","&gt;");
 if(!Empty($Clf))
@@ -40,7 +44,6 @@ if(!Empty($Clf))
         {   $aRow = mysql_fetch_array($Result);
             $Camarade = stripslashes($aRow["CAM_Pseudo"]);
             mysql_free_result($Result);
-            $albnm = $_POST['albnm'];
             if(Empty($albnm))
             {   mysql_close($Link);
                 $Msg = "Album non s&eacute;lectionn&eacute;!!!!...?";
@@ -580,7 +583,7 @@ while($aRow = mysql_fetch_array($Result))
     <td width=10><img src="<?php echo GetFolder(); ?>/Images/nopic.gif"></td>
     <td nowrap><font ID="Title"><?php
     if(!Empty($vwpht)) echo $aRow["PHT_Fichier"];
-    else echo "N°&nbsp;<font color=\"#000000\">$iNumPht</font>";
+    else echo "N&deg;&nbsp;<font color=\"#000000\">$iNumPht</font>";
     ?></font></td>
     <td width=5><img src="<?php echo GetFolder(); ?>/Images/nopic.gif"></td>
     <td width=5 valign="bottom" bgcolor="#ffffff"><img src="<?php echo GetFolder(); ?>/Images/OranInBG.jpg"></td>

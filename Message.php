@@ -137,6 +137,9 @@ if(strcmp($Chp,"6"))
 </tr>
 </table><br>
 <font face="Impact,Verdana,Lucida" size=3 color="#000000"><?php echo $Msg; ?></font>
+<?php
+if(Empty($NoBack)) {
+?>
 <table border=0 width="100%" cellspacing=0 cellpadding=0>
 <tr>
 <td width="100%">
@@ -197,6 +200,9 @@ if(strcmp($Chp,"6"))
 </td>
 </tr>
 </table>
+<?php
+}
+?>
 <!-- *********************************************************************************************************************************************** -->
 </td>
 <td valign="top"><img src="<?php echo GetFolder(); ?>/Images/Projo.jpg"></td>

@@ -9,7 +9,7 @@ $msgcntt = $_POST['msgcntt'];
 $msgstk = $_POST['msgstk'];
 $msgpsd = $_POST['msgpsd'];
 $msgobj = $_POST['msgobj'];
-$ope = $_POST['Clf'];
+$ope = $_POST['ope'];
 $aSearch = array("<",">");
 $aReplace = array("&lt;","&gt;");
 $Message = "Echec durant la lecture du message...";
@@ -68,6 +68,7 @@ if(!Empty($Clf))
                                         else $Msg .= "Pas d'Objet";
                                         $Msg .= "</font>] envoy&eacute; avec succ&eacute;s!";
                                         $Tpe = 1;
+                                        $NoBack = true;
                                         include("Message.php");
                                         die();
                                     }

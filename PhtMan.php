@@ -86,6 +86,7 @@ else
 <link rel="stylesheet" type="text/css" href="http://www.leclassico.fr/font-family.css">
 <style type="text/css">
 form {padding: 0px; margin-bottom: 0px; border: 0px}
+select, option { width: 170px }
 #Title {font-size: 18pt; font-family: Impact,Verdana,Lucida; color: yellow}
 #SubTitle {font-size: 12pt; font-family: Impact,Verdana,Lucida; color: black}
 #Content {font-size: 8pt; font-family: Verdana,Lucida,Courier; color: black}
@@ -172,8 +173,7 @@ function FillPhotoArray()
                 $aAlbInfo = array();
             }
             $CurAlbum = $aRow["ALB_Nom"];
-            if(strlen($aRow["ALB_Nom"]) <= 20) $aYourAlb[] = str_replace($aSearch,$aReplace,trim($aRow["ALB_Nom"]));
-            else $aYourAlb[] = str_replace($aSearch,$aReplace,substr(trim($aRow["ALB_Nom"]),0,20))."...";
+            $aYourAlb[] = str_replace($aSearch,$aReplace,trim($aRow["ALB_Nom"]));
         }
         if(!Empty($aRow["PHT_Fichier"]))
         {   if(strlen(addslashes($aRow["PHT_Fichier"])) <= 9) $aPhtInfo[] = "n°$iAlbPht - ".addslashes($aRow["PHT_Fichier"]);
@@ -256,8 +256,7 @@ function FillPhotoArray()
                 $aAlbInfo = array();
             }
             $CurAlbum = $aRow["ALB_Nom"];
-            if(strlen($aRow["ALB_Nom"]) <= 20) $aSharedAlb[] = str_replace($aSearch,$aReplace,trim($aRow["ALB_Nom"]));
-            else $aSharedAlb[] = str_replace($aSearch,$aReplace,substr(trim($aRow["ALB_Nom"]),0,20))."...";
+            $aSharedAlb[] = str_replace($aSearch,$aReplace,trim($aRow["ALB_Nom"]));
         }
         if(!Empty($aRow["PHT_Fichier"]))
         {   if(strlen(addslashes($aRow["PHT_Fichier"])) <= 9) $aPhtInfo[] = "n°$iAlbPht - ".addslashes($aRow["PHT_Fichier"]);
@@ -330,9 +329,9 @@ function ChgYourAlbList()
     {   document.getElementById("SharedList").value=0;
         document.getElementById("BtnAddPhoto").disabled="";
         // Rempli la liste des photos
+        document.getElementById("NewAlb").value=document.getElementById("YourList").options[document.getElementById("YourList").selectedIndex].text;
         if(aYourList[(document.getElementById("YourList").value)-1].length!=0)
-        {   document.getElementById("NewAlb").value=aYourList[(document.getElementById("YourList").value)-1][0][1];
-            for(i=0;i<aYourList[(document.getElementById("YourList").value)-1].length;i++)
+        {   for(i=0;i<aYourList[(document.getElementById("YourList").value)-1].length;i++)
             {   oElement=document.createElement("option");
                 oElement.text=aYourList[(document.getElementById("YourList").value)-1][i][0];
                 oElement.value=i;
@@ -340,8 +339,7 @@ function ChgYourAlbList()
             }
         }
         else
-        {   document.getElementById("NewAlb").value="";
-            oElement=document.createElement("option");
+        {   oElement=document.createElement("option");
             oElement.text=sNoPhoto;
             oElement.value=0;
             document.getElementById("PhotoList").add(oElement);
@@ -365,9 +363,9 @@ function ChgSharedAlbList()
     {   document.getElementById("YourList").value=0;
         document.getElementById("BtnAddPhoto").disabled="";
         // Rempli la liste des photos
+        document.getElementById("NewAlb").value=document.getElementById("SharedList").options[document.getElementById("SharedList").selectedIndex].text;
         if(aSharedList[(document.getElementById("SharedList").value)-1].length!=0)
-        {   document.getElementById("NewAlb").value=aSharedList[(document.getElementById("SharedList").value)-1][0][1];
-            for(i=0;i<aSharedList[(document.getElementById("SharedList").value)-1].length;i++)
+        {   for(i=0;i<aSharedList[(document.getElementById("SharedList").value)-1].length;i++)
             {   oElement=document.createElement("option");
                 oElement.text=aSharedList[(document.getElementById("SharedList").value)-1][i][0];
                 oElement.value=i;
@@ -375,8 +373,7 @@ function ChgSharedAlbList()
             }
         }
         else
-        {   document.getElementById("NewAlb").value="";
-            oElement=document.createElement("option");
+        {   oElement=document.createElement("option");
             oElement.text=sNoPhoto;
             oElement.value=0;
             document.getElementById("PhotoList").add(oElement);

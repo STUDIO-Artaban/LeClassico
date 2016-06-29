@@ -1,6 +1,7 @@
 <?php
 require("Package.php");
 $Clf = $_GET['Clf'];
+$man = $_GET['man'];
 $art = $_POST['art'];
 $tri = $_POST['tri'];
 $alb = $_POST['alb'];

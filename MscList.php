@@ -2,6 +2,12 @@
 require("Package.php");
 $Chp = "10";
 $Clf = $_GET['Clf'];
+$man = $_GET['man'];
+$trcfg = $_GET['trcfg'];
+$file = $_GET['file'];
+$auto = $_GET['auto'];
+$lp = $_GET['lp'];
+$lck = $_GET['lck'];
 $Tri = 0;
 $SelFile = "";
 $SelLock = false;
@@ -34,38 +40,37 @@ $aReplace = array("&lt;","&gt;");
                 die();
             }
         }
-
-            if(!Empty($trcfg)) $Tri = $trcfg;
-            if(!Empty($file)) $SelFile = $file;
-            if((!Empty($lck))&&($lck == 1)) $SelLock = true;
-            if((!Empty($auto))&&($auto == 1)) $SelPlay = true;
-            if((!Empty($lp))&&($lp == 1)) $SelLoop = true;
-            $Query = "SELECT * FROM Music";
-            switch($Tri)
-            {   case 0: // Artiste
-                {   $Query .= " ORDER BY MSC_Artiste, MSC_Album, MSC_Morceau, MSC_Pseudo";
-                    break;
-                }
-                case 1: // Album
-                {   $Query .= " ORDER BY MSC_Album, MSC_Artiste, MSC_Morceau, MSC_Pseudo";
-                    break;
-                }
-                case 2: // Morceau
-                {   $Query .= " ORDER BY MSC_Morceau, MSC_Artiste, MSC_Album, MSC_Pseudo";
-                    break;
-                }
-                case 3: // Pseudo
-                {   $Query .= " ORDER BY MSC_Pseudo, MSC_Artiste, MSC_Album, MSC_Morceau";
-                    break;
-                }
-                default:
-                {   $Query .= " ORDER BY MSC_Artiste, MSC_Album, MSC_Morceau, MSC_Pseudo";
-                    break;
-                }
+        if(!Empty($trcfg)) $Tri = $trcfg;
+        if(!Empty($file)) $SelFile = $file;
+        if((!Empty($lck))&&($lck == 1)) $SelLock = true;
+        if((!Empty($auto))&&($auto == 1)) $SelPlay = true;
+        if((!Empty($lp))&&($lp == 1)) $SelLoop = true;
+        $Query = "SELECT * FROM Music";
+        switch($Tri)
+        {   case 0: // Artiste
+            {   $Query .= " ORDER BY MSC_Artiste, MSC_Album, MSC_Morceau, MSC_Pseudo";
+                break;
             }
-            $Result = mysql_query(trim($Query),$Link);
-            $iResCnt = mysql_num_rows($Result);
+            case 1: // Album
+            {   $Query .= " ORDER BY MSC_Album, MSC_Artiste, MSC_Morceau, MSC_Pseudo";
+                break;
+            }
+            case 2: // Morceau
+            {   $Query .= " ORDER BY MSC_Morceau, MSC_Artiste, MSC_Album, MSC_Pseudo";
+                break;
+            }
+            case 3: // Pseudo
+            {   $Query .= " ORDER BY MSC_Pseudo, MSC_Artiste, MSC_Album, MSC_Morceau";
+                break;
+            }
+            default:
+            {   $Query .= " ORDER BY MSC_Artiste, MSC_Album, MSC_Morceau, MSC_Pseudo";
+                break;
+            }
         }
+        $Result = mysql_query(trim($Query),$Link);
+        $iResCnt = mysql_num_rows($Result);
+    }
 //    }
 //}
 //else
