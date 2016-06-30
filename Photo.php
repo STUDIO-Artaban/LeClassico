@@ -52,21 +52,15 @@ if(!Empty($Clf))
             }
             else
             {   if(!Empty($ope))
-                {   // Ajoute un commentaire ///////////////////////////////////////////////////////////////////////////////
+                {   $aDate = getdate();
                     if($ope != 2)
-                    {   if((!Empty($cmmt))&&(strcmp(trim($cmmt),""))&&(!Empty($pht))&&(strcmp(trim($pht),"")))
-                        {   $Query = "SELECT PHT_Comment FROM Photos WHERE UPPER(PHT_Album) = UPPER('".addslashes(base64_decode(urldecode(trim($albnm))))."')";
-                            $Query .= " AND PHT_Fichier LIKE '".base64_decode(urldecode($pht))."'";
-                            $Result = mysql_query(trim($Query),$Link);
-                            $aRow = mysql_fetch_array($Result);
-                            $Comment = "";
-                            if((!Empty($aRow["PHT_Comment"]))&&(strcmp(trim($aRow["PHT_Comment"]),"")))
-                            {   $Comment = addslashes($aRow["PHT_Comment"])."<br><br>";
-                                mysql_free_result($Result);
-                            }
-                            $Comment .= "<b><u>".addslashes($Camarade).":</u></b>&nbsp;".str_replace($aSearch,$aReplace,trim($cmmt));
-                            $Query = "UPDATE Photos SET PHT_Comment = '$Comment' WHERE UPPER(PHT_Album) = UPPER('".addslashes(base64_decode(urldecode(trim($albnm))))."')";
-                            $Query .= " AND PHT_Fichier LIKE '".base64_decode(urldecode($pht))."'";
+                    {   // Ajoute un commentaire ///////////////////////////////////////////////////////////////////////////////
+                        if((!Empty($cmmt))&&(strcmp(trim($cmmt),""))&&(!Empty($pht))&&(strcmp(trim($pht),"")))
+                        {   $Query = "INSERT INTO Commentaires (COM_Fichier,COM_Pseudo,COM_Date,COM_Text) VALUES (";
+                            $Query .= "'".base64_decode(urldecode($pht))."',";
+                            $Query .= "'".addslashes($Camarade)."',";
+                            $Query .= "'".trim($aDate["year"])."-".trim($aDate["mon"])."-".trim($aDate["mday"])." ".trim($aDate["hours"]).":".trim($aDate["minutes"]).":".trim($aDate["seconds"])."',";
+                            $Query .= "'".str_replace($aSearch,$aReplace,trim($cmmt))."')";
                             if(!mysql_query(trim($Query),$Link))
                             {   mysql_close($Link);
                                 $Msg = "Une erreur est intervenue durant l'ajout de ton commentaire! Son contenu ne lui a peut-&ecirc;tre pas plus!";
@@ -78,7 +72,6 @@ if(!Empty($Clf))
                     }
                     else
                     {   // Vote ///////////////////////////////////////////////////////////////////////////////////////
-                        $aDate = getdate();
                         $iVote = 0;
                         if(!Empty($vtpht1))
                         {   switch($vtpht1)
@@ -714,7 +707,7 @@ while($aRow = mysql_fetch_array($Result))
         <tr bgcolor="#d8e1c6">
         <td><img src="<?php echo GetFolder(); ?>/Images/nopic.gif"></td>
         <td>
-        <div style="width: 139px; height: 182px; overflow: auto"><font ID="Comment"><?php echo stripslashes($aRow["PHT_Comment"]); ?></font></div>
+        <div style="width: 139px; height: 182px; overflow: auto"><font ID="Comment"><?php echo GetComments($Link,$aRow["PHT_Fichier"]); ?></font></div>
         </td>
         <td><img src="<?php echo GetFolder(); ?>/Images/nopic.gif"></td>
         </tr>

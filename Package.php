@@ -182,4 +182,19 @@ function PrintString($String)
     }
     return $PrintStr;
 }
+///////////////////////////////////
+// GetComments
+///////////////////////////////////
+function GetComments($link,$fichier)
+{   $query = "SELECT COM_Date,COM_Pseudo,COM_Text FROM Commentaires WHERE COM_Fichier LIKE '$fichier' ORDER BY COM_Date";
+    $result = mysql_query(trim($query),$link);
+    $comments = "";
+    while($row = mysql_fetch_array($result))
+    {   // Tant qu'il y a des commentaires
+        if(!Empty($comments)) $comments .= "<br>";
+        $comments .= "<b><u>".$row["COM_Pseudo"].":</u></b>&nbsp;".$row["COM_Text"];
+    }
+    mysql_free_result($result);
+    return $comments;
+}
 ?>
