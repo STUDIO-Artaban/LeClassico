@@ -149,7 +149,13 @@ if(!Empty($Clf))
             else if($ope == 3)
             {   // Désabonnement
                 if((!Empty($abo))&&(strcmp(trim($abo),"")))
-                {   $Query = "DELETE FROM Abonnements WHERE UPPER(ABO_Pseudo) = UPPER('".addslashes($Camarade)."') AND ABO_Camarade LIKE '".addslashes($abo)."'";
+                {   if(!strcmp(trim($abo),GetWebmaster()))
+                    {   mysql_close($Link);
+                        $Msg = "Impossible de se désabonner de <b>Webmaster</b>... il est trop fort!";
+                        include("Message.php");
+                        die();
+                    }
+                    $Query = "DELETE FROM Abonnements WHERE UPPER(ABO_Pseudo) = UPPER('".addslashes($Camarade)."') AND ABO_Camarade LIKE '".addslashes($abo)."'";
                     if(!mysql_query(trim($Query),$Link))
                     {   mysql_close($Link);
                         $Msg = "Echec de la mise &agrave; jour de tes abonnements! Contact le <font color=\"#808080\">Webmaster</font>!";

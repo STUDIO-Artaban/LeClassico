@@ -56,11 +56,12 @@ if(!Empty($Clf))
                     if($ope != 2)
                     {   // Ajoute un commentaire ///////////////////////////////////////////////////////////////////////////////
                         if((!Empty($cmmt))&&(strcmp(trim($cmmt),""))&&(!Empty($pht))&&(strcmp(trim($pht),"")))
-                        {   $Query = "INSERT INTO Commentaires (COM_Fichier,COM_Pseudo,COM_Date,COM_Text) VALUES (";
-                            $Query .= "'".base64_decode(urldecode($pht))."',";
+                        {   $Query = "INSERT INTO Commentaires (COM_ObjType,COM_ObjID,COM_Pseudo,COM_Date,COM_Text) VALUES (";
+                            $Query .= "'P',";
+                            $Query .= GetPhotoID(base64_decode(urldecode($pht))).",";
                             $Query .= "'".addslashes($Camarade)."',";
                             $Query .= "'".trim($aDate["year"])."-".trim($aDate["mon"])."-".trim($aDate["mday"])." ".trim($aDate["hours"]).":".trim($aDate["minutes"]).":".trim($aDate["seconds"])."',";
-                            $Query .= "'".str_replace($aSearch,$aReplace,trim($cmmt))."')";
+                            $Query .= "'".addslashes(str_replace($aSearch,$aReplace,trim($cmmt)))."')";
                             if(!mysql_query(trim($Query),$Link))
                             {   mysql_close($Link);
                                 $Msg = "Une erreur est intervenue durant l'ajout de ton commentaire! Son contenu ne lui a peut-&ecirc;tre pas plus!";
@@ -506,13 +507,13 @@ while($aRow = mysql_fetch_array($Result))
     $iLastVote = $aRow["VOT_Pos"];
 }
 mysql_free_result($Result);
-$Query = "SELECT PHT_Pseudo,PHT_Fichier,PHT_Comment,V1.VOT_Note AS PHT_Note,V1.VOT_Total AS PHT_Total,SUM(V2.VOT_Note) AS PHT_AllNote,SUM(V2.VOT_Total) AS PHT_AllTotal";
+$Query = "SELECT PHT_Pseudo,PHT_Fichier,PHT_FichierID,V1.VOT_Note AS PHT_Note,V1.VOT_Total AS PHT_Total,SUM(V2.VOT_Note) AS PHT_AllNote,SUM(V2.VOT_Total) AS PHT_AllTotal";
 $Query .= " FROM Photos LEFT JOIN Votes AS V1 ON PHT_Fichier = V1.VOT_Fichier AND UPPER(V1.VOT_Pseudo) = UPPER('".addslashes($Camarade)."') AND V1.VOT_Date = '".trim($aDate["year"])."-".trim($aDate["mon"])."-".trim($aDate["mday"])."' AND V1.VOT_Type = 0 LEFT JOIN Votes AS V2 ON PHT_Fichier = V2.VOT_Fichier AND V2.VOT_Type = 0";
 $Query .= " WHERE UPPER(PHT_Album) = UPPER('".addslashes(base64_decode(urldecode(trim($albnm))))."')";
 // Gestion de l'affichage d'1 photo
 if(!Empty($vwpht)) $Query .= " AND PHT_Fichier LIKE '".base64_decode(urldecode($vwpht))."'";
 //
-$Query .= " GROUP BY PHT_Pseudo,PHT_Fichier,PHT_Comment,PHT_Note,PHT_Total ORDER BY PHT_Fichier";
+$Query .= " GROUP BY PHT_Pseudo,PHT_Fichier,PHT_FichierID,PHT_Note,PHT_Total ORDER BY PHT_Fichier";
 $Result = mysql_query(trim($Query),$Link);
 $iResCnt = mysql_num_rows($Result);
 $iResEnd = $iResCnt;
@@ -707,7 +708,7 @@ while($aRow = mysql_fetch_array($Result))
         <tr bgcolor="#d8e1c6">
         <td><img src="<?php echo GetFolder(); ?>/Images/nopic.gif"></td>
         <td>
-        <div style="width: 139px; height: 182px; overflow: auto"><font ID="Comment"><?php echo GetComments($Clf,$Link,$aRow["PHT_Fichier"]); ?></font></div>
+        <div style="width: 139px; height: 182px; overflow: auto"><font ID="Comment"><?php echo GetComments($Clf,$Link,'P',$aRow["PHT_FichierID"]); ?></font></div>
         </td>
         <td><img src="<?php echo GetFolder(); ?>/Images/nopic.gif"></td>
         </tr>

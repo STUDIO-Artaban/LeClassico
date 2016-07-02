@@ -89,13 +89,16 @@ if(!Empty($Clf))
                                         if(!mysql_query(trim($Query),$Link)) $iStatus = 13; //****** MAJ
                                         else
                                         {   // Ajout dans l'album
-                                            $Query = "INSERT INTO Photos (PHT_Album,PHT_Pseudo,PHT_Fichier) VALUES (";
+                                            $Query = "INSERT INTO Photos (PHT_Album,PHT_Pseudo,PHT_Fichier,PHT_FichierID) VALUES (";
                                             // Album
                                             $Query .= "'".trim($albnm)."',";
                                             // Pseudo
                                             $Query .= "'".addslashes($Camarade)."',";
                                             // Fichier
-                                            $Query .= "'$File')";
+                                            $Query .= "'$File',";
+                                            // Fichier ID
+                                            $iPhtID--;
+                                            $Query .= "$iPhtID)";
                                             if(!mysql_query(trim($Query),$Link)) $iStatus = 14; //****** Album
                                             else $iStatus = 15; // Ok...!
                                         }

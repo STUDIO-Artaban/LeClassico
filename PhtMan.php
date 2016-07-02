@@ -53,6 +53,10 @@ if(!Empty($Clf))
                         {   // Supprime la photo de la table Votes
                             $Query = "DELETE FROM Votes WHERE VOT_Fichier LIKE '$pht'";
                             mysql_query(trim($Query),$Link);
+                            // Supprime la photo de la table Commentaires
+                            $phtID = GetPhotoID($pht);
+                            $Query = "DELETE FROM Commentaires WHERE COM_ObjType = 'P' AND COM_ObjID = $phtID";
+                            mysql_query(trim($Query),$Link);
                             // Supprime la photo du serveur
                             @unlink(GetSrvPhtFolder()."$pht");
                         }

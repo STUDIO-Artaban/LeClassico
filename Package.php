@@ -36,7 +36,10 @@ $DistSrvAddr = "http://www.leclassico.fr/";
 //$DistSrvAddr = "http://vp.magellan.free.fr/LeClassico/";
 //$DistSrvAddr = "http://www.lconseil.com/pascal/";
 //$DistSrvAddr = "http://localhost/LeClassico/";
-/////////////////////////////////////////////////////////////////////////////////
+// Webmaster name ///////////////////////////////////////////////////////////////
+$WebMaster = "Webmaster";
+
+///////////////////////////////////
 // GetFolder
 ///////////////////////////////////
 function GetFolder()
@@ -185,8 +188,8 @@ function PrintString($String)
 ///////////////////////////////////
 // GetComments
 ///////////////////////////////////
-function GetComments($clf,$link,$fichier)
-{   $query = "SELECT COM_Date,COM_Pseudo,COM_Text FROM Commentaires WHERE COM_Fichier LIKE '$fichier' ORDER BY COM_Date";
+function GetComments($clf,$link,$type,$id)
+{   $query = "SELECT COM_Date,COM_Pseudo,COM_Text FROM Commentaires WHERE COM_ObjType = '$type' AND COM_ObjID = $id ORDER BY COM_Date";
     $result = mysql_query(trim($query),$link);
     $comments = "";
     while($row = mysql_fetch_array($result))
@@ -199,5 +202,19 @@ function GetComments($clf,$link,$fichier)
     }
     mysql_free_result($result);
     return $comments;
+}
+///////////////////////////////////
+// GetWebmaster
+///////////////////////////////////
+function GetWebmaster()
+{   global $WebMaster;
+    return $WebMaster;
+}
+///////////////////////////////////
+// GetPhotoID
+///////////////////////////////////
+function GetPhotoID($photo)
+{   // Retourne l'ID du de la photo en fonction du fichier (ex: 'LC0112.jpg' -> 112)
+    return intval(substr($photo,2));
 }
 ?>

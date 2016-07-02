@@ -93,7 +93,7 @@ function ModeAutonome()
 <td width="100%">
     <table border=0 width="100%" cellspacing=0 cellpadding=0 bgcolor="#e4e4e4">
     <tr>
-    <td><font ID="Title">&nbsp;Liste&nbsp;des&nbsp;messages</font></td>
+    <td><font ID="Title">&nbsp;Fil&nbsp;d'&nbsp;actualit&eacute;</font></td>
     </tr>
     </table>
 </td>

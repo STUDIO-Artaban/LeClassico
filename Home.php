@@ -307,10 +307,10 @@ if(mysql_num_rows($Result) != 0)
     //
     $iResCnt = 0;
     $iResStart = 1;
-    $Query = "SELECT PHT_Album,PHT_Pseudo,PHT_Fichier,PHT_Comment,V1.VOT_Note AS PHT_Note,V1.VOT_Total AS PHT_Total,SUM(V2.VOT_Note) AS PHT_AllNote,SUM(V2.VOT_Total) AS PHT_AllTotal";
+    $Query = "SELECT PHT_Album,PHT_Pseudo,PHT_Fichier,PHT_FichierID,V1.VOT_Note AS PHT_Note,V1.VOT_Total AS PHT_Total,SUM(V2.VOT_Note) AS PHT_AllNote,SUM(V2.VOT_Total) AS PHT_AllTotal";
     $Query .= " FROM Photos LEFT JOIN Votes AS V1 ON PHT_Fichier = V1.VOT_Fichier AND UPPER(V1.VOT_Pseudo) = UPPER('".addslashes($Camarade)."') AND V1.VOT_Date = '".trim($aDate["year"])."-".trim($aDate["mon"])."-".trim($aDate["mday"])."' AND V1.VOT_Type = 0 LEFT JOIN Votes AS V2 ON PHT_Fichier = V2.VOT_Fichier AND V2.VOT_Type = 0";
     $Query .= " WHERE PHT_Fichier LIKE '".trim($aPic[rand(0,($PhtIndex-1))])."'";
-    $Query .= " GROUP BY PHT_Album,PHT_Pseudo,PHT_Fichier,PHT_Comment,PHT_Note,PHT_Total ORDER BY PHT_Fichier";
+    $Query .= " GROUP BY PHT_Album,PHT_Pseudo,PHT_Fichier,PHT_FichierID,PHT_Note,PHT_Total ORDER BY PHT_Fichier";
     $Result = mysql_query(trim($Query),$Link);
     $iResCnt = mysql_num_rows($Result);
     $iResEnd = $iResCnt;
@@ -513,7 +513,7 @@ if(mysql_num_rows($Result) != 0)
         <tr bgcolor="#d8e1c6">
         <td><img src="<?php echo GetFolder(); ?>/Images/nopic.gif"></td>
         <td>
-        <div style="width: 139px; height: 182px; overflow: auto"><font ID="Comment"><?php echo GetComments($Clf,$Link,$aRow["PHT_Fichier"]); ?></font></div>
+        <div style="width: 139px; height: 182px; overflow: auto"><font ID="Comment"><?php echo GetComments($Clf,$Link,'P',$aRow["PHT_FichierID"]); ?></font></div>
         </td>
         <td><img src="<?php echo GetFolder(); ?>/Images/nopic.gif"></td>
         </tr>
@@ -579,7 +579,7 @@ if(mysql_num_rows($Result) != 0)
 }
 mysql_free_result($Result);
 ?>
-<!-- ********************************************************************************************************** PUB -->
+<!-- ********************************************************************************************************** PUBLICITE -->
 <table border=0 width="100%" cellspacing=0 cellpadding=0>
 <tr>
 <td>
@@ -611,7 +611,7 @@ mysql_free_result($Result);
 <td width="100%">
     <table border=0 width="100%" cellspacing=0 cellpadding=0 bgcolor="#e4e4e4">
     <tr>
-    <td><font ID="Title">&nbsp;Pub</font></td>
+    <td><font ID="Title">&nbsp;Publicit&eacute;</font></td>
     </tr>
     </table>
 </td>

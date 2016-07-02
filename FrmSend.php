@@ -221,7 +221,7 @@ if(Empty($md))
     <td width="100%">
         <table border=0 width="100%" cellspacing=0 cellpadding=0 bgcolor="#e4e4e4">
         <tr>
-        <td><font ID="Title">&nbsp;Message&nbsp;&agrave;&nbsp;envoyer</font></td>
+        <td><font ID="Title">&nbsp;Publications</font></td>
         </tr>
         </table>
     </td>

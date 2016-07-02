@@ -88,7 +88,7 @@ if(!Empty($Chp))
         $Mnu = "1";
     }
     else if(!strcmp($Chp,"5"))
-    {   echo "<title>Le Classico: Fil d'actualité</title>\n";
+    {   echo "<title>Le Classico: Fil d'actualit&eacute;</title>\n";
         $Mnu = "1";
     }
     else if(!strcmp($Chp,"6"))
