@@ -647,10 +647,15 @@ else
     <td width="100%" bgcolor="<?php echo $BckColor; ?>">
         <table border=0 width="100%" cellspacing=0 cellpadding=0>
         <tr>
-        <td><font face="Verdana,Lucida,Courier" size=1><b>&bull;&nbsp;Pseudo:&nbsp;<font color="<?php
+        <td><font face="Verdana,Lucida,Courier" color="<?php
         if(!strcmp($BckColor,"#D8E1C6")) echo "#8080ff";
         else echo "#ffff00";
-        ?>"><?php echo stripslashes($aRow["CAM_Pseudo"]); ?></font></b></font></td>
+        ?>" size=1><b>&bull;&nbsp;Pseudo:&nbsp;<?php
+        if(Empty($Clf))
+            echo stripslashes($aRow["CAM_Pseudo"])."</b></font>";
+        else
+            echo "</b></font><a style=\"font-size:10pt\" href=\"index.php?Chp=2&Cam=".urlencode(base64_encode($aRow["CAM_Pseudo"]))."&Clf=$Clf\" target=\"_top\">".stripslashes($aRow["CAM_Pseudo"])."</a>";
+        ?></td>
         </tr>
         <?php
         if((!is_null($aRow["CAM_Nom"]))&&(!Empty($aRow["CAM_Nom"])))

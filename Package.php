@@ -185,14 +185,17 @@ function PrintString($String)
 ///////////////////////////////////
 // GetComments
 ///////////////////////////////////
-function GetComments($link,$fichier)
+function GetComments($clf,$link,$fichier)
 {   $query = "SELECT COM_Date,COM_Pseudo,COM_Text FROM Commentaires WHERE COM_Fichier LIKE '$fichier' ORDER BY COM_Date";
     $result = mysql_query(trim($query),$link);
     $comments = "";
     while($row = mysql_fetch_array($result))
     {   // Tant qu'il y a des commentaires
         if(!Empty($comments)) $comments .= "<br>";
-        $comments .= "<b><u>".$row["COM_Pseudo"].":</u></b>&nbsp;".$row["COM_Text"];
+        if(!Empty($clf))
+            $comments .= "<a href=\"index.php?Chp=2&Cam=".urlencode(base64_encode($row["COM_Pseudo"]))."&Clf=$clf\" target=\"_top\" style=\"font-size:10pt\">".$row["COM_Pseudo"].":</a>&nbsp;".$row["COM_Text"];
+        else
+            $comments .= "<b><u>".$row["COM_Pseudo"].":</u></b>&nbsp;".$row["COM_Text"];
     }
     mysql_free_result($result);
     return $comments;

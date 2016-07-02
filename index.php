@@ -2,6 +2,7 @@
 require("Package.php");
 $Chp = $_GET['Chp'];
 $Clf = $_GET['Clf'];
+$Cam = $_GET['Cam'];
 $psd = $_POST['psd'];
 $ccf = $_POST['ccf'];
 $bRes = true;
@@ -75,7 +76,7 @@ if(!Empty($Chp))
         $Mnu = "0";
     }
     else if(!strcmp($Chp,"2"))
-    {   echo "<title>Le Classico: Infos Perso</title>\n";
+    {   echo "<title>Le Classico: Profile</title>\n";
         $Mnu = "1";
     }
     else if(!strcmp($Chp,"3"))
@@ -87,7 +88,7 @@ if(!Empty($Chp))
         $Mnu = "1";
     }
     else if(!strcmp($Chp,"5"))
-    {   echo "<title>Le Classico: Le Forum</title>\n";
+    {   echo "<title>Le Classico: Fil d'actualité</title>\n";
         $Mnu = "1";
     }
     else if(!strcmp($Chp,"6"))
@@ -341,7 +342,10 @@ else
                         ////////////////////////////////
                         if(!Empty($Chp))
                         {   if(!strcmp($Chp,"1")) echo "Home.php?Clf=$Clf";
-                            else if(!strcmp($Chp,"2")) echo "InfoPerso.php?Clf=$Clf";
+                            else if(!strcmp($Chp,"2"))
+                            {   echo "InfoPerso.php?Clf=$Clf";
+                                if(!Empty($Cam)) echo "&Cam=$Cam";
+                            }
                             else if(!strcmp($Chp,"3")) echo "AddMember.php?Clf=$Clf";
                             else if(!strcmp($Chp,"4")) echo "FindMember.php?Clf=$Clf";
                             else if(!strcmp($Chp,"7"))

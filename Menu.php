@@ -172,8 +172,8 @@ else echo "Musique";
 <td width=19 bgcolor="#ff0000"><img src="<?php echo GetFolder(); ?>/Images/nopic.gif"></td>
 <td width=10 bgcolor="#00ff00"><img src="<?php echo GetFolder(); ?>/Images/nopic.gif"></td>
 <td width=177 bgcolor="#00ff00"><img src="<?php echo GetFolder(); ?>/Images/Puce.gif">&nbsp;<a href="<?php echo GetFolder(); ?>/index.php?Chp=2&Clf=<?php echo $Clf; ?>" target="_top"><?php
-if((!Empty($Chp))&&(!strcmp($Chp,"2"))) echo "<font color=\"gray\">Infos&nbsp;Perso</font>";
-else echo "Infos&nbsp;Perso";
+if((!Empty($Chp))&&(!strcmp($Chp,"2"))) echo "<font color=\"gray\">Profile</font>";
+else echo "Profile";
 ?></a></td>
 <td width=19 bgcolor="#ff0000"><img src="<?php echo GetFolder(); ?>/Images/nopic.gif"></td>
 </tr>
@@ -218,8 +218,8 @@ else echo "Rechercher";
 <td width=19 bgcolor="#ff0000"><img src="<?php echo GetFolder(); ?>/Images/nopic.gif"></td>
 <td width=10 bgcolor="#00ff00"><img src="<?php echo GetFolder(); ?>/Images/nopic.gif"></td>
 <td width=177 bgcolor="#00ff00"><img src="<?php echo GetFolder(); ?>/Images/Puce.gif">&nbsp;<a href="<?php echo GetFolder(); ?>/index.php?Chp=5&Clf=<?php echo $Clf; ?>" target="_top"><?php
-if((!Empty($Chp))&&(!strcmp($Chp,"5"))) echo "<font color=\"gray\">Forum</font>";
-else echo "Forum";
+if((!Empty($Chp))&&(!strcmp($Chp,"5"))) echo "<font color=\"gray\">Fil d'actualité</font>";
+else echo "Fil d'actualité";
 ?></a></td>
 <td width=19 bgcolor="#ff0000"><img src="<?php echo GetFolder(); ?>/Images/nopic.gif"></td>
 </tr>

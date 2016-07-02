@@ -145,7 +145,7 @@ mysql_close($Link);
 <tr>
 <td><img src="<?php echo GetFolder(); ?>/Images/nopic.gif"></td>
 <td bgcolor="#bacc9a"><img src="<?php echo GetFolder(); ?>/Images/nopic.gif"></td>
-<td bgcolor="#bacc9a"><font ID="Title">Objet:&nbsp;&nbsp;</font><input type="text" ID="MsgPadObj" style="width: 228px; font-size: 9pt; font-family: Verdana,Lucida,Courier; color: <?php
+<td bgcolor="#bacc9a"><font ID="Title">Objet:&nbsp;&nbsp;</font><input type="text" ID="MsgPadObj" style="width: 218px; font-size: 9pt; font-family: Verdana,Lucida,Courier; color: <?php
 if(!Empty($msgtpe)) echo "gray";
 else echo "black";
 ?>" maxlength=25 value="<?php

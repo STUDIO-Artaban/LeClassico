@@ -707,7 +707,7 @@ while($aRow = mysql_fetch_array($Result))
         <tr bgcolor="#d8e1c6">
         <td><img src="<?php echo GetFolder(); ?>/Images/nopic.gif"></td>
         <td>
-        <div style="width: 139px; height: 182px; overflow: auto"><font ID="Comment"><?php echo GetComments($Link,$aRow["PHT_Fichier"]); ?></font></div>
+        <div style="width: 139px; height: 182px; overflow: auto"><font ID="Comment"><?php echo GetComments($Clf,$Link,$aRow["PHT_Fichier"]); ?></font></div>
         </td>
         <td><img src="<?php echo GetFolder(); ?>/Images/nopic.gif"></td>
         </tr>
