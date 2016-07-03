@@ -40,6 +40,15 @@ if(!Empty($Clf))
             mysql_free_result($Result);
             if(!Empty($ope))
             {   // Ajoute une photo dans un album /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+
+
                 if((!Empty($albnm))&&(strcmp(trim($albnm),""))&&(!Empty($_FILES["pht"]["name"]))&&(strlen($_FILES["pht"]["name"]) > 4)&&
                    ((!strcmp(strtoupper(substr($_FILES["pht"]["name"],-4)),".GIF"))||
                     (!strcmp(strtoupper(substr($_FILES["pht"]["name"],-4)),".JPG"))||
@@ -117,6 +126,17 @@ if(!Empty($Clf))
                     else $iStatus = 6; //****** GenFile
                 }
                 else $iStatus = 5; //****** Extension
+
+
+
+
+
+
+
+
+
+
+
             }
         }
         else $iStatus = 4; //****** Camarade

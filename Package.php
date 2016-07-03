@@ -21,6 +21,8 @@ $SrvPhtFolder = $_SERVER["DOCUMENT_ROOT"]."/Photos/";
 $SrvFlyFolder = $_SERVER["DOCUMENT_ROOT"]."/Flyers/";
 // Serveur music DIR ////////////////////////////////////////////////////////////
 $SrvMscFolder = $_SERVER["DOCUMENT_ROOT"]."/Music/";
+// Serveur profile DIR //////////////////////////////////////////////////////////
+$SrvProFolder = $_SERVER["DOCUMENT_ROOT"]."/Profiles/";
 // Adresse pour les images //////////////////////////////////////////////////////
 $SrvImgAddr = "http://www.leclassico.fr/Images";
 //$SrvImgAddr = "file:///I:/Program Files/EasyPHP/www/LeClassico/Images";
@@ -216,5 +218,121 @@ function GetWebmaster()
 function GetPhotoID($photo)
 {   // Retourne l'ID du de la photo en fonction du fichier (ex: 'LC0112.jpg' -> 112)
     return intval(substr($photo,2));
+}
+///////////////////////////////////
+// GetSrvProFolder
+///////////////////////////////////
+function GetSrvProFolder()
+{   global $SrvProFolder;
+    return $SrvProFolder;
+}
+///////////////////////////////////
+// GetPhotoFile
+///////////////////////////////////
+function GetPhotoFile($link,$previous)
+{   $query = "SELECT PNU_PhotoID FROM PhotoNumber";
+    if($result = mysql_query(trim($query),$link))
+    {   $row = mysql_fetch_array($result);
+        $iPhtID = $row["PNU_PhotoID"];
+        if($previous) $iPhtID--;
+        $file = "$iPhtID";
+        switch(strlen($file))
+        {   case 1:
+            {   $file = "LC000$iPhtID";
+                break;
+            }
+            case 2:
+            {   $file = "LC00$iPhtID";
+                break;
+            }
+            case 3:
+            {   $file = "LC0$iPhtID";
+                break;
+            }
+            default:
+            {   $file = "LC$iPhtID";
+                break;
+            }
+        }
+        mysql_free_result($result);
+        return $file;
+    }
+}
+///////////////////////////////////
+// GetImageExtension
+///////////////////////////////////
+function GetImageExtension($fileName)
+{   if((!Empty($_FILES[$fileName]["name"]))&&(strlen($_FILES[$fileName]["name"]) > 4)) {
+        if(!strcmp(strtoupper(substr($_FILES[$fileName]["name"],-4)),".GIF")) return ".gif";
+        else if(!strcmp(strtoupper(substr($_FILES[$fileName]["name"],-4)),".JPG")) return ".jpg";
+        else if(!strcmp(strtoupper(substr($_FILES[$fileName]["name"],-4)),".PNG")) return ".png";
+    }
+}
+///////////////////////////////////
+// GetResult
+///////////////////////////////////
+function GetResult($res)
+{   switch($res)
+    {   case 1: // Uploading en cours
+            return "Transfert en cours...";
+        case 2: // Non connecté
+            return "<font color=\"#ff0000\">Non connect&eacute;</font>!";
+        case 3: // Echec de la connexion au serveur SQL
+            return "<font color=\"#ff0000\">Echec</font> de la connexion au serveur <font color=\"#ff0000\">SQL</font>!";
+        case 4: // Pseudo du camarade inconnu
+            return "Pseudo du camarade <font color=\"#ff0000\">inconnu</font>!";
+        case 5: // Fichier ou extension du fichier non valide
+            return "Fichier ou extension du fichier <font color=\"#ff0000\">non valide</font>!";
+        case 6: // Echec de la génération du nouveau nom du fichier
+            return "<font color=\"#ff0000\">Echec</font> de la <font color=\"#ff0000\">g&eacute;n&eacute;ration</font> du nouveau nom du fichier!";
+        case 7: // Echec de la connexion au serveur FTP
+            return "<font color=\"#ff0000\">Echec</font> de la connexion au serveur <font color=\"#ff0000\">FTP</font>!";
+        case 8: // Login FTP incorrect
+            return "Login FTP <font color=\"#ff0000\">incorrect</font>!";
+        case 9: // Le fichier source n'existe pas
+            return "Le fichier source <font color=\"#ff0000\">n'existe pas</font>!";
+        case 10: // Taille de la photo > 200 Ko
+            return "Taille de la photo <font color=\"#ff0000\">&gt;</font> &agrave; <font color=\"#ff0000\">200 Ko</font>! Espace disque limit&eacute;!!!";
+        case 11: // Espace disque insuffisant
+            return "Espace disque <font color=\"#ff0000\">insuffisant</font>!";
+        case 12: // Echec de l'upload
+            return "Le Transfert a <font color=\"#ff0000\">&eacute;chou&eacute;</font>!";
+        case 13: // Echec durant la mise à jour des nouveaux nom de fichier
+            return "<font color=\"#ff0000\">Echec</font> durant <font color=\"#ff0000\">la mise &agrave; jour</font> des nouveaux noms de fichier!";
+        case 14: // Echec de l'ajout dans l'album
+            return "<font color=\"#ff0000\">Echec de l'ajout</font> dans l'album!";
+        case 15: // Ajout réussi
+            return "Ajout r&eacute;ussi !!!";
+        case 16: // Suppression en cours
+            return "Suppression en cours...";
+        case 17: // Echec suppression: Droits insuffisants
+            return "<font color=\"#ff0000\">Echec de la suppression</font>! Tu n'as pas les droits sur cet album!!!!!!";
+        case 18: // Echec suppression
+            return "<font color=\"#ff0000\">Echec de la suppression</font>! Contact le <font color=\"#8080ff\">Webmaster</font>!";
+        case 19: // Suppression réussi
+            return "Suppression r&eacute;ussi !!";
+    }
+    // Prêt
+    return "Pr&ecirc;t...";
+}
+///////////////////////////////////
+// DownloadImageFile
+///////////////////////////////////
+function DownloadImageFile($link,$folder,$fileName)
+{   $ext = GetImageExtension($fileName);
+    if(Empty($ext)) return 5; // Wrong extension
+    $file = GetPhotoFile($link,false);
+    if(Empty($file)) return 6; // Generate file number
+    $iPhtID = GetPhotoID($file);
+    if(Empty($_FILES[$fileName]["size"])) return 9; // Empty file
+    if($_FILES["pht"]["size"] > 200000) return 10; // Wrong file size
+    //if((diskfreespace("$folder/") - $_FILES[$fileName]["size"]) < 5000000) return 11; // Not enough memory space
+    $file .= $ext;
+    if(!@move_uploaded_file($_FILES[$fileName]["tmp_name"],trim($folder)."$file")) return 12; // Failed to "download"
+    // MAJ de la table PhotoNumber
+    $iPhtID++;
+    $query = "UPDATE PhotoNumber SET PNU_PhotoID = $iPhtID";
+    if(!mysql_query(trim($query),$link)) return 13; // Failed to update photo number
+    return 14;
 }
 ?>

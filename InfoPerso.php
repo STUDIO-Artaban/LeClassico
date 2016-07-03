@@ -164,13 +164,45 @@ if(!Empty($Clf))
                     }
                 }
             }
-            else
+            else if($ope == 4)
             {   // Abonnement
                 if((!Empty($abo))&&(strcmp(trim($abo),"")))
                 {   $Query = "INSERT INTO Abonnements (ABO_Pseudo,ABO_Camarade) VALUES ('".addslashes($Camarade)."','".addslashes($abo)."')";
                     if(!mysql_query(trim($Query),$Link))
                     {   mysql_close($Link);
                         $Msg = "Echec de la mise &agrave; jour de tes abonnements! Contact le <font color=\"#808080\">Webmaster</font>!";
+                        include("Message.php");
+                        die();
+                    }
+                }
+            }
+            else
+            {   // Change la bannière ou la photo du profile
+                $iStatus = 3;
+                $isBanner = true;
+                if(!Empty($_FILES["banFile"]["name"]))
+                    $iStatus = DownloadImageFile($Link,GetSrvProFolder(),"banFile");
+                else if(!Empty($_FILES["proFile"]["name"])) {
+                    $iStatus = DownloadImageFile($Link,GetSrvProFolder(),"proFile");
+                    $isBanner = false;
+                }
+                if($iStatus > 12) $File = GetPhotoFile($Link,true).GetImageExtension(($isBanner)? "banFile":"proFile");
+                switch($iStatus) {
+                    case 14: { // Ok...
+                        $Query = "UPDATE Camarades SET CAM_".(($isBanner)? "Banner":"Profile")." = '$File'";
+                        $Query .= " WHERE UPPER(CAM_Pseudo) = UPPER('".addslashes($Camarade)."')";
+                        if(!mysql_query(trim($Query),$Link)) {
+                            @unlink(GetSrvProFolder()."$File");
+                            $Msg = "Echec de la mise &agrave; jour de ton profile! Contact le <font color=\"#808080\">Webmaster</font>!";
+                            include("Message.php");
+                            die();
+                        }
+                        break;
+                    }
+                    default:
+                    {   mysql_close($Link);
+                        if($iStatus == 13) @unlink(GetSrvProFolder()."$File");
+                        $Msg = GetResult($iStatus);
                         include("Message.php");
                         die();
                     }
@@ -212,6 +244,10 @@ if(!Empty($Clf))
             else $Hobbies = stripslashes($aRow["CAM_Hobbies"]);
             if(is_null($aRow["CAM_APropos"])) $APropos = "";
             else $APropos = stripslashes($aRow["CAM_APropos"]);
+            if(is_null($aRow["CAM_Profile"])) $Profile = "Images/".(($Sexe == 1)? "woman":"man").".png";
+            else $Profile = "Profiles/".$aRow["CAM_Profile"];
+            if(is_null($aRow["CAM_Banner"])) $Banner = "Images/banner.png";
+            else $Banner = "Profiles/".$aRow["CAM_Banner"];
             mysql_free_result($Result);
             //
         }
@@ -251,6 +287,22 @@ textarea {
 #BigTitle {font-size: 24pt; font-family: Cursive,Verdana,Lucida; color: white}
 #Entete {font-size: 12pt; font-family: Impact,Verdana,Lucida}
 #Title {font-size: 12pt; font-family: Impact,Verdana,Lucida}
+.corner {
+    border-radius: 10px;
+    margin-right: 10px;
+}
+.icon {
+    border: 5px solid white;
+    border-radius: 15px;
+    position: absolute;
+    left: 50px;
+    width: 100px;
+    height: 100px;
+}
+.minBanner {
+    min-width: 100px;
+    min-height: 100px;
+}
 </style>
 <script type="text/javascript">
 <!--
@@ -286,6 +338,17 @@ function Initialize()
         document.getElementById("Email").style.marginBottom="1px";
     }
 }
+// OnChangePhoto /////////////////////////////////////////////
+function OnChangePhoto(banner)
+{   if(banner) {
+        document.getElementById('banBtn').value = 'Remplacer';
+        document.getElementById('formOpe').value = 6;
+    }
+    else {
+        document.getElementById('proBtn').value = 'Remplacer';
+        document.getElementById('formOpe').value = 7;
+    }
+}
 -->
 </script>
 </head>
@@ -294,81 +357,42 @@ function Initialize()
 <tr height="100%">
 <td width="100%" valign="top">
 <!-- ********************************************************************************************************************************** INFOS PERSO -->
-<table border=0 width="100%" cellspacing=0 cellpadding=0>
-<tr>
-<td>
-    <table border=0 width="100%" cellspacing=0 cellpadding=0>
+<img class="corner minBanner" ID="Banner" src="<?php echo $Banner; ?>">
+<div class="icon" ID="Profile">
+    <table border=0 cellspacing=0 cellpadding=0>
     <tr>
+    <td><img class="corner" width=100 height=100 src="<?php echo $Profile ?>"></td>
+    <?php
+    if(Empty($Cam)) {
+    ?>
     <td>
+        <form action="InfoPerso.php?Clf=<?php echo $Clf; ?>" enctype="multipart/form-data" method="post">
         <table border=0 cellspacing=0 cellpadding=0>
         <tr>
-        <td><img src="<?php echo GetFolder(); ?>/Images/TitConHG.jpg"></td>
+        <td><input type="file" onchange="OnChangePhoto(true)" name="banFile" /></td>
+        <td><div style="width:10px" /></td>
+        <td><input type="submit" ID="banBtn" value="Retirer"></td>
+        </tr>
+        <tr height=50>
+        <td colspan=3><input type="hidden" ID="formOpe" name="ope" value=5></td>
         </tr>
         <tr>
-        <td bgcolor="#ff0000">
-            <table border=0 height=28 cellspacing=0 cellpadding=0>
-            <tr>
-            <td><img src="<?php echo GetFolder(); ?>/Images/nopic.gif"></td>
-            </tr>
-            </table>
-        </td>
-        </tr>
-        <tr>
-        <td><img src="<?php echo GetFolder(); ?>/Images/TitConBG.jpg"></td>
+        <td><input type="file" onchange="OnChangePhoto(false)"  name="proFile" /></td>
+        <td></td>
+        <td><input type="submit" ID="proBtn" value="Retirer"></td>
         </tr>
         </table>
+        </form>
     </td>
-    <td bgcolor="#ff0000">
-        <table border=0 cellspacing=0 cellpadding=0>
-        <tr>
-        <td><img src="<?php echo GetFolder(); ?>/Images/nopic.gif"></td>
-        </tr>
-        <tr>
-        <td><img src="<?php echo GetFolder(); ?>/Images/PuceLC.gif"></td>
-        </tr>
-        <tr>
-        <td><img src="<?php echo GetFolder(); ?>/Images/nopic.gif"></td>
-        </tr>
-        </table>
-    </td>
-    <td width="100%" bgcolor="#ff0000" nowrap><font ID="BigTitle">&nbsp;<b>Profile<?php
-    if(!Empty($Cam))
-    {   // Profile d'un camarade
-        echo ":</b></font>&nbsp;<font ID=\"Title\" style=\"color:yellow;font-size:23pt\">".stripslashes($Cam)."</font>";
+    <?php
     }
-    else echo "</b></font>";
-    ?></td>
-    <td>
-        <table border=0 cellspacing=0 cellpadding=0>
-        <tr>
-        <td><img src="<?php echo GetFolder(); ?>/Images/TitConHD.jpg"></td>
-        </tr>
-        <tr>
-        <td bgcolor="#ff0000">
-            <table border=0 height=28 cellspacing=0 cellpadding=0>
-            <tr>
-            <td><img src="<?php echo GetFolder(); ?>/Images/nopic.gif"></td>
-            </tr>
-            </table>
-        </td>
-        </tr>
-        <tr>
-        <td><img src="<?php echo GetFolder(); ?>/Images/TitConBD.jpg"></td>
-        </tr>
-        </table>
-    </td>
-    <td width=15>
-        <table border=0 width=15 cellspacing=0 cellpadding=0>
-        <tr>
-        <td><img src="<?php echo GetFolder(); ?>/Images/nopic.gif"></td>
-        </tr>
-        </table>
-    </td>
+    ?>
     </tr>
     </table>
-</td>
-</tr>
-</table><br>
+</div>
+<table border=0 cellspacing=0 cellpadding=0>
+<tr height=65><td></td></tr>
+</table>
 <font face="Verdana,Lucida,Courier" size=2><?php
 if(Empty($Cam))
 {   // Son profile
@@ -388,7 +412,7 @@ auxquelles il ou elle est abonné, ainsi que toute son actualité.</font><br><br>
 <?php
 }
 ?>
-<table border=0 width=300 cellspacing=0 cellpadding=0>
+<table border=0 width="100%" cellspacing=0 cellpadding=0>
 <tr>
 <td width=140 valign="top">
     <table border=0 width=140 cellspacing=0 cellpadding=0>
@@ -431,7 +455,7 @@ if(Empty($Cam))
 </tr>
 <tr>
 <td><img src="<?php echo GetFolder(); ?>/Images/nopic.gif"></td>
-<td><input type="hidden" name="ope" value=1><input type="submit" style="font-family: Verdana;font-size: 10pt" value="Changer"></td>
+<td><input type="hidden" name="ope" value=1><input type="submit" style="font-family: Verdana;font-size: 10pt" value="Changer"><hr></td>
 </tr>
 </table><br>
 </form>
@@ -862,6 +886,10 @@ possibilité de t'abonner à son actualité, ou éventuellement de t'en désabonner s
 <script type="text/javascript">
 <!--
 // Commandes //////////////////////////////////////////////////////////////////////////////////
+document.getElementById("Profile").style.top = (document.getElementById("Banner").height - 50) + "px";
+<?php
+if(Empty($Cam)) {
+?>
 document.getElementById("Nom").value="<?php
 // Nom
 if(!Empty($Nom)) echo str_replace("\'","'",addslashes($Nom));
@@ -886,6 +914,9 @@ document.getElementById("Email").value="<?php
 // Email
 if(!Empty($Email)) echo str_replace("\'","'",addslashes($Email));
 ?>";
+<?php
+}
+?>
 //-->
 </script>
 </body>
