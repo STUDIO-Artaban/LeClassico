@@ -310,8 +310,8 @@ textarea {
 function OnChangeCodePost()
 {   if((window.event.keyCode<48)||(window.event.keyCode>57)) window.event.keyCode = "";
 }
-// Initialize /////////////////////////////////////////////////
-function Initialize()
+// OnInitialize /////////////////////////////////////////////////
+function OnInitialize()
 {
     // Modifie la page si Netscape
     if (navigator.appName!="Microsoft Internet Explorer")
@@ -349,10 +349,15 @@ function OnChangePhoto(banner)
         document.getElementById('formOpe').value = 7;
     }
 }
+// OnResize //////////////////////////////////////////////////
+function OnResize() {
+    document.getElementById("Banner").style.width =  (window.innerWidth - 180) + "px";
+    document.getElementById("Profile").style.top = (document.getElementById("Banner").height - 50) + "px";
+}
 -->
 </script>
 </head>
-<body bgcolor="#ffffff" style="margin-top: 0;margin-left: 10px" onload="Initialize()">
+<body bgcolor="#ffffff" style="margin-top: 0;margin-left: 10px" onload="OnInitialize()" onresize="OnResize()">
 <table border=0 width="100%" height="100%" cellspacing=0 cellpadding=0>
 <tr height="100%">
 <td width="100%" valign="top">
@@ -886,7 +891,7 @@ possibilité de t'abonner à son actualité, ou éventuellement de t'en désabonner s
 <script type="text/javascript">
 <!--
 // Commandes //////////////////////////////////////////////////////////////////////////////////
-document.getElementById("Profile").style.top = (document.getElementById("Banner").height - 50) + "px";
+OnResize();
 <?php
 if(Empty($Cam)) {
 ?>
