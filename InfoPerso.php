@@ -32,180 +32,221 @@ if(!Empty($Clf))
         if((!Empty($Cam))&&(!strcmp($Cam,$Camarade))) unset($Cam);
         mysql_select_db(GetMySqlDB(),$Link);
         if(!Empty($ope))
-        {   if($ope == 1)
-            {   // Opération de MAJ du code confidentiel //////////////////////////////////////////////////////////////////////////////////////////////
-                if((!Empty($nccf))||(!Empty($cnccf)))
-                {   if(!strcmp(trim($nccf),""))
-                    {   mysql_close($Link);
-                        $Msg = "Code confidentiel non saisi!";
-                        include("Message.php");
-                        die();
-                    }
-                    else
-                    {   if(!strcmp(trim($cnccf),""))
+        {   switch($ope) {
+                case 1:
+                {   // Opération de MAJ du code confidentiel //////////////////////////////////////////////////////////////////////////////////////////////
+                    if((!Empty($nccf))||(!Empty($cnccf)))
+                    {   if(!strcmp(trim($nccf),""))
                         {   mysql_close($Link);
-                            $Msg = "Confirmation du code confidentiel non saisi!";
+                            $Msg = "Code confidentiel non saisi!";
                             include("Message.php");
                             die();
                         }
                         else
-                        {   if(strcmp(trim($nccf),trim($cnccf)))
+                        {   if(!strcmp(trim($cnccf),""))
                             {   mysql_close($Link);
-                                $Msg = "Code confidentiel non confirm&eacute;!";
+                                $Msg = "Confirmation du code confidentiel non saisi!";
                                 include("Message.php");
                                 die();
                             }
                             else
-                            {   //MAJ du code confidentiel
-                                $Query = "UPDATE Camarades SET CAM_CodeConf = '$nccf' WHERE UPPER(CAM_Pseudo) = UPPER('".addslashes($Camarade)."')";
-                                if(!mysql_query(trim($Query),$Link))
+                            {   if(strcmp(trim($nccf),trim($cnccf)))
                                 {   mysql_close($Link);
-                                    $Msg = "Echec de la mise &agrave; jour de ton code confidentiel! Contact le <font color=\"#808080\">Webmaster</font>!";
+                                    $Msg = "Code confidentiel non confirm&eacute;!";
                                     include("Message.php");
                                     die();
                                 }
                                 else
-                                {   mysql_close($Link);
-                                    $Msg = "Ok! La mise &agrave; jour de ton code confidentiel s'est d&eacute;roul&eacute;e sans accros!";
-                                    $Tpe = "1";
-                                    include("Message.php");
-                                    die();
+                                {   //MAJ du code confidentiel
+                                    $Query = "UPDATE Camarades SET CAM_CodeConf = '$nccf' WHERE UPPER(CAM_Pseudo) = UPPER('".addslashes($Camarade)."')";
+                                    if(!mysql_query(trim($Query),$Link))
+                                    {   mysql_close($Link);
+                                        $Msg = "Echec de la mise &agrave; jour de ton code confidentiel! Contact le <font color=\"#808080\">Webmaster</font>!";
+                                        include("Message.php");
+                                        die();
+                                    }
+                                    else
+                                    {   mysql_close($Link);
+                                        $Msg = "Ok! La mise &agrave; jour de ton code confidentiel s'est d&eacute;roul&eacute;e sans accros!";
+                                        $Tpe = "1";
+                                        include("Message.php");
+                                        die();
+                                    }
                                 }
                             }
                         }
                     }
+                    break;
                 }
-            }
-            else if($ope == 2)
-            {   // Opération de MAJ des infos personnels
-                $Query = "UPDATE Camarades SET";
-                if((!Empty($nm))&&(strcmp(trim($nm),"")))
-                {   $Query .= " CAM_Nom = '".trim($nm)."',";
-                    $bModif = true;
-                }
-                else $Query .= " CAM_Nom = NULL,";
-                if((!Empty($prnm))&&(strcmp(trim($prnm),"")))
-                {   $Query .= " CAM_Prenom = '".trim($prnm)."',";
-                    $bModif = true;
-                }
-                else $Query .= " CAM_Prenom = NULL,";
-                if((!Empty($sx))&&(strcmp(trim($sx),"")))
-                {   if(!strcmp($sx,"Masculin")) $Query .= " CAM_Sexe = 2,";
-                    else $Query .= " CAM_Sexe = 1,";
-                    $bModif = true;
-                }
-                if((!Empty($dtns))&&(strcmp(trim($dtns),""))&&(strcmp(trim($dtns),"AAAA-MM-JJ")))
-                {   $Query .= " CAM_BornDate = '".trim($dtns)."',";
-                    $bModif = true;
-                }
-                else $Query .= " CAM_BornDate = NULL,";
-                if((!Empty($adrs))&&(strcmp(trim($adrs),"")))
-                {   $Query .= " CAM_Adresse = '".trim($adrs)."',";
-                    $bModif = true;
-                }
-                else $Query .= " CAM_Adresse = NULL,";
-                if((!Empty($twn))&&(strcmp(trim($twn),"")))
-                {   $Query .= " CAM_Ville = '".trim($twn)."',";
-                    $bModif = true;
-                }
-                else $Query .= " CAM_Ville = NULL,";
-                if((!Empty($cpst))&&(strcmp(trim($cpst),"")))
-                {   $Query .= " CAM_Postal = '".trim($cpst)."',";
-                    $bModif = true;
-                }
-                else $Query .= " CAM_Postal = NULL,";
-                if((!Empty($mail))&&(strcmp(trim($mail),"")))
-                {   $Query .= " CAM_Email = '".trim($mail)."',";
-                    $bModif = true;
-                }
-                else $Query .= " CAM_Email = NULL,";
-                if((!Empty($hobbi))&&(strcmp(trim($hobbi),"")))
-                {   $Query .= " CAM_Hobbies = '".trim($hobbi)."',";
-                    $bModif = true;
-                }
-                else $Query .= " CAM_Hobbies = NULL,";
-                if((!Empty($aprop))&&(strcmp(trim($aprop),"")))
-                {   $Query .= " CAM_APropos = '".trim($aprop)."'";
-                    $bModif = true;
-                }
-                else $Query .= " CAM_APropos = NULL";
-                if($bModif)
-                {   $Query .= " WHERE UPPER(CAM_Pseudo) = UPPER('".addslashes($Camarade)."')";
-                    if(!mysql_query(trim($Query),$Link))
-                    {   mysql_close($Link);
-                        $Msg = "Echec de la mise &agrave; jour de tes infos personnels! Contact le <font color=\"#808080\">Webmaster</font>!";
-                        include("Message.php");
-                        die();
+                case 2:
+                {   // Opération de MAJ des infos personnels
+                    $Query = "UPDATE Camarades SET";
+                    if((!Empty($nm))&&(strcmp(trim($nm),"")))
+                    {   $Query .= " CAM_Nom = '".trim($nm)."',";
+                        $bModif = true;
                     }
-                    else
-                    {   mysql_close($Link);
-                        $Msg = "Ok! La mise &agrave; jour de tes infos personnels s'est d&eacute;roul&eacute;e sans accros!";
-                        $Tpe = "1";
-                        include("Message.php");
-                        die();
+                    else $Query .= " CAM_Nom = NULL,";
+                    if((!Empty($prnm))&&(strcmp(trim($prnm),"")))
+                    {   $Query .= " CAM_Prenom = '".trim($prnm)."',";
+                        $bModif = true;
                     }
-                }
-            }
-            else if($ope == 3)
-            {   // Désabonnement
-                if((!Empty($abo))&&(strcmp(trim($abo),"")))
-                {   if(!strcmp(trim($abo),GetWebmaster()))
-                    {   mysql_close($Link);
-                        $Msg = "Impossible de se désabonner de <b>Webmaster</b>... il est trop fort!";
-                        include("Message.php");
-                        die();
+                    else $Query .= " CAM_Prenom = NULL,";
+                    if((!Empty($sx))&&(strcmp(trim($sx),"")))
+                    {   if(!strcmp($sx,"Masculin")) $Query .= " CAM_Sexe = 2,";
+                        else $Query .= " CAM_Sexe = 1,";
+                        $bModif = true;
                     }
-                    $Query = "DELETE FROM Abonnements WHERE UPPER(ABO_Pseudo) = UPPER('".addslashes($Camarade)."') AND ABO_Camarade LIKE '".addslashes($abo)."'";
-                    if(!mysql_query(trim($Query),$Link))
-                    {   mysql_close($Link);
-                        $Msg = "Echec de la mise &agrave; jour de tes abonnements! Contact le <font color=\"#808080\">Webmaster</font>!";
-                        include("Message.php");
-                        die();
+                    if((!Empty($dtns))&&(strcmp(trim($dtns),""))&&(strcmp(trim($dtns),"AAAA-MM-JJ")))
+                    {   $Query .= " CAM_BornDate = '".trim($dtns)."',";
+                        $bModif = true;
                     }
-                }
-            }
-            else if($ope == 4)
-            {   // Abonnement
-                if((!Empty($abo))&&(strcmp(trim($abo),"")))
-                {   $Query = "INSERT INTO Abonnements (ABO_Pseudo,ABO_Camarade) VALUES ('".addslashes($Camarade)."','".addslashes($abo)."')";
-                    if(!mysql_query(trim($Query),$Link))
-                    {   mysql_close($Link);
-                        $Msg = "Echec de la mise &agrave; jour de tes abonnements! Contact le <font color=\"#808080\">Webmaster</font>!";
-                        include("Message.php");
-                        die();
+                    else $Query .= " CAM_BornDate = NULL,";
+                    if((!Empty($adrs))&&(strcmp(trim($adrs),"")))
+                    {   $Query .= " CAM_Adresse = '".trim($adrs)."',";
+                        $bModif = true;
                     }
-                }
-            }
-            else
-            {   // Change la bannière ou la photo du profile
-                $iStatus = 3;
-                $isBanner = true;
-                if(!Empty($_FILES["banFile"]["name"]))
-                    $iStatus = DownloadImageFile($Link,GetSrvProFolder(),"banFile");
-                else if(!Empty($_FILES["proFile"]["name"])) {
-                    $iStatus = DownloadImageFile($Link,GetSrvProFolder(),"proFile");
-                    $isBanner = false;
-                }
-                if($iStatus > 12) $File = GetPhotoFile($Link,true).GetImageExtension(($isBanner)? "banFile":"proFile");
-                switch($iStatus) {
-                    case 14: { // Ok...
-                        $Query = "UPDATE Camarades SET CAM_".(($isBanner)? "Banner":"Profile")." = '$File'";
-                        $Query .= " WHERE UPPER(CAM_Pseudo) = UPPER('".addslashes($Camarade)."')";
-                        if(!mysql_query(trim($Query),$Link)) {
-                            @unlink(GetSrvProFolder()."$File");
-                            $Msg = "Echec de la mise &agrave; jour de ton profile! Contact le <font color=\"#808080\">Webmaster</font>!";
+                    else $Query .= " CAM_Adresse = NULL,";
+                    if((!Empty($twn))&&(strcmp(trim($twn),"")))
+                    {   $Query .= " CAM_Ville = '".trim($twn)."',";
+                        $bModif = true;
+                    }
+                    else $Query .= " CAM_Ville = NULL,";
+                    if((!Empty($cpst))&&(strcmp(trim($cpst),"")))
+                    {   $Query .= " CAM_Postal = '".trim($cpst)."',";
+                        $bModif = true;
+                    }
+                    else $Query .= " CAM_Postal = NULL,";
+                    if((!Empty($mail))&&(strcmp(trim($mail),"")))
+                    {   $Query .= " CAM_Email = '".trim($mail)."',";
+                        $bModif = true;
+                    }
+                    else $Query .= " CAM_Email = NULL,";
+                    if((!Empty($hobbi))&&(strcmp(trim($hobbi),"")))
+                    {   $Query .= " CAM_Hobbies = '".trim($hobbi)."',";
+                        $bModif = true;
+                    }
+                    else $Query .= " CAM_Hobbies = NULL,";
+                    if((!Empty($aprop))&&(strcmp(trim($aprop),"")))
+                    {   $Query .= " CAM_APropos = '".trim($aprop)."'";
+                        $bModif = true;
+                    }
+                    else $Query .= " CAM_APropos = NULL";
+                    if($bModif)
+                    {   $Query .= " WHERE UPPER(CAM_Pseudo) = UPPER('".addslashes($Camarade)."')";
+                        if(!mysql_query(trim($Query),$Link))
+                        {   mysql_close($Link);
+                            $Msg = "Echec de la mise &agrave; jour de tes infos personnels! Contact le <font color=\"#808080\">Webmaster</font>!";
                             include("Message.php");
                             die();
                         }
-                        break;
+                        else
+                        {   mysql_close($Link);
+                            $Msg = "Ok! La mise &agrave; jour de tes infos personnels s'est d&eacute;roul&eacute;e sans accros!";
+                            $Tpe = "1";
+                            include("Message.php");
+                            die();
+                        }
                     }
-                    default:
-                    {   mysql_close($Link);
-                        if($iStatus == 13) @unlink(GetSrvProFolder()."$File");
-                        $Msg = GetResult($iStatus);
+                    break;
+                }
+                case 3:
+                {   // Désabonnement
+                    if((!Empty($abo))&&(strcmp(trim($abo),"")))
+                    {   if(!strcmp(trim($abo),GetWebmaster()))
+                        {   mysql_close($Link);
+                            $Msg = "Impossible de se désabonner de <b>Webmaster</b>... il est trop fort!";
+                            include("Message.php");
+                            die();
+                        }
+                        $Query = "DELETE FROM Abonnements WHERE UPPER(ABO_Pseudo) = UPPER('".addslashes($Camarade)."') AND ABO_Camarade LIKE '".addslashes($abo)."'";
+                        if(!mysql_query(trim($Query),$Link))
+                        {   mysql_close($Link);
+                            $Msg = "Echec de la mise &agrave; jour de tes abonnements! Contact le <font color=\"#808080\">Webmaster</font>!";
+                            include("Message.php");
+                            die();
+                        }
+                    }
+                    break;
+                }
+                case 4:
+                {   // Abonnement
+                    if((!Empty($abo))&&(strcmp(trim($abo),"")))
+                    {   $Query = "INSERT INTO Abonnements (ABO_Pseudo,ABO_Camarade) VALUES ('".addslashes($Camarade)."','".addslashes($abo)."')";
+                        if(!mysql_query(trim($Query),$Link))
+                        {   mysql_close($Link);
+                            $Msg = "Echec de la mise &agrave; jour de tes abonnements! Contact le <font color=\"#808080\">Webmaster</font>!";
+                            include("Message.php");
+                            die();
+                        }
+                    }
+                    break;
+                }
+                case 5:
+                {   // Change la bannière ou la photo du profile
+                    $iStatus = 3;
+                    $isBanner = true;
+                    if(!Empty($_FILES["banFile"]["name"]))
+                        $iStatus = DownloadImageFile($Link,GetSrvProFolder(),"banFile");
+                    else if(!Empty($_FILES["proFile"]["name"])) {
+                        $iStatus = DownloadImageFile($Link,GetSrvProFolder(),"proFile");
+                        $isBanner = false;
+                    }
+                    if($iStatus > 12) $File = GetPhotoFile($Link,true).GetImageExtension(($isBanner)? "banFile":"proFile");
+                    switch($iStatus) {
+                        case 14: { // Ok...
+                            $Query = "UPDATE Camarades SET CAM_".(($isBanner)? "Banner":"Profile")." = '$File'";
+                            $Query .= " WHERE UPPER(CAM_Pseudo) = UPPER('".addslashes($Camarade)."')";
+                            if(!mysql_query(trim($Query),$Link)) {
+                                @unlink(GetSrvProFolder()."$File");
+                                $Msg = "Echec de la mise &agrave; jour de ton profile! Contact le <font color=\"#808080\">Webmaster</font>!";
+                                include("Message.php");
+                                die();
+                            }
+                            break;
+                        }
+                        default:
+                        {   mysql_close($Link);
+                            if($iStatus == 13) @unlink(GetSrvProFolder()."$File");
+                            $Msg = GetResult($iStatus);
+                            include("Message.php");
+                            die();
+                        }
+                    }
+                    break;
+                }
+                case 6:
+                {   // Retire la bannière
+                    $Query = "SELECT CAM_Banner FROM Camarades WHERE UPPER(CAM_Pseudo) = UPPER('".addslashes($Camarade)."')";
+                    $Result = mysql_query(trim($Query),$Link);
+                    if($aRow = mysql_fetch_array($Result))
+                    {   $File = $aRow["CAM_Banner"];
+                        mysql_free_result($Result);
+                    }
+                    $Query = "UPDATE Camarades SET CAM_Banner = NULL WHERE UPPER(CAM_Pseudo) = UPPER('".addslashes($Camarade)."')";
+                    if(!mysql_query(trim($Query),$Link)) {
+                        if(!Empty($File)) @unlink(GetSrvProFolder()."$File");
+                        $Msg = "Echec durant la mise &agrave; jour de ton profile! Contact le <font color=\"#808080\">Webmaster</font>!";
                         include("Message.php");
                         die();
                     }
+                    break;
+                }
+                case 7:
+                {   // Retire la photo du profile
+                    $Query = "SELECT CAM_Profile FROM Camarades WHERE UPPER(CAM_Pseudo) = UPPER('".addslashes($Camarade)."')";
+                    $Result = mysql_query(trim($Query),$Link);
+                    if($aRow = mysql_fetch_array($Result))
+                    {   $File = $aRow["CAM_Profile"];
+                        mysql_free_result($Result);
+                    }
+                    $Query = "UPDATE Camarades SET CAM_Profile = NULL WHERE UPPER(CAM_Pseudo) = UPPER('".addslashes($Camarade)."')";
+                    if(!mysql_query(trim($Query),$Link)) {
+                        if(!Empty($File)) @unlink(GetSrvProFolder()."$File");
+                        $Msg = "Echec durant la mise &agrave; jour de ton profile! Contact le <font color=\"#808080\">Webmaster</font>!";
+                        include("Message.php");
+                        die();
+                    }
+                    break;
                 }
             }
         }
@@ -244,10 +285,18 @@ if(!Empty($Clf))
             else $Hobbies = stripslashes($aRow["CAM_Hobbies"]);
             if(is_null($aRow["CAM_APropos"])) $APropos = "";
             else $APropos = stripslashes($aRow["CAM_APropos"]);
+            $isProfile = false;
             if(is_null($aRow["CAM_Profile"])) $Profile = "Images/".(($Sexe == 1)? "woman":"man").".png";
-            else $Profile = "Profiles/".$aRow["CAM_Profile"];
+            else {
+                $Profile = "Profiles/".$aRow["CAM_Profile"];
+                $isProfile = true;
+            }
+            $isBanner = false;
             if(is_null($aRow["CAM_Banner"])) $Banner = "Images/banner.png";
-            else $Banner = "Profiles/".$aRow["CAM_Banner"];
+            else {
+                $Banner = "Profiles/".$aRow["CAM_Banner"];
+                $isBanner = true;
+            }
             mysql_free_result($Result);
             //
         }
@@ -341,18 +390,25 @@ function OnInitialize()
 // OnChangePhoto /////////////////////////////////////////////
 function OnChangePhoto(banner)
 {   if(banner) {
-        document.getElementById('banBtn').value = 'Remplacer';
-        document.getElementById('formOpe').value = 6;
+        document.getElementById('banBtn').style.display = 'block';
+        document.getElementById('banBtn').value = '<?php if($isBanner) echo "Remplacer";else echo "Ajouter"; ?>';
     }
     else {
-        document.getElementById('proBtn').value = 'Remplacer';
-        document.getElementById('formOpe').value = 7;
+        document.getElementById('proBtn').style.display = 'block';
+        document.getElementById('proBtn').value = '<?php if($isProfile) echo "Remplacer";else echo "Ajouter"; ?>';
     }
+    document.getElementById('formOpe').value = 5;
 }
 // OnResize //////////////////////////////////////////////////
 function OnResize() {
     document.getElementById("Banner").style.width =  (window.innerWidth - 180) + "px";
     document.getElementById("Profile").style.top = (document.getElementById("Banner").height - 50) + "px";
+}
+// OnValidate ////////////////////////////////////////////////
+function OnValidate(ope) {
+    if(document.getElementById('formOpe').value == 0)
+        document.getElementById('formOpe').value = ope;
+    return true;
 }
 -->
 </script>
@@ -376,15 +432,15 @@ function OnResize() {
         <tr>
         <td><input type="file" onchange="OnChangePhoto(true)" name="banFile" /></td>
         <td><div style="width:10px" /></td>
-        <td><input type="submit" ID="banBtn" value="Retirer"></td>
+        <td><input type="submit" ID="banBtn" style="display:<?php if($isBanner) echo 'block';else echo 'none'; ?>" value="Retirer" onclick="OnValidate(6)"></td>
         </tr>
         <tr height=50>
-        <td colspan=3><input type="hidden" ID="formOpe" name="ope" value=5></td>
+        <td colspan=3><input type="hidden" ID="formOpe" name="ope" value=0></td>
         </tr>
         <tr>
-        <td><input type="file" onchange="OnChangePhoto(false)"  name="proFile" /></td>
+        <td><input type="file" onchange="OnChangePhoto(false)" name="proFile" /></td>
         <td></td>
-        <td><input type="submit" ID="proBtn" value="Retirer"></td>
+        <td><input type="submit" ID="proBtn" style="display:<?php if($isProfile) echo 'block';else echo 'none'; ?>" value="Retirer" onclick="OnValidate(7)"></td>
         </tr>
         </table>
         </form>
