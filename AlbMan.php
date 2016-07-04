@@ -271,7 +271,8 @@ function ChgAlbumList()
                 $Query .= " ORDER BY ALB_Nom";
                 $Result = mysql_query(trim($Query),$Link);
                 while($aRow = mysql_fetch_array($Result))
-                {   // Tant qu'il y a des albums
+                {   if(!strcmp($aRow["ALB_Nom"],"Journal")) continue;
+                    // Tant qu'il y a des albums
                 ?>case <?php echo $CntAlb; ?>:
                 {   iSelAlb=<?php echo $CntAlb; ?>;
                     document.getElementById("AlbNom").disabled="";
@@ -700,8 +701,10 @@ mysql_close($Link);
     if(count($aAlbNom) != 0)
     {   foreach($aAlbNom as $AlbNom)
         {   // Tant qu'il y a des albums
-    ?><option><?php echo stripslashes($AlbNom); ?></option>
-    <?php
+            if(strcmp($AlbNom,"Journal")) {
+                ?><option><?php echo stripslashes($AlbNom); ?></option>
+            <?php
+            }
             // Tant qu'il y a des albums
         }
     }

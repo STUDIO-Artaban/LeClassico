@@ -200,7 +200,10 @@ while($aRow = mysql_fetch_array($Result))
         ?>" align="left">
              <table border=0 cellspacing=0 cellpadding=0>
              <tr>
-             <td nowrap><font ID="Title"><font style="font-size: 12pt">&nbsp;Pr&eacute;sent&eacute; par:&nbsp;&nbsp;<font color="#8000ff"><?php echo $aRow["EVE_Pseudo"]; ?></font></font></font></td>
+             <td nowrap><font ID="Title"><font style="font-size: 12pt">&nbsp;Pr&eacute;sent&eacute; par:&nbsp;&nbsp;<?php
+             if(Empty($Clf)) echo "<font color=\"#8000ff\">".$aRow["EVE_Pseudo"]."</font>";
+             else echo "<a href=\"index.php?Chp=2&Cam=".urlencode(base64_encode($aRow["EVE_Pseudo"]))."&Clf=$Clf\" target=\"_top\" style=\"font-size:12pt\">".$aRow["EVE_Pseudo"]."</a>";
+             ?></font></font></td>
              </tr>
              </table>
         </div></td>

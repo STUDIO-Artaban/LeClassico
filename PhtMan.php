@@ -168,7 +168,8 @@ function FillPhotoArray()
     $Query .= " WHERE UPPER(ALB_Pseudo) = UPPER('".addslashes($Camarade)."') GROUP BY ALB_Nom,PHT_Pseudo,PHT_Fichier ORDER BY ALB_Nom,PHT_Fichier";
     $Result = mysql_query(trim($Query),$Link);
     while($aRow = mysql_fetch_array($Result))
-    {   // Tant qu'il y a des photos dans l'album
+    {   if(!strcmp($aRow["ALB_Nom"],"Journal")) continue;
+        // Tant qu'il y a des photos dans l'album
         if(strcmp($CurAlbum,$aRow["ALB_Nom"]))
         {   // Nouvel album
             if(strcmp($CurAlbum,""))
@@ -552,7 +553,8 @@ mysql_close($Link);
     $iAlbPos = 1;
     if(count($aYourAlb) != 0)
     {   foreach($aYourAlb as $YourAlb)
-        {   // Tant qu'il y a des albums
+        {   if(!strcmp($YourAlb,"Journal")) continue;
+            // Tant qu'il y a des albums
         ?><option value=<?php echo "$iAlbPos>$YourAlb"; ?></option>
         <?php
             // Tant qu'il y a des albums

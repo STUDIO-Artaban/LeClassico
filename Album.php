@@ -426,7 +426,10 @@ else echo "SubFonHD.jpg";
         <td width="40%" valign="top">
             <table border=0 width="100%" cellspacing=0 cellpadding=0>
             <tr>
-            <td nowrap><font face="Verdana,Lucida,Courier" size=1><b>&bull;&nbsp;Auteur:&nbsp;</b><font color="#8000ff"><?php echo stripslashes($aRow["ALB_Pseudo"]); ?></font></font></td>
+            <td nowrap><font face="Verdana,Lucida,Courier" size=1><b>&bull;&nbsp;Auteur:&nbsp;</b><?php
+            if(Empty($Clf)) echo "<font color=\"#8000ff\">".stripslashes($aRow["ALB_Pseudo"])."</font>";
+            else echo "<a href=\"index.php?Chp=2&Cam=".urlencode(base64_encode($aRow["ALB_Pseudo"]))."&Clf=$Clf\" target=\"_top\" style=\"font-size:10pt\">".$aRow["ALB_Pseudo"]."</a>";
+            ?></font></td>
             </tr>
             <tr>
             <td nowrap><font face="Verdana,Lucida,Courier" size=1><b>&bull;&nbsp;Date:&nbsp;</b><?php echo stripslashes($aRow["ALB_Date"]); ?></font></td>
