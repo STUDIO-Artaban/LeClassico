@@ -170,21 +170,21 @@ function Initialize()
     if (navigator.appName!="Microsoft Internet Explorer")
     {   
         // Merci IE!! :p
-        document.getElementById("Psd").style.marginTop="1px";
-        document.getElementById("Prn").style.marginTop="1px";
-        document.getElementById("Nom").style.marginTop="1px";
-        document.getElementById("Dnd").style.marginTop="1px";
-        document.getElementById("Dnf").style.marginTop="1px";
-        document.getElementById("Adr").style.marginTop="1px";
-        document.getElementById("Vll").style.marginTop="1px";
+        if(document.getElementById("Psd")) document.getElementById("Psd").style.marginTop="1px";
+        if(document.getElementById("Prn")) document.getElementById("Prn").style.marginTop="1px";
+        if(document.getElementById("Nom")) document.getElementById("Nom").style.marginTop="1px";
+        if(document.getElementById("Dnd")) document.getElementById("Dnd").style.marginTop="1px";
+        if(document.getElementById("Dnf")) document.getElementById("Dnf").style.marginTop="1px";
+        if(document.getElementById("Adr")) document.getElementById("Adr").style.marginTop="1px";
+        if(document.getElementById("Vll")) document.getElementById("Vll").style.marginTop="1px";
 
-        document.getElementById("Psd").style.marginBottom="1px";
-        document.getElementById("Prn").style.marginBottom="1px";
-        document.getElementById("Nom").style.marginBottom="1px";
-        document.getElementById("Dnd").style.marginBottom="1px";
-        document.getElementById("Dnf").style.marginBottom="1px";
-        document.getElementById("Adr").style.marginBottom="1px";
-        document.getElementById("Vll").style.marginBottom="1px";
+        if(document.getElementById("Psd")) document.getElementById("Psd").style.marginBottom="1px";
+        if(document.getElementById("Prn")) document.getElementById("Prn").style.marginBottom="1px";
+        if(document.getElementById("Nom")) document.getElementById("Nom").style.marginBottom="1px";
+        if(document.getElementById("Dnd")) document.getElementById("Dnd").style.marginBottom="1px";
+        if(document.getElementById("Dnf")) document.getElementById("Dnf").style.marginBottom="1px";
+        if(document.getElementById("Adr")) document.getElementById("Adr").style.marginBottom="1px";
+        if(document.getElementById("Vll")) document.getElementById("Vll").style.marginBottom="1px";
     }
 }
 -->

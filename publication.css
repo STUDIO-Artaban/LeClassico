@@ -1,0 +1,25 @@
+.publicate {
+    background-color: #00ff00;
+    border-radius: 10px;
+    padding: 10px 10px 10px 10px;
+}
+.message {
+    font-family: Verdana,Lucida,Courier;
+    font-size: 10pt;
+    width: 340px;
+    min-width: 340px;
+    max-width: 340px;
+    height: 51px;
+    min-height: 51px;
+    max-height: 51px;
+    overflow-y: scroll;
+    resize: none;
+}
+.lien { width: 340px; }
+.separator {
+    width: 2px;
+    height: 112px;
+    background-color: white;
+    margin-right: 10px;
+}
+

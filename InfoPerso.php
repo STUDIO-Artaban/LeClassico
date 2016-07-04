@@ -18,6 +18,7 @@ $mail = $_POST['mail'];
 $hobbi = $_POST['hobbi'];
 $aprop = $_POST['aprop'];
 $abo = $_POST['abo'];
+$pub = $_POST['pub'];
 $bModif = false;
 if(!Empty($Clf))
 {   // Connexion
@@ -250,6 +251,14 @@ if(!Empty($Clf))
                 }
             }
         }
+        else if(!Empty($pub)) {
+            $iStatus = AjoutePublication($Link,$Camarade);
+            if($iStatus != 15) {
+                $Msg = GetResult($iStatus);
+                include("Message.php");
+                die();
+            }
+        }
         // Lecture des infos personnels/d'un camarade
         $Abonne = false;
         if(Empty($Cam))
@@ -321,6 +330,7 @@ else
 <meta name="Description" content="Site officiel du Classico">
 <meta name="Keywords" content="classico; music; deep; country; nashville; amis; amies">
 <link rel="stylesheet" type="text/css" href="http://www.leclassico.fr/font-family.css">
+<link rel="stylesheet" type="text/css" href="http://www.leclassico.fr/publication.css">
 <style type="text/css">
 form {padding: 0px; margin-bottom: 0px; border: 0px}
 textarea {
@@ -353,38 +363,39 @@ textarea {
     min-height: 100px;
 }
 </style>
+<script src="Librairies/publication.js"></script>
 <script type="text/javascript">
 <!--
 // OnChangeCodePost ///////////////////////////////////////////////////////////////////////////
 function OnChangeCodePost()
 {   if((window.event.keyCode<48)||(window.event.keyCode>57)) window.event.keyCode = "";
 }
-// OnInitialize /////////////////////////////////////////////////
-function OnInitialize()
+// Initialize /////////////////////////////////////////////////
+function Initialize()
 {
     // Modifie la page si Netscape
     if (navigator.appName!="Microsoft Internet Explorer")
     {   
         // Merci IE!! :p
-        document.getElementById("Pwd").style.marginTop="1px";
-        document.getElementById("Cpw").style.marginTop="1px";
-        document.getElementById("Nom").style.marginTop="1px";
-        document.getElementById("Prenom").style.marginTop="1px";
-        document.getElementById("Ddn").style.marginTop="1px";
-        document.getElementById("Adresse").style.marginTop="1px";
-        document.getElementById("Ville").style.marginTop="1px";
-        document.getElementById("Postal").style.marginTop="1px";
-        document.getElementById("Email").style.marginTop="1px";
+        if(document.getElementById("Pwd")) document.getElementById("Pwd").style.marginTop="1px";
+        if(document.getElementById("Cpw")) document.getElementById("Cpw").style.marginTop="1px";
+        if(document.getElementById("Nom")) document.getElementById("Nom").style.marginTop="1px";
+        if(document.getElementById("Prenom")) document.getElementById("Prenom").style.marginTop="1px";
+        if(document.getElementById("Ddn")) document.getElementById("Ddn").style.marginTop="1px";
+        if(document.getElementById("Adresse")) document.getElementById("Adresse").style.marginTop="1px";
+        if(document.getElementById("Ville")) document.getElementById("Ville").style.marginTop="1px";
+        if(document.getElementById("Postal")) document.getElementById("Postal").style.marginTop="1px";
+        if(document.getElementById("Email")) document.getElementById("Email").style.marginTop="1px";
 
-        document.getElementById("Pwd").style.marginBottom="1px";
-        document.getElementById("Cpw").style.marginBottom="1px";
-        document.getElementById("Nom").style.marginBottom="1px";
-        document.getElementById("Prenom").style.marginBottom="1px";
-        document.getElementById("Ddn").style.marginBottom="1px";
-        document.getElementById("Adresse").style.marginBottom="1px";
-        document.getElementById("Ville").style.marginBottom="1px";
-        document.getElementById("Postal").style.marginBottom="1px";
-        document.getElementById("Email").style.marginBottom="1px";
+        if(document.getElementById("Pwd")) document.getElementById("Pwd").style.marginBottom="1px";
+        if(document.getElementById("Cpw")) document.getElementById("Cpw").style.marginBottom="1px";
+        if(document.getElementById("Nom")) document.getElementById("Nom").style.marginBottom="1px";
+        if(document.getElementById("Prenom")) document.getElementById("Prenom").style.marginBottom="1px";
+        if(document.getElementById("Ddn")) document.getElementById("Ddn").style.marginBottom="1px";
+        if(document.getElementById("Adresse")) document.getElementById("Adresse").style.marginBottom="1px";
+        if(document.getElementById("Ville")) document.getElementById("Ville").style.marginBottom="1px";
+        if(document.getElementById("Postal")) document.getElementById("Postal").style.marginBottom="1px";
+        if(document.getElementById("Email")) document.getElementById("Email").style.marginBottom="1px";
     }
 }
 // OnChangePhoto /////////////////////////////////////////////
@@ -413,7 +424,7 @@ function OnValidate(ope) {
 -->
 </script>
 </head>
-<body bgcolor="#ffffff" style="margin-top: 0;margin-left: 10px" onload="OnInitialize()" onresize="OnResize()">
+<body bgcolor="#ffffff" style="margin-top: 0;margin-left: 10px" onload="Initialize()" onresize="OnResize()">
 <table border=0 width="100%" height="100%" cellspacing=0 cellpadding=0>
 <tr height="100%">
 <td width="100%" valign="top">
@@ -452,7 +463,7 @@ function OnValidate(ope) {
     </table>
 </div>
 <table border=0 cellspacing=0 cellpadding=0>
-<tr height=65><td></td></tr>
+<tr height=70><td></td></tr>
 </table>
 <font face="Verdana,Lucida,Courier" size=2><?php
 if(Empty($Cam))
@@ -937,6 +948,40 @@ possibilité de t'abonner à son actualité, ou éventuellement de t'en désabonner s
     </tr>
     </table>
 </td>
+</tr>
+</table><br>
+<table border=0 width="100%" cellspacing=0 cellpadding=0>
+<tr>
+<td width=10><div style="width:10px" /></td>
+<td width="100%">
+    <div class="publicate"><!-- Publication -->
+        <form action="InfoPerso.php?Clf=<?php echo $Clf; ?>" enctype="multipart/form-data" method="post">
+        <table border=0 cellspacing=0 cellpadding=0>
+        <tr>
+        <td valign="top"><div style="width:110px"><font ID="Title">Ton message:</font></div></td>
+        <td><textarea class="message" name="msg"></textarea></td>
+        <td rowspan=3 width="100%" align="right"><div class="separator"></div></td>
+        <td rowspan=3 valign="bottom"><input type="submit" value="Publier"></td>
+        </tr>
+        <tr>
+        <td><input type="radio" name="join" ID="lnkRadio" value=0><font ID="Title">Lien:</font></td>
+        <td><input class="lien" type="text" onchange="OnPublicationChange(true)" placeholder="http://" name="lnk"></td>
+        <td colspan=2><input type="hidden" name="to" value=""></td>
+        </tr>
+        <tr>
+        <td><input type="radio" name="join" ID="imgRadio" value=1><font ID="Title">Image:</font></td>
+        <td><input type="file" onchange="OnPublicationChange(false)" name="img"></td>
+        <td colspan=2><input type="hidden" name="pub" value=1></td>
+        </tr>
+        </table>
+        </form>
+    </div>
+</td>
+</tr>
+</table><br>
+<table border=0 width="100%" cellspacing=0 cellpadding=0 ID="Publication">
+<tr>
+<td></td>
 </tr>
 </table>
 <!-- *********************************************************************************************************************************************** -->
