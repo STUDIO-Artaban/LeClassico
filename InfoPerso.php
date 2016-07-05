@@ -332,6 +332,7 @@ else
 <link rel="stylesheet" type="text/css" href="http://www.leclassico.fr/font-family.css">
 <link rel="stylesheet" type="text/css" href="http://www.leclassico.fr/publication.css">
 <style type="text/css">
+a {font-size: 12pt; font-family: Impact,Verdana,Lucida; color: blue}
 form {padding: 0px; margin-bottom: 0px; border: 0px}
 textarea {
     width: 310px;
@@ -820,7 +821,7 @@ if((!is_null($aRow["CAM_APropos"]))&&(!Empty($aRow["CAM_APropos"])))
 if(Empty($Cam))
 {
 ?>Tu trouveras ci-dessous la liste des camarades auxquels tu es abonné. Ainsi, il te seras possible
-de voir depuis le <a href="index.php?Chp=5&Clf=<?php echo $Clf; ?>" target="_top">fil d'actualité</a> tous ceux qu'ils publient, et cela sans avoir à aller sur chacun de
+de voir depuis le <a href="index.php?Chp=5&Clf=<?php echo $Clf; ?>" style="font-size: 10pt" target="_top">fil d'actualité</a> tous ceux qu'ils publient, et cela sans avoir à aller sur chacun de
 leur profile.<?php
 }
 else
@@ -886,7 +887,6 @@ possibilité de t'abonner à son actualité, ou éventuellement de t'en désabonner s
 </td>
 </tr>
 </table><br>
-<!-- Publications -->
 <table border=0 width="100%" cellspacing=0 cellpadding=0>
 <tr>
 <td width=10>
@@ -950,6 +950,7 @@ possibilité de t'abonner à son actualité, ou éventuellement de t'en désabonner s
 </td>
 </tr>
 </table><br>
+<!-- Publications: ENVOI @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ -->
 <table border=0 width="100%" cellspacing=0 cellpadding=0>
 <tr>
 <td width=10><div style="width:10px" /></td>
@@ -979,12 +980,14 @@ possibilité de t'abonner à son actualité, ou éventuellement de t'en désabonner s
 </td>
 </tr>
 </table><br>
-<table border=0 width="100%" cellspacing=0 cellpadding=0 ID="Publication">
+<!-- PUBLICATIONS ################################################################################################################# -->
+<table border=0 width="100%" cellspacing=0 cellpadding=0 ID="Publications">
 <tr>
-<td></td>
+<td width=10><div style="width:10px" /></td>
+<td><hr></td>
 </tr>
 </table>
-<!-- *********************************************************************************************************************************************** -->
+<!-- ****************************************************************************************************************************** -->
 </td>
 <td valign="top"><img src="<?php echo GetFolder(); ?>/Images/Projo.jpg"></td>
 </tr>
@@ -993,30 +996,31 @@ possibilité de t'abonner à son actualité, ou éventuellement de t'en désabonner s
 <!--
 // Commandes //////////////////////////////////////////////////////////////////////////////////
 OnResize();
+StartPubListener("<?php echo $Clf; ?>",<?php echo ((Empty($Cam))? "null":"\"".urlencode(base64_encode($Cam))."\""); ?>,4,"InfoPerso.php");
 <?php
 if(Empty($Cam)) {
 ?>
-document.getElementById("Nom").value="<?php
+if(document.getElementById("Nom")) document.getElementById("Nom").value="<?php
 // Nom
 if(!Empty($Nom)) echo str_replace("\'","'",addslashes($Nom));
 ?>";
-document.getElementById("Prenom").value="<?php
+if(document.getElementById("Prenom")) document.getElementById("Prenom").value="<?php
 // Prénom
 if(!Empty($Prenom)) echo str_replace("\'","'",addslashes($Prenom));
 ?>";
-document.getElementById("Adresse").value="<?php
+if(document.getElementById("Adresse")) document.getElementById("Adresse").value="<?php
 // Adresse
 if(!Empty($Adresse)) echo str_replace("\'","'",addslashes($Adresse));
 ?>";
-document.getElementById("Ville").value="<?php
+if(document.getElementById("Ville")) document.getElementById("Ville").value="<?php
 // Ville
 if(!Empty($Ville)) echo str_replace("\'","'",addslashes($Ville));
 ?>";
-document.getElementById("Postal").value="<?php
+if(document.getElementById("Postal")) document.getElementById("Postal").value="<?php
 // Postal
 if(!Empty($Postal)) echo str_replace("\'","'",addslashes($Postal));
 ?>";
-document.getElementById("Email").value="<?php
+if(document.getElementById("Email")) document.getElementById("Email").value="<?php
 // Email
 if(!Empty($Email)) echo str_replace("\'","'",addslashes($Email));
 ?>";

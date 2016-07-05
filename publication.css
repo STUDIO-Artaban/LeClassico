@@ -1,3 +1,18 @@
+#Message {
+    font-size: 14pt;
+    font-family: Cursive,Verdana,Lucida;
+    color: white;
+    text-shadow: 2px 2px black;
+}
+#Date {
+    font-size: 11pt;
+    font-family: Cursive,Verdana,Lucida;
+    font-weight: bold;
+}
+#Label {
+    font-size: 12pt;
+    font-family: Impact,Verdana,Lucida;
+}
 .publicate {
     background-color: #00ff00;
     border-radius: 10px;
@@ -21,5 +36,18 @@
     height: 112px;
     background-color: white;
     margin-right: 10px;
+}
+.tinyProfile {
+    width: 22px;
+    height: 22px;
+}
+.link {
+    font-size: 12pt;
+    font-family: Cursive,Verdana,Lucida;
+    color: blue;
+}
+.comment {
+    font-size: 8pt;
+    font-family: Verdana,Lucida,Courier;
 }
 
