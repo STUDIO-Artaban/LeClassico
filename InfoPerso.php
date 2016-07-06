@@ -363,24 +363,6 @@ textarea {
     min-width: 100px;
     min-height: 100px;
 }
-
-
-
-
-
-
-
-.pubImage {
-    border-radius: 5px;
-}
-
-
-
-
-
-
-
-
 </style>
 <script src="Librairies/publication.js"></script>
 <script type="text/javascript">
