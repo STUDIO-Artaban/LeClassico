@@ -1,11 +1,83 @@
 <?php
 require("../Package.php");
+$Clf = $_GET['Clf'];
+$Cam = $_GET['Cam'];
+$Count = $_GET['Count'];
+if(!Empty($Cam)) $Cam = base64_decode(urldecode($Cam));
 header('Content-Type: application/json');
+if(!Empty($Clf))
+{   // Connexion
+    $Link = @mysql_connect(GetMySqlLocalhost(),GetMySqlUser(),GetMySqlPassword());
+    if(Empty($Link)) echo '{"error":"Connection failed!"}';
+    else
+    {   $Camarade = UserKeyIdentifier($Clf);
+        mysql_select_db(GetMySqlDB(),$Link);
+        $Query = "SELECT CAM_Pseudo FROM Camarades WHERE UPPER(CAM_Pseudo) = UPPER('".addslashes($Camarade)."')";
+        $Result = mysql_query(trim($Query),$Link);
+        if(mysql_num_rows($Result) != 0)
+        {   $aRow = mysql_fetch_array($Result);
+            $Camarade = stripslashes($aRow["CAM_Pseudo"]);
+            mysql_free_result($Result);
+            // Request
+            $Query = "SELECT ACT_ActuID,ACT_Pseudo,CAM_Profile,CAM_Sexe,ACT_Camarade,ACT_Date,ACT_Text,ACT_Link,ACT_Fichier";
+            $Query .= " FROM Actualites LEFT JOIN Camarades ON ACT_Pseudo = CAM_Pseudo";
+            if(!Empty($Cam)) {
 
-if(Empty($Clf))
 
 
-//echo '{"videos":[{"video":{"url":"http://studio-artaban.com/Anaglyph3D/2016-05-17%2009:15:31.000.webm","size":1474417},"thumbnail":{"url":"http://studio-artaban.com/Anaglyph3D/2016-05-17%2009:15:31.000.jpg","size":122243},"Album":{"title":"Clapiers","description":"Clapiers (en occitan languedocien Clapiés) est une commune française située dans le département de l\'Hérault et la région Languedoc-Roussillon-Midi-Pyrénées en périphérie de Montpellier.\n\n-= Vidéo réalisé en 3D simulée avec une tablette Samsung Galaxy Tab 2 =-","date":"2016-05-17 09:15:31.000","duration":30,"location":true,"latitude":48.51269,"longitude":2.2053,"thumbnailWidth":480,"thumbnailHeight":640}},{"video":{"url":"http://studio-artaban.com/Anaglyph3D/2016-05-21%2011:15:42.000.webm","size":1474417},"thumbnail":{"url":"http://studio-artaban.com/Anaglyph3D/2016-05-21%2011:15:42.000.jpg","size":101155},"Album":{"title":"Télescope","description":"Télescope CELESTRON C8-S XLT\nDiamètre: 200 mmm\nLongueur focale: 1 m\nType: Smith Cassegrain\n\n-= Vidéo réalisé en 3D réelle avec une tablette Samsung Galaxy Tab 2 et un smartphone Samsung Galaxy Trend Lite =-","date":"2016-05-21 11:15:42.000","duration":120,"location":true,"latitude":45.75209,"longitude":4.48203,"thumbnailWidth":640,"thumbnailHeight":480}},{"video":{"url":"http://studio-artaban.com/Anaglyph3D/2016-05-26%2015:35:12.000.webm","size":1474417},"thumbnail":{"url":"http://studio-artaban.com/Anaglyph3D/2016-05-26%2015:35:12.000.jpg","size":237639},"Album":{"title":"Hécate #1","description":"Hécate est une chatte de 2 ans et demi, croisé entre un Maine coon et une Sacré de Birmanie.\n\n-= Vidéo réalisé en 3D réelle avec une tablette Samsung Galaxy Tab 2 et un smartphone Samsung Galaxy Trend Lite =-","date":"2016-05-26 15:35:12.000","duration":10,"location":false,"latitude":0,"longitude":0,"thumbnailWidth":640,"thumbnailHeight":480}},{"video":{"url":"http://studio-artaban.com/Anaglyph3D/2016-06-04%2022:05:36.000.webm","size":1474417},"thumbnail":{"url":"http://studio-artaban.com/Anaglyph3D/2016-06-04%2022:05:36.000.jpg","size":192310},"Album":{"title":"Hécate #2","description":"Hécate est une chatte de 2 ans et demi, croisé entre un Maine coon et une Sacré de Birmanie.\n\n-= Vidéo réalisé en 3D réelle avec une tablette Samsung Galaxy Tab 2 et un smartphone Samsung Galaxy Trend Lite =-","date":"2016-06-04 22:05:36.000","duration":60,"location":true,"latitude":43.3639058,"longitude":3.5238074,"thumbnailWidth":640,"thumbnailHeight":480}},{"video":{"url":"http://studio-artaban.com/Anaglyph3D/2016-06-22%2014:25:09.000.webm","size":1474417},"thumbnail":{"url":"http://studio-artaban.com/Anaglyph3D/2016-06-22%2014:25:09.000.jpg","size":33604},"Album":{"title":"Montpellier","description":"Description #3","date":"2016-06-22 14:25:09.000","duration":15,"location":true,"latitude":43.3639058,"longitude":3.5238074,"thumbnailWidth":640,"thumbnailHeight":480}}]}';
-echo '{"test":2}';
 
+
+
+                // WHERE UPPER(ACT_Pseudo) = UPPER('Pascal') OR UPPER(ACT_Camarade) = UPPER('Pascal')
+
+
+
+
+
+
+            }
+            else
+                $Query .= " INNER JOIN Abonnements ON ACT_Pseudo = ABO_Camarade AND UPPER(ABO_Pseudo) = UPPER('".addslashes($Camarade)."')";
+            $Query .= " ORDER BY ACT_Date DESC";
+            if(!Empty($Count)) $Query .= " LIMIT $Count";
+            $Result = mysql_query(trim($Query),$Link);
+            // Reply
+            if(mysql_num_rows($Result) == 0) $Reply = '{"publications":null}';
+            else {
+                $Reply = '';
+                while($aRow = mysql_fetch_array($Result)) {
+                    $Profile = $aRow["CAM_Profile"];
+                    if(is_null($Profile)) {
+                        if((!is_null($aRow["CAM_Sexe"]))&&($aRow["CAM_Sexe"] == 1))
+                            $Profile = "Images/woman.png";
+                        else
+                            $Profile = "Images/man.png";
+                    }
+                    else
+                        $Profile = "Profiles/$Profile";
+                    if(strlen($Reply) == 0) $Reply .= '{"publications":[';
+                    else $Reply .= ',';
+                    $Reply .= '{"profile":"'.trim($Profile).'",';
+                    $Reply .= '"token":"'.trim($Clf).'",';
+                    $Reply .= '"camarade":"'.urlencode(base64_encode($aRow["ACT_Pseudo"])).'",';
+                    $Reply .= '"pseudo":"'.addslashes($aRow["ACT_Pseudo"]).'",';
+                    $Reply .= '"date":"'.substr($aRow["ACT_Date"],0,10).'",';
+                    $Reply .= '"time":"'.substr($aRow["ACT_Date"],11).'",';
+                    $Reply .= '"text":"'.trim($aRow["ACT_Text"]).'",';
+                    $Reply .= '"link":"'.trim($aRow["ACT_Link"]).'",';
+                    $Reply .= '"image":"'.trim($aRow["ACT_Fichier"]).'",';
+                    $Reply .= '"id":'.strval($aRow["ACT_ActuID"]).'}';
+                }
+                $Reply .= ']}';
+            }
+            echo $Reply;
+        }
+        else
+        {   mysql_close($Link);
+            echo '{"error":"Invalid user!"}';
+        }
+    }
+}
+else
+    echo '{"error":"No valid token!"}';
 ?>

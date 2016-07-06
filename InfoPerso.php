@@ -363,6 +363,24 @@ textarea {
     min-width: 100px;
     min-height: 100px;
 }
+
+
+
+
+
+
+
+.pubImage {
+    border-radius: 5px;
+}
+
+
+
+
+
+
+
+
 </style>
 <script src="Librairies/publication.js"></script>
 <script type="text/javascript">
@@ -846,13 +864,18 @@ possibilité de t'abonner à son actualité, ou éventuellement de t'en désabonner s
     <td>
         <select style="width:310px"<?php if(Empty($Cam)) echo " name=\"abo\" onChange=\"document.getElementById('desAbon').disabled = false;\""; ?> size=7>
         <?php
-        if(Empty($Cam))
+        if(Empty($Cam)) {
             $Query = "SELECT ABO_Camarade FROM Abonnements WHERE UPPER(ABO_Pseudo) = UPPER('".addslashes($Camarade)."')";
-        else
+            $CurCam = $Camarade;
+        }
+        else {
             $Query = "SELECT ABO_Camarade FROM Abonnements WHERE UPPER(ABO_Pseudo) = UPPER('".addslashes($Cam)."')";
+            $CurCam = $Cam;
+        }
         $Result = mysql_query(trim($Query),$Link);
         while($aRow = mysql_fetch_array($Result))
-        {   echo "<option>".stripslashes($aRow["ABO_Camarade"])."</option>\n";
+        {   if(strcmp($CurCam,$aRow["ABO_Camarade"]))
+                echo "<option>".stripslashes($aRow["ABO_Camarade"])."</option>\n";
         }
         mysql_free_result($Result);
         mysql_close($Link);
