@@ -39,6 +39,7 @@ if(!Empty($Clf))
                     else $Reply .= ',';
                     $Reply .= '{"id":'.strval($aRow["COM_ObjID"]).',';
                     $Reply .= '"pseudo":"'.addslashes($aRow["COM_Pseudo"]).'",';
+                    $Reply .= '"camarade":"'.urlencode(base64_encode($aRow["COM_Pseudo"])).'",';
                     $Reply .= '"text":"'.trim($aRow["COM_Text"]).'",';
                     $Reply .= '"date":"'.trim($aRow["COM_Date"]).'"}';
                 }

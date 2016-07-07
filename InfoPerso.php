@@ -1001,7 +1001,7 @@ possibilité de t'abonner à son actualité, ou éventuellement de t'en désabonner s
 <!--
 // Commandes //////////////////////////////////////////////////////////////////////////////////
 OnResize();
-StartPubListener("<?php echo $Clf; ?>",<?php echo ((Empty($Cam))? "null":"\"".urlencode(base64_encode($Cam))."\""); ?>,4,10,"InfoPerso.php");
+StartPubListener("<?php echo $Clf; ?>",<?php echo ((Empty($Cam))? "\"".urlencode(base64_encode($Camarade))."\"":"\"".urlencode(base64_encode($Cam))."\""); ?>,4,10,"InfoPerso.php");
 <?php
 if(Empty($Cam)) {
 ?>

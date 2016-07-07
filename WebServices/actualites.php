@@ -21,21 +21,8 @@ if(!Empty($Clf))
             // Request
             $Query = "SELECT ACT_ActuID,ACT_Pseudo,CAM_Profile,CAM_Sexe,ACT_Camarade,ACT_Date,ACT_Text,ACT_Link,ACT_Fichier";
             $Query .= " FROM Actualites LEFT JOIN Camarades ON ACT_Pseudo = CAM_Pseudo";
-            if(!Empty($Cam)) {
-
-
-
-
-
-
-                // WHERE UPPER(ACT_Pseudo) = UPPER('Pascal') OR UPPER(ACT_Camarade) = UPPER('Pascal')
-
-
-
-
-
-
-            }
+            if(!Empty($Cam))
+                $Query .= " WHERE UPPER(ACT_Pseudo) = UPPER('".addslashes($Cam)."') OR UPPER(ACT_Camarade) = UPPER('".addslashes($Cam)."')";
             else
                 $Query .= " INNER JOIN Abonnements ON ACT_Pseudo = ABO_Camarade AND UPPER(ABO_Pseudo) = UPPER('".addslashes($Camarade)."')";
             $Query .= " ORDER BY ACT_Date DESC";

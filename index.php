@@ -40,7 +40,7 @@ if(Empty($Clf))
                else
                {   mysql_free_result($Result);
                    // Optimisation des tables MySQL
-                   $Query = "OPTIMIZE TABLE Camarades, Evenements, Presents, Albums, Photos, Messagerie, Forum, Votes";
+                   $Query = "OPTIMIZE TABLE Camarades, Evenements, Presents, Albums, Photos, Messagerie, Votes, Abonnements, Commentaires, Actualites";
                    mysql_query(trim($Query),$Link);
                }
            }

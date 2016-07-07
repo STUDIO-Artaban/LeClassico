@@ -45,9 +45,6 @@ function AddCommentaires(data) {
 
 
 
-            var cam = '';
-            if (camarade != '')
-                cam = '&Cam=' + camarade;
             // Add comment row
             var row = document.getElementById(TABLE_COMMENTAIRES + '12').insertRow(3);
             var cell = row.insertCell(0);
@@ -57,7 +54,7 @@ function AddCommentaires(data) {
             cell = row.insertCell(2);
             cell.style.backgroundColor = "#d8e1c6";
             cell.innerHTML =
-                HTML_COMMENT_PREV_CAMARDE + cam +
+                HTML_COMMENT_PREV_CAMARDE + '&Cam=' + data[i].camarade +
                     '&Clf=' + clef +
                 HTML_COMMENT_PREV_PSEUDO + data[i].pseudo +
                 HTML_COMMENT_NO_PREV + data[i].text +
@@ -380,9 +377,7 @@ function SendRequests() {
         }
         case REQ_INIT_ACTU: {
             delay = 10;
-            reqAddress = LC_WEBSERVICE + LC_ACTUALITES + clef + '&Count=' + countActu;
-            if (camarade != '')
-                reqAddress += '&Cam=' + camarade;
+            reqAddress = LC_WEBSERVICE + LC_ACTUALITES + clef + '&Count=' + countActu + '&Cam=' + camarade;
             break;
         }
         case REQ_INIT_COMMENT: {
@@ -431,7 +426,7 @@ function SendRequests() {
 function StartPubListener(clf,cam,cntAct,cntCom,src) {
     request = REQ_INIT_ACTU;
     clef = clf;
-    if(cam) camarade = cam;
+    camarade = cam;
     countActu = cntAct;
     countComm = cntCom;
     file = src;
