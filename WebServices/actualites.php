@@ -50,8 +50,8 @@ if(!Empty($Clf))
                     $Reply .= '"pseudo":"'.addslashes($aRow["ACT_Pseudo"]).'",';
                     $Reply .= '"date":"'.substr($aRow["ACT_Date"],0,10).'",';
                     $Reply .= '"time":"'.substr($aRow["ACT_Date"],11).'",';
-                    $Reply .= '"text":"'.trim($aRow["ACT_Text"]).'",';
-                    $Reply .= '"link":"'.trim($aRow["ACT_Link"]).'",';
+                    $Reply .= '"text":"'.str_replace('"','\"',trim($aRow["ACT_Text"])).'",';
+                    $Reply .= '"link":"'.str_replace('"','\"',trim($aRow["ACT_Link"])).'",';
                     $Reply .= '"image":"'.trim($aRow["ACT_Fichier"]).'",';
                     $Reply .= '"id":'.strval($aRow["ACT_ActuID"]).'}';
                 }

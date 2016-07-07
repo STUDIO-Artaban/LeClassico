@@ -14,7 +14,6 @@ if(Empty($vwu)) $vwu = $_POST['vwu'];
 if(Empty($vwpht)) $vwpht = $_POST['vwpht'];
 $pht = $_POST['pht'];
 $ope = $_POST['ope'];
-$cmmt = $_POST['cmmt'];
 $pht1 = $_POST['pht1'];
 $vtpht1 = $_POST['vtpht1'];
 $pht2 = $_POST['pht2'];
@@ -25,8 +24,6 @@ $pht4 = $_POST['pht4'];
 $vtpht4 = $_POST['vtpht4'];
 $pht5 = $_POST['pht5'];
 $vtpht5 = $_POST['vtpht5'];
-$aSearch = array("<",">");
-$aReplace = array("&lt;","&gt;");
 if(!Empty($Clf))
 {   // Connexion
     $Link = @mysql_connect(GetMySqlLocalhost(),GetMySqlUser(),GetMySqlPassword());
@@ -55,20 +52,13 @@ if(!Empty($Clf))
                 {   $aDate = getdate();
                     if($ope != 2)
                     {   // Ajoute un commentaire ///////////////////////////////////////////////////////////////////////////////
-                        if((!Empty($cmmt))&&(strcmp(trim($cmmt),""))&&(!Empty($pht))&&(strcmp(trim($pht),"")))
-                        {   $Query = "INSERT INTO Commentaires (COM_ObjType,COM_ObjID,COM_Pseudo,COM_Date,COM_Text) VALUES (";
-                            $Query .= "'P',";
-                            $Query .= GetPhotoID(base64_decode(urldecode($pht))).",";
-                            $Query .= "'".addslashes($Camarade)."',";
-                            $Query .= "'".trim($aDate["year"])."-".trim($aDate["mon"])."-".trim($aDate["mday"])." ".trim($aDate["hours"]).":".trim($aDate["minutes"]).":".trim($aDate["seconds"])."',";
-                            $Query .= "'".addslashes(str_replace($aSearch,$aReplace,trim($cmmt)))."')";
-                            if(!mysql_query(trim($Query),$Link))
-                            {   mysql_close($Link);
-                                $Msg = "Une erreur est intervenue durant l'ajout de ton commentaire! Son contenu ne lui a peut-&ecirc;tre pas plus!";
-                                $Msg .= " Si le probl&egrave;me persiste contact le <font color=\"#808080\">Webmaster</font>!";
-                                include("Message.php");
-                                die();
-                            }
+                        $iStatus = AjouteCommentaire($Link,$Camarade,'P',GetPhotoID(base64_decode(urldecode($pht))),"cmmt");
+                        if($iStatus != 15)
+                        {   mysql_close($Link);
+                            $Msg = "Une erreur est intervenue durant l'ajout de ton commentaire! Son contenu ne lui a peut-&ecirc;tre pas plus!";
+                            $Msg .= " Si le probl&egrave;me persiste contact le <font color=\"#808080\">Webmaster</font>!";
+                            include("Message.php");
+                            die();
                         }
                     }
                     else

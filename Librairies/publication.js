@@ -4,9 +4,15 @@ AUHTOR: Pascal Viguie
 DATE: 04/07/2016
 *****************************************************************************************/
 
+function strcmp(a, b) {
+    if (a.toString() < b.toString()) return -1;
+    if (a.toString() > b.toString()) return 1;
+    return 0;
+}
+
 // OnPublicationChange //////////////////////
 function OnPublicationChange(link) {
-    if(link) document.getElementById("lnkRadio").checked = true;
+    if (link) document.getElementById("lnkRadio").checked = true;
     else document.getElementById("imgRadio").checked = true;
 }
 
@@ -14,6 +20,8 @@ function OnPublicationChange(link) {
 var LC_WEBSERVICE = 'http://www.leclassico.fr/WebServices/';
 var LC_ACTUALITES = 'actualites.php?Clf=';
 var LC_COMMENTAIRES = 'commentaires.php?Clf=';
+
+var SEPARATOR_ACTU_ID = 'n';
 
 var TABLE_PUBLICATIONS = 'Publications';
 var TABLE_COMMENTAIRES = 'Commentaires';
@@ -33,20 +41,17 @@ var HTML_COMMENT_NO_PREV = ':</a><font class="comment">&nbsp;';
 var clef = '';
 var camarade = '';
 var file = '';
+var commDate = '';
+var actuDate = '';
+var actuId = '';
+var actuRow = {};
 
 function AddCommentaires(data) {
     for (var i = 0; i < data.length; i++) {
-
-
-
-
-        if (document.getElementById(TABLE_COMMENTAIRES + '12')) {
-
-
-
-
+        if (document.getElementById(TABLE_COMMENTAIRES + data[i].id)) {
+            var comment = data[i].text.replace('<','&lt;').replace('>','&gt;');
             // Add comment row
-            var row = document.getElementById(TABLE_COMMENTAIRES + '12').insertRow(3);
+            var row = document.getElementById(TABLE_COMMENTAIRES + data[i].id).insertRow(actuRow[data[i].id]);
             var cell = row.insertCell(0);
             cell.style.backgroundColor = "#bacc9a";
             cell = row.insertCell(1);
@@ -63,105 +68,14 @@ function AddCommentaires(data) {
             cell.style.backgroundColor = "#d8e1c6";
             cell = row.insertCell(4);
             cell.style.backgroundColor = "#bacc9a";
+
+            actuRow[data[i].id] += 1;
+            if (strcmp(data[i].date, commDate) == 1)
+                commDate = data[i].date;
         }
         //else
         //    console.log('No "Commentaires" HTML table!');
     }
-
-
-
-
-
-
-
-
-
-    /*
-    // Add comment row
-    var row = document.getElementById(TABLE_COMMENTAIRES + '0').insertRow(3);
-    var cell = row.insertCell(0);
-    cell.style.backgroundColor = "#bacc9a";
-    cell = row.insertCell(1);
-    cell.style.backgroundColor = "#d8e1c6";
-    cell = row.insertCell(2);
-    cell.style.backgroundColor = "#d8e1c6";
-    cell.innerHTML =
-        HTML_COMMENT_PREV_CAMARDE +
-            'camcamcam' +
-            '&Clf=' + 'clfclfclf' +
-        HTML_COMMENT_PREV_PSEUDO + 'Pascal' +
-        HTML_COMMENT_NO_PREV +
-            'ola bloblo bloblo bloblo bloblo bloblo bloblo bloblo bloblo bloblo bloblo bloblo bloblo #1' +
-        '</font>';
-    cell = row.insertCell(3);
-    cell.style.backgroundColor = "#d8e1c6";
-    cell = row.insertCell(4);
-    cell.style.backgroundColor = "#bacc9a";
-
-
-    // Add comment row
-    var row = document.getElementById(TABLE_COMMENTAIRES + '0').insertRow(4);
-    var cell = row.insertCell(0);
-    cell.style.backgroundColor = "#bacc9a";
-    cell = row.insertCell(1);
-    cell.style.backgroundColor = "#d8e1c6";
-    cell = row.insertCell(2);
-    cell.style.backgroundColor = "#d8e1c6";
-    cell.innerHTML =
-        HTML_COMMENT_PREV_CAMARDE +
-            'camcamcam' +
-            '&Clf=' + 'clfclfclf' +
-        HTML_COMMENT_PREV_PSEUDO + 'Seik' +
-        HTML_COMMENT_NO_PREV +
-            'ola bloblo bloblo bloblo bloblo bloblo bloblo bloblo bloblo bloblo bloblo bloblo bloblo #2' +
-        '</font>';
-    cell = row.insertCell(3);
-    cell.style.backgroundColor = "#d8e1c6";
-    cell = row.insertCell(4);
-    cell.style.backgroundColor = "#bacc9a";
-
-
-
-
-
-
-
-
-
-
-    // Add comment row
-    var row = document.getElementById(TABLE_COMMENTAIRES + '1').insertRow(3);
-    var cell = row.insertCell(0);
-    cell.style.backgroundColor = "#bacc9a";
-    cell = row.insertCell(1);
-    cell.style.backgroundColor = "#d8e1c6";
-    cell = row.insertCell(2);
-    cell.style.backgroundColor = "#d8e1c6";
-    cell.innerHTML =
-        HTML_COMMENT_PREV_CAMARDE +
-            'camcamcam' +
-            '&Clf=' + 'clfclfclf' +
-        HTML_COMMENT_PREV_PSEUDO + 'JM' +
-        HTML_COMMENT_NO_PREV +
-            'ola bloblo bloblo bloblo bloblo bloblo bloblo bloblo bloblo bloblo bloblo bloblo bloblo #3' +
-        '</font>';
-    cell = row.insertCell(3);
-    cell.style.backgroundColor = "#d8e1c6";
-    cell = row.insertCell(4);
-    cell.style.backgroundColor = "#bacc9a";
-    */
-
-
-
-
-
-
-
-
-
-
-
-
 }
 
 var HTML_ACTU_PREV_PROFILE =
@@ -270,7 +184,7 @@ var HTML_COMMENT_PREV_ACTUID = '" method="post">' +
         '<td><font ID="Label">Ton commentaire:</font></td>' +
         '</tr>' +
         '<tr>' +
-        '<td><input type="hidden" name="ope" value=69><input type="text" class="comment"></td>' +
+        '<td><input type="hidden" name="ope" value=69><input type="text" name="txt" class="comment"></td>' +
         '</tr>' +
         '<tr>' +
         '<td><input type="hidden" name="act" value=';
@@ -317,6 +231,12 @@ function AddActualites(data) {
             row.style.height = '20px';
             row.insertCell(0);
             row.insertCell(1);
+
+            actuRow[data[i].id] = 3;
+            if (actuId == '') actuId = data[i].id;
+            else actuId += SEPARATOR_ACTU_ID + data[i].id;
+            if (strcmp(data[i].date + ' ' + data[i].time, actuDate) == 1)
+                actuDate = data[i].date + ' ' + data[i].time;
         }
     }
     //else
@@ -381,20 +301,16 @@ function SendRequests() {
             break;
         }
         case REQ_INIT_COMMENT: {
-
-
-
-
-
-            reqAddress = LC_WEBSERVICE + LC_COMMENTAIRES + clef + '&Count=' + countComm + '&Actu=12';
-
-
-
-
-
+            reqAddress = LC_WEBSERVICE + LC_COMMENTAIRES + clef + '&Count=' + countComm + '&Actu=' + actuId;
             break;
         }
         case REQ_NEW_ACTU: {
+
+            
+            // TODO: Remove ' ' from '2016-07-07 10:10:10' of actuDate & commDate
+
+
+            reqAddress = LC_WEBSERVICE + LC_ACTUALITES + clef + '&Cam=' + camarade + '&Date=' + actuDate;
 
 
 
@@ -405,6 +321,7 @@ function SendRequests() {
             return;
         }
         case REQ_NEW_COMMENT: {
+            reqAddress = LC_WEBSERVICE + LC_COMMENTAIRES + clef + '&Actu=' + actuId + '&Date=' + commDate;
 
 
 
@@ -420,7 +337,7 @@ function SendRequests() {
         xhr.send();
     }
     catch (e) { }
-    setTimeout(SendRequests, 2000);
+    setTimeout(SendRequests, delay);
 }
 
 function StartPubListener(clf,cam,cntAct,cntCom,src) {

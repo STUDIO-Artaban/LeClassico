@@ -249,6 +249,16 @@ if(!Empty($Clf))
                     }
                     break;
                 }
+                case 69:
+                {   // Ajoute un commentaire (actualité)
+                    $iStatus = AjouteCommentaire($Link,$Camarade,'A',$_POST["act"],"txt");
+                    if($iStatus != 15) {
+                        $Msg = GetResult($iStatus);
+                        include("Message.php");
+                        die();
+                    }
+                    break;
+                }
             }
         }
         else if(!Empty($pub)) {

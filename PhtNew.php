@@ -25,6 +25,7 @@ $iStatus = 0;
    17 - Echec de la suppression de la photo: Droits insuffisants
    18 - Echec de la suppression de la photo: ???
    19 - Suppression réussi
+   ... See 'Package.php' file
 */
 if(!Empty($Clf))
 {   // Connexion
@@ -40,103 +41,35 @@ if(!Empty($Clf))
             mysql_free_result($Result);
             if(!Empty($ope))
             {   // Ajoute une photo dans un album /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
-
-
-
-
-
-
-                if((!Empty($albnm))&&(strcmp(trim($albnm),""))&&(!Empty($_FILES["pht"]["name"]))&&(strlen($_FILES["pht"]["name"]) > 4)&&
-                   ((!strcmp(strtoupper(substr($_FILES["pht"]["name"],-4)),".GIF"))||
-                    (!strcmp(strtoupper(substr($_FILES["pht"]["name"],-4)),".JPG"))||
-                    (!strcmp(strtoupper(substr($_FILES["pht"]["name"],-4)),".PNG"))))
-                {   // Génération du nouveau nom du fichier
-                    $Query = "SELECT PNU_PhotoID FROM PhotoNumber";
-                    if($Result = mysql_query(trim($Query),$Link))
-                    {   $aRow = mysql_fetch_array($Result);
-                        $iPhtID = $aRow["PNU_PhotoID"];
-                        $File = "$iPhtID";
-                        switch(strlen($File))
-                        {   case 1:
-                            {   $File = "LC000$iPhtID";
-                                break;
+                if((!Empty($albnm))&&(strcmp(trim($albnm),"")))
+                {   $iStatus = DownloadImageFile($Link,GetSrvPhtFolder(),"pht");
+                    if($iStatus > 12) $File = GetPhotoFile($Link,true).GetImageExtension("pht");
+                    switch($iStatus) {
+                        case 14: {
+                            // Ajout dans l'album
+                            $Query = "INSERT INTO Photos (PHT_Album,PHT_Pseudo,PHT_Fichier,PHT_FichierID) VALUES (";
+                            // Album
+                            $Query .= "'".trim($albnm)."',";
+                            // Pseudo
+                            $Query .= "'".addslashes($Camarade)."',";
+                            // Fichier
+                            $Query .= "'$File',";
+                            // Fichier ID
+                            $iPhtID = GetPhotoID($File);
+                            $Query .= "$iPhtID)";
+                            if(mysql_query(trim($Query),$Link)) $iStatus = 15; // Ok...!
+                            else
+                            {   // Supprime le fichier ainsi transféré du serveur
+                                @unlink(GetSrvPhtFolder()."$File");
                             }
-                            case 2:
-                            {   $File = "LC00$iPhtID";
-                                break;
-                            }
-                            case 3:
-                            {   $File = "LC0$iPhtID";
-                                break;
-                            }
-                            default:
-                            {   $File = "LC$iPhtID";
-                                break;
-                            }
+                            break;
                         }
-                        if(!strcmp(strtoupper(substr($_FILES["pht"]["name"],-4)),".GIF")) $File .= ".gif";
-                        elseif(!strcmp(strtoupper(substr($_FILES["pht"]["name"],-4)),".JPG")) $File .= ".jpg";
-                        else $File .= ".png";
-                        // Contrôle si le fichier existe
-                        //if($aFileInfo = @stat("$pht"))
-                        if(!Empty($_FILES["pht"]["size"]))
-                        {   // Contrôle de la taille de la photo
-                            //if($aFileInfo[7] <= 200000)
-                            if($_FILES["pht"]["size"] <= 200000)
-                            {   // Contrôle l'espace disque suffisant
-                                //if((diskfreespace(GetSrvPhtFolder()."/") - $_FILES["pht"]["size"]) > 5000000)
-                                //{   // Upload de la nouvelle photo
-                                    //if(!@copy($pht,"I:\\Program Files\\EasyPHP\\www\\LeClassico\\Photos\\$File")) $iStatus = 12; //****** Upload
-                                    if(!@move_uploaded_file($_FILES["pht"]["tmp_name"],GetSrvPhtFolder()."$File")) $iStatus = 12; //****** Upload
-                                    else
-                                    {   // MAJ de la table PhotoNumber
-                                        $iPhtID++;
-                                        $Query = "UPDATE PhotoNumber SET PNU_PhotoID = $iPhtID";
-                                        if(!mysql_query(trim($Query),$Link)) $iStatus = 13; //****** MAJ
-                                        else
-                                        {   // Ajout dans l'album
-                                            $Query = "INSERT INTO Photos (PHT_Album,PHT_Pseudo,PHT_Fichier,PHT_FichierID) VALUES (";
-                                            // Album
-                                            $Query .= "'".trim($albnm)."',";
-                                            // Pseudo
-                                            $Query .= "'".addslashes($Camarade)."',";
-                                            // Fichier
-                                            $Query .= "'$File',";
-                                            // Fichier ID
-                                            $iPhtID--;
-                                            $Query .= "$iPhtID)";
-                                            if(!mysql_query(trim($Query),$Link)) $iStatus = 14; //****** Album
-                                            else $iStatus = 15; // Ok...!
-                                        }
-                                        if($iStatus != 15)
-                                        {   // Supprime le fichier ainsi transféré du serveur
-                                            @unlink(GetSrvPhtFolder()."$File");
-                                        }
-                                    }
-                                //}
-                                //else $iStatus = 11; //****** Espace
-                            }
-                            else $iStatus = 10; //****** Taille
+                        case 13:
+                        {   @unlink(GetSrvPhtFolder()."$File");
+                            break;
                         }
-                        else $iStatus = 9; //****** Exist
                     }
-                    else $iStatus = 6; //****** GenFile
                 }
-                else $iStatus = 5; //****** Extension
-
-
-
-
-
-
-
-
-
-
-
             }
         }
         else $iStatus = 4; //****** Camarade

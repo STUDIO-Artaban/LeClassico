@@ -19,15 +19,15 @@ if(!Empty($Clf))
             $Camarade = stripslashes($aRow["CAM_Pseudo"]);
             mysql_free_result($Result);
             // Request
-
-
-
-
-            $Query = "SELECT COM_ObjID,COM_Pseudo,COM_Text,COM_Date FROM Commentaires WHERE COM_ObjType = 'A' AND COM_ObjID = $Actu ORDER BY COM_Date";
-
-
-
-
+            $Query = "SELECT COM_ObjID,COM_Pseudo,COM_Text,COM_Date FROM Commentaires WHERE COM_ObjType = 'A' AND COM_ObjID IN (";
+            $ActuIDs = explode('n', $Actu);
+            $PrevID = false;
+            foreach($ActuIDs as &$ActuId) {
+                if($PrevID) $Query .= ",$ActuId";
+                else $Query .= "$ActuId";
+                $PrevID = true;
+            }
+            $Query .= ") ORDER BY COM_Date";
             if(!Empty($Count)) $Query .= " LIMIT $Count";
             $Result = mysql_query(trim($Query),$Link);
             // Reply
@@ -40,7 +40,7 @@ if(!Empty($Clf))
                     $Reply .= '{"id":'.strval($aRow["COM_ObjID"]).',';
                     $Reply .= '"pseudo":"'.addslashes($aRow["COM_Pseudo"]).'",';
                     $Reply .= '"camarade":"'.urlencode(base64_encode($aRow["COM_Pseudo"])).'",';
-                    $Reply .= '"text":"'.trim($aRow["COM_Text"]).'",';
+                    $Reply .= '"text":"'.str_replace('"','\"',trim($aRow["COM_Text"])).'",';
                     $Reply .= '"date":"'.trim($aRow["COM_Date"]).'"}';
                 }
                 $Reply .= ']}';
