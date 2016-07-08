@@ -1,7 +1,7 @@
 /****************************************************************************************
 FILE: publication.js
 AUHTOR: Pascal Viguie
-DATE: 04/07/2016
+DATE: 05/07/2016
 *****************************************************************************************/
 
 function strcmp(a, b) {
@@ -63,7 +63,7 @@ function OnPublicationChange(link) {
 }
 
 // StartPubListener /////////////////////////
-var DELAY_UPDATE = 5000; // In milliseconds
+var DELAY_UPDATE = 2000; // In milliseconds
 
 var SEPARATOR_ACTU_ID = 'n';
 var SEPARATOR_DATE_TIME = 'n';
@@ -375,6 +375,7 @@ function SendRequests() {
     try {
         //console.log('SendRequests: ' + reqAddress);
         xhr.open('GET', reqAddress, false);
+        xhr.setRequestHeader('Content-type', 'application/json;charset=utf-8');
         xhr.send();
     }
     catch (e) { console.log('XMLHttpRequest exception!'); }

@@ -7,7 +7,7 @@ $Actu = $_GET['Actu'];
 $Cmd = $_GET['Cmd'];
 $Date = $_GET['Date'];
 if(!Empty($Cam)) $Cam = base64_decode(urldecode($Cam));
-header('Content-Type: application/json');
+header('Content-Type: application/json;charset=utf-8');
 if(!Empty($Clf))
 {   // Connexion
     $Link = @mysql_connect(GetMySqlLocalhost(),GetMySqlUser(),GetMySqlPassword());
@@ -86,6 +86,7 @@ if(!Empty($Clf))
                     $Reply .= ']}';
                 }
             }
+            mysql_close($Link);
             echo $Reply;
         }
         else

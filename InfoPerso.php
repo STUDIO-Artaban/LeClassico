@@ -337,6 +337,7 @@ else
 <html>
 <head>
 <title>Le Classico: Profile</title>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8"> 
 <meta name="Description" content="Site officiel du Classico">
 <meta name="Keywords" content="classico; music; deep; country; nashville; amis; amies">
 <link rel="stylesheet" type="text/css" href="http://www.leclassico.fr/font-family.css">
