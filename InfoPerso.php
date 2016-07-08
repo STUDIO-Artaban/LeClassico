@@ -374,7 +374,7 @@ textarea {
     min-height: 100px;
 }
 </style>
-<script src="Librairies/publication.js"></script>
+<script src="Librairies/publication.js" charset="utf-8"></script>
 <script type="text/javascript">
 <!--
 // OnChangeCodePost ///////////////////////////////////////////////////////////////////////////

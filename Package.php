@@ -41,7 +41,7 @@ $DistSrvAddr = "http://www.leclassico.fr/";
 // Webmaster name ///////////////////////////////////////////////////////////////
 $WebMaster = "Webmaster";
 
-///////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
 // GetFolder
 ///////////////////////////////////
 function GetFolder()
@@ -194,13 +194,16 @@ function GetComments($clf,$link,$type,$id)
 {   $query = "SELECT COM_Date,COM_Pseudo,COM_Text FROM Commentaires WHERE COM_ObjType = '$type' AND COM_ObjID = $id ORDER BY COM_Date";
     $result = mysql_query(trim($query),$link);
     $comments = "";
+    $search = array("<",">");
+    $replace = array("&lt;","&gt;");
     while($row = mysql_fetch_array($result))
     {   // Tant qu'il y a des commentaires
         if(!Empty($comments)) $comments .= "<br>";
+        $text = str_replace($search,$replace,$row["COM_Text"]);
         if(!Empty($clf))
-            $comments .= "<a href=\"index.php?Chp=2&Cam=".urlencode(base64_encode($row["COM_Pseudo"]))."&Clf=$clf\" target=\"_top\" style=\"font-size:10pt\">".$row["COM_Pseudo"].":</a>&nbsp;".$row["COM_Text"];
+            $comments .= "<a href=\"index.php?Chp=2&Cam=".urlencode(base64_encode($row["COM_Pseudo"]))."&Clf=$clf\" target=\"_top\" style=\"font-size:10pt\">".$row["COM_Pseudo"].":</a>&nbsp;$text";
         else
-            $comments .= "<b><u>".$row["COM_Pseudo"].":</u></b>&nbsp;".$row["COM_Text"];
+            $comments .= "<b><u>".$row["COM_Pseudo"].":</u></b>&nbsp;$text";
     }
     mysql_free_result($result);
     return $comments;
@@ -234,7 +237,10 @@ function GetPhotoFile($link,$previous)
     if($result = mysql_query(trim($query),$link))
     {   $row = mysql_fetch_array($result);
         $iPhtID = $row["PNU_PhotoID"];
+        // TODO: Remove code below coz possible issue if new photo has been generated
+        //       between 'GetPhotoFile(false)' & 'GetPhotoFile(true)' calls
         if($previous) $iPhtID--;
+        //
         $file = "$iPhtID";
         switch(strlen($file))
         {   case 1:
@@ -311,6 +317,14 @@ function GetResult($res)
             return "<font color=\"#ff0000\">Echec de la suppression</font>! Contact le <font color=\"#8080ff\">Webmaster</font>!";
         case 19: // Suppression réussi
             return "Suppression r&eacute;ussi !!";
+        case 20: // Rien a publier
+            return "Rien &agrave; publier!!... circulez!";
+        case 21: // Echec publication
+            return "<font color=\"#ff0000\">Echec durant la publication</font>! Contact le <font color=\"#8080ff\">Webmaster</font>!";
+        case 22: // Rien a commenter
+            return "No comment!!!";
+        case 23: // Echec commentaire
+            return "<font color=\"#ff0000\">Echec durant l'ajout du commentaire</font>! Contact le <font color=\"#8080ff\">Webmaster</font>!";
     }
     // Prêt
     return "Pr&ecirc;t...";
@@ -328,11 +342,44 @@ function DownloadImageFile($link,$folder,$fileName)
     if($_FILES["pht"]["size"] > 200000) return 10; // Wrong file size
     //if((diskfreespace("$folder/") - $_FILES[$fileName]["size"]) < 5000000) return 11; // Not enough memory space
     $file .= $ext;
-    if(!@move_uploaded_file($_FILES[$fileName]["tmp_name"],trim($folder)."$file")) return 12; // Failed to "download"
+    if(!@move_uploaded_file($_FILES[$fileName]["tmp_name"],trim($folder)."$file")) return 12; // Failed to download
     // MAJ de la table PhotoNumber
     $iPhtID++;
     $query = "UPDATE PhotoNumber SET PNU_PhotoID = $iPhtID";
     if(!mysql_query(trim($query),$link)) return 13; // Failed to update photo number
     return 14;
+}
+///////////////////////////////////
+// AjoutePublication
+///////////////////////////////////
+function AjoutePublication($link,$camarade)
+{   $msg = trim($_POST["msg"]);
+    $to = trim($_POST["to"]);
+    $lnk = trim($_POST["lnk"]);
+    $join = $_POST["join"];
+    if((is_null($join))||(Empty($join))) $join = 0;
+    if((!strcmp($msg,""))&&((($join == 0)&&(!strcmp($lnk,"")))||(($join == 1)&&(Empty($_FILES["img"]["name"]))))) return 20; // Nothing to publish
+    if(($join == 1)&&(!Empty($_FILES["img"]["name"]))&&(DownloadImageFile($link,GetSrvPhtFolder(),"img") != 14)) return 12; // Download failed
+    $file = GetPhotoFile($link,true).GetImageExtension("img");
+    // MAJ database
+    $query = "INSERT INTO Actualites (ACT_ActuID,ACT_Date,ACT_Pseudo,ACT_Camarade,ACT_Text,ACT_Link,ACT_Fichier) VALUES (NULL,CURRENT_TIMESTAMP,";
+    $query .= "'".addslashes($camarade)."',";
+    $query .= ((strcmp($to,""))? "'$to',":"NULL,");
+    $query .= ((strcmp($msg,""))? "'$msg',":"NULL,");
+    if(($join == 0)&&(strcmp($lnk,""))) $query .= "'$lnk',NULL)";
+    else if(($join == 1)&&(!Empty($_FILES["img"]["name"]))) $query .= "NULL,'$file')";
+    else $query .= "NULL,NULL)";
+    if(!mysql_query(trim($query),$link)) return 21; // Failed to publish
+    return 15; // Ok...
+}
+///////////////////////////////////
+// AjouteCommentaire
+///////////////////////////////////
+function AjouteCommentaire($link,$camarade,$type,$id,$comment)
+{   $txt = trim($_POST[$comment]);
+    if(!strcmp($txt,"")) return 22; // No comment
+    $query = "INSERT INTO Commentaires (COM_ObjType,COM_ObjID,COM_Pseudo,COM_Date,COM_Text) VALUES ('$type',$id,'".addslashes($camarade)."',CURRENT_TIMESTAMP,'".addslashes($txt)."')";
+    if(!mysql_query(trim($query),$link)) return 23; // Failed to comment
+    return 15; // Ok...
 }
 ?>

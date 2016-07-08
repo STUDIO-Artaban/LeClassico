@@ -9,34 +9,51 @@ function strcmp(a, b) {
     if (a.toString() > b.toString()) return 1;
     return 0;
 }
+function remove(message,address) {
+    if (!confirm(message)) return;
+    var http = new XMLHttpRequest();
+    try {
+        http.open('GET', address, false);
+        http.send();
+    }
+    catch (e) { console.log('XMLHttpRequest exception!'); }
+    if (http.status == 200) {
+        var reply;
+        try { reply = JSON.parse(xhr.responseText); }
+        catch (e) {
+            reply = new Object()
+            reply.error = 'JSON.parse exception!';
+        }
+        if (typeof reply.error != 'undefined') {
+            console.log('ERROR: ' + reply.error);
+            alert('Echec durant la suppression: ' + reply.error + '\nSi le probleme persiste, contactes le Webmaster!');
+        }
+        else
+            setTimeout(function() { location.reload(true); }, 100);
+    }
+    //else
+    //    console.log('Web service not ready!');
+}
+
+//
+var LC_WEBSERVICE = 'http://www.leclassico.fr/WebServices/';
+var LC_ACTUALITES = 'actualites.php?Clf=';
+var LC_COMMENTAIRES = 'commentaires.php?Clf=';
+
+var clef = '';
+var file = '';
+var camarade = '';
 
 // OnRemovePublication //////////////////////
-var actuArr = [];
 function OnRemovePublication(actuID) {
-
-
-
-
-
-    //confirm?
-    //actuArr -> row--
-
-
-
-
+    remove('Es-tu sur de vouloir supprimer cette publication\nainsi que tous les commentaires?',
+            LC_WEBSERVICE + LC_ACTUALITES + clef + '&Actu=' + actuID + '&Cmd=1');
 }
 
 // OnRemoveCommentaire //////////////////////
-function OnRemoveCommentaire(actuID,row,commentDate) {
-
-
-
-
-    //confirm?
-
-
-
-
+function OnRemoveCommentaire(type,actuID,commentDate,clf) {
+    remove('Es-tu sur de vouloir supprimer ce commentaire?', LC_WEBSERVICE + LC_COMMENTAIRES + clf + '&Type=A&Cmd=1&Actu=' + actuID +
+            '&Date=' + commentDate.replace(' ',SEPARATOR_DATE_TIME));
 }
 
 // OnPublicationChange //////////////////////
@@ -46,11 +63,10 @@ function OnPublicationChange(link) {
 }
 
 // StartPubListener /////////////////////////
-var LC_WEBSERVICE = 'http://www.leclassico.fr/WebServices/';
-var LC_ACTUALITES = 'actualites.php?Clf=';
-var LC_COMMENTAIRES = 'commentaires.php?Clf=';
+var DELAY_UPDATE = 5000; // In milliseconds
 
 var SEPARATOR_ACTU_ID = 'n';
+var SEPARATOR_DATE_TIME = 'n';
 
 var TABLE_PUBLICATIONS = 'Publications';
 var TABLE_COMMENTAIRES = 'Commentaires';
@@ -67,25 +83,23 @@ var HTML_COMMENT_PREV_CAMARDE = '<a href="index.php?Chp=2';
 var HTML_COMMENT_PREV_PSEUDO = '" target="_top" style="font-size:10pt">';
 var HTML_COMMENT_NO_PREV = ':</a><font class="comment">&nbsp;';
 
-var clef = '';
-var camarade = '';
-var file = '';
 var commDate = '';
 var actuDate = '';
 var actuId = '';
-var actuRow = {};
 
+var commRow = {};
 function AddCommentaires(data) {
     for (var i = 0; i < data.length; i++) {
-
         if (document.getElementById(TABLE_COMMENTAIRES + data[i].id)) {
+
             var htmlComment = data[i].text.replace('<','&lt;').replace('>','&gt;');
             var htmlRemove = '';
             if (data[i].remove)
-                htmlRemove = '&nbsp;<img class="remove" src="Images/remove.png" onclick="OnRemoveCommentaire(' + data[i].id + ',' + actuRow[data[i].id] + ',"' + data[i].date + '")">';
+                htmlRemove = '&nbsp;<img class="remove" src="Images/remove.png" onclick=\'OnRemoveCommentaire("A",' + data[i].id +
+                                ',"' + data[i].date + '","' + clef + '")\'>';
 
             // Add comment row
-            var row = document.getElementById(TABLE_COMMENTAIRES + data[i].id).insertRow(actuRow[data[i].id]);
+            var row = document.getElementById(TABLE_COMMENTAIRES + data[i].id).insertRow(commRow[data[i].id]);
             var cell = row.insertCell(0);
             cell.innerHTML =
                 HTML_COMMENT_PREV_CAMARDE + '&Cam=' + data[i].camarade +
@@ -94,7 +108,7 @@ function AddCommentaires(data) {
                 HTML_COMMENT_NO_PREV + htmlComment + htmlRemove +
                 '</font>';
 
-            actuRow[data[i].id] += 1;
+            commRow[data[i].id] += 1;
             if (strcmp(data[i].date, commDate) == 1)
                 commDate = data[i].date;
         }
@@ -253,7 +267,7 @@ function AddActualites(data) {
                     '&Cam=' + data[i].camarade +
                     '" target="_top" style="font-size:12pt">' + data[i].pseudo +
                 HTML_ACTU_PREV_DATE + data[i].date + '</font> &agrave; <font color="#ff0000">' + data[i].time + htmlRemove +
-                HTML_ACTU_PREV_MESSAGE + data[i].text +
+                HTML_ACTU_PREV_MESSAGE + data[i].text.replace('<','&lt;').replace('>','&gt;') +
                 HTML_ACTU_PREV_LINK + data[i].link + '" target="_blank">' + data[i].link +
                 HTML_ACTU_PREV_IMAGE + htmlImage +
                 HTML_ACTU_PREV_COMMENTS;
@@ -265,7 +279,7 @@ function AddActualites(data) {
             cell.innerHTML = 
                 HTML_COMMENT_PREV_NAME + TABLE_COMMENTAIRES + data[i].id +
                 HTML_COMMENT_PREV_FILE + file +
-                    '?Clf=' + data[i].token +
+                    '?Clf=' + clef +
                     '&Cam=' + camarade +
                 HTML_COMMENT_PREV_ACTUID + data[i].id +
                 HTML_COMMENT_PREV_NOTHING;
@@ -275,7 +289,7 @@ function AddActualites(data) {
             row.insertCell(0);
             row.insertCell(1);
 
-            actuRow[data[i].id] = 0;
+            commRow[data[i].id] = 0;
             if (actuId == '') actuId = data[i].id;
             else actuId += SEPARATOR_ACTU_ID + data[i].id;
             if (strcmp(data[i].date + ' ' + data[i].time, actuDate) == 1)
@@ -333,7 +347,7 @@ var countComm = 0;
 
 function SendRequests() {
     var reqAddress;
-    var delay = 2000;
+    var delay = DELAY_UPDATE;
     switch (request) {
         case REQ_NONE: {
             return; // Stop
@@ -344,34 +358,18 @@ function SendRequests() {
             break;
         }
         case REQ_INIT_COMMENT: {
-            reqAddress = LC_WEBSERVICE + LC_COMMENTAIRES + clef + '&Count=' + countComm + '&Actu=' + actuId;
+            reqAddress = LC_WEBSERVICE + LC_COMMENTAIRES + clef + '&Type=A&Count=' + countComm + '&Actu=' + actuId;
             break;
         }
         case REQ_NEW_ACTU: {
-
-            
-            // TODO: Remove ' ' from '2016-07-07 10:10:10' of actuDate & commDate
-
-
-            reqAddress = LC_WEBSERVICE + LC_ACTUALITES + clef + '&Cam=' + camarade + '&Date=' + actuDate;
-
-
-
-
-
-
-
-            return;
+            reqAddress = LC_WEBSERVICE + LC_ACTUALITES + clef + '&Cam=' + camarade +
+                            '&Date=' + actuDate.replace(' ',SEPARATOR_DATE_TIME);
+            break;
         }
         case REQ_NEW_COMMENT: {
-            reqAddress = LC_WEBSERVICE + LC_COMMENTAIRES + clef + '&Actu=' + actuId + '&Date=' + commDate;
-
-
-
-
-
-
-            return;
+            reqAddress = LC_WEBSERVICE + LC_COMMENTAIRES + clef + '&Type=A&Actu=' + actuId +
+                            '&Date=' + commDate.replace(' ',SEPARATOR_DATE_TIME);
+            break;
         }
     }
     try {
@@ -379,7 +377,7 @@ function SendRequests() {
         xhr.open('GET', reqAddress, false);
         xhr.send();
     }
-    catch (e) { }
+    catch (e) { console.log('XMLHttpRequest exception!'); }
     setTimeout(SendRequests, delay);
 }
 
