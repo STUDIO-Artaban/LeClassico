@@ -337,7 +337,7 @@ else
 <html>
 <head>
 <title>Le Classico: Profile</title>
-<meta http-equiv="Content-Type" content="text/html;charset=utf-8"> 
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1"> 
 <meta name="Description" content="Site officiel du Classico">
 <meta name="Keywords" content="classico; music; deep; country; nashville; amis; amies">
 <link rel="stylesheet" type="text/css" href="http://www.leclassico.fr/font-family.css">
@@ -375,7 +375,7 @@ textarea {
     min-height: 100px;
 }
 </style>
-<script src="Librairies/publication.js" charset="utf-8"></script>
+<script src="Librairies/publication.js" charset="ISO-8859-1"></script>
 <script type="text/javascript">
 <!--
 // OnChangeCodePost ///////////////////////////////////////////////////////////////////////////

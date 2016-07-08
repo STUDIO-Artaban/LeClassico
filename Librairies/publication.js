@@ -375,7 +375,7 @@ function SendRequests() {
     try {
         //console.log('SendRequests: ' + reqAddress);
         xhr.open('GET', reqAddress, false);
-        xhr.setRequestHeader('Content-type', 'application/json;charset=utf-8');
+        xhr.setRequestHeader('Content-type', 'text/html;charset=ISO-8859-1');
         xhr.send();
     }
     catch (e) { console.log('XMLHttpRequest exception!'); }
