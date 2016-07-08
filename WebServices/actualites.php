@@ -7,7 +7,7 @@ $Actu = $_GET['Actu'];
 $Cmd = $_GET['Cmd'];
 $Date = $_GET['Date'];
 if(!Empty($Cam)) $Cam = base64_decode(urldecode($Cam));
-header('Content-Type: text/html;charset=ISO-8859-1');
+header('Content-Type: application/json;charset=ISO-8859-1');
 if(!Empty($Clf))
 {   // Connexion
     $Link = @mysql_connect(GetMySqlLocalhost(),GetMySqlUser(),GetMySqlPassword());
@@ -47,11 +47,11 @@ if(!Empty($Clf))
                 $Query .= " FROM Actualites LEFT JOIN Camarades ON ACT_Pseudo = CAM_Pseudo";
                 if(!Empty($Cam)) {
                     $Query .= " WHERE (UPPER(ACT_Pseudo) = UPPER('".addslashes($Cam)."') OR UPPER(ACT_Camarade) = UPPER('".addslashes($Cam)."'))";
-                    if(!Empty($Date)) $Query .= " AND ACT_Date > '".str_replace("n"," ",$Date)."'";
+                    if((!is_null($Date))&&(strcmp(trim($Date),""))) $Query .= " AND ACT_Date > '".str_replace("n"," ",$Date)."'";
                 }
                 else {
                     $Query .= " INNER JOIN Abonnements ON ACT_Pseudo = ABO_Camarade AND UPPER(ABO_Pseudo) = UPPER('".addslashes($Camarade)."')";
-                    if(!Empty($Date)) $Query .= " WHERE ACT_Date > '".str_replace("n"," ",$Date)."'";
+                    if((!is_null($Date))&&(strcmp(trim($Date),""))) $Query .= " WHERE ACT_Date > '".str_replace("n"," ",$Date)."'";
                 }
                 $Query .= " ORDER BY ACT_Date DESC";
                 if(!Empty($Count)) $Query .= " LIMIT $Count";

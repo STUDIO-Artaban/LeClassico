@@ -337,7 +337,6 @@ else
 <html>
 <head>
 <title>Le Classico: Profile</title>
-<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1"> 
 <meta name="Description" content="Site officiel du Classico">
 <meta name="Keywords" content="classico; music; deep; country; nashville; amis; amies">
 <link rel="stylesheet" type="text/css" href="http://www.leclassico.fr/font-family.css">
@@ -375,7 +374,7 @@ textarea {
     min-height: 100px;
 }
 </style>
-<script src="Librairies/publication.js" charset="ISO-8859-1"></script>
+<script src="Librairies/publication.js"></script>
 <script type="text/javascript">
 <!--
 // OnChangeCodePost ///////////////////////////////////////////////////////////////////////////
@@ -972,7 +971,7 @@ possibilité de t'abonner à son actualité, ou éventuellement de t'en désabonner s
 <td width=10><div style="width:10px" /></td>
 <td width="100%">
     <div class="publicate"><!-- Publication -->
-        <form action="InfoPerso.php?Clf=<?php echo $Clf; ?>" enctype="multipart/form-data" method="post">
+        <form action="InfoPerso.php?Clf=<?php echo $Clf; if(!Empty($Cam)) echo "&Cam=".urlencode(base64_encode($Cam)); ?>" enctype="multipart/form-data" method="post">
         <table border=0 cellspacing=0 cellpadding=0>
         <tr>
         <td valign="top"><div style="width:110px"><font ID="Title">Ton message:</font></div></td>
@@ -983,7 +982,7 @@ possibilité de t'abonner à son actualité, ou éventuellement de t'en désabonner s
         <tr>
         <td><input type="radio" name="join" ID="lnkRadio" value=0><font ID="Title">Lien:</font></td>
         <td><input class="lien" type="text" onchange="OnPublicationChange(true)" placeholder="http://" name="lnk"></td>
-        <td colspan=2><input type="hidden" name="to" value=""></td>
+        <td colspan=2><input type="hidden" name="to" value="<?php echo $Cam; ?>"></td>
         </tr>
         <tr>
         <td><input type="radio" name="join" ID="imgRadio" value=1><font ID="Title">Image:</font></td>

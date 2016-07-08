@@ -7,7 +7,7 @@ $Count = $_GET['Count'];
 $Cmd = $_GET['Cmd'];
 $Date = $_GET['Date'];
 if(!Empty($Cam)) $Cam = base64_decode(urldecode($Cam));
-header('Content-Type: text/html;charset=ISO-8859-1');
+header('Content-Type: application/json;charset=ISO-8859-1');
 if(!Empty($Clf))
 {   // Connexion
     $Link = @mysql_connect(GetMySqlLocalhost(),GetMySqlUser(),GetMySqlPassword());
@@ -37,7 +37,7 @@ if(!Empty($Clf))
                     $PrevID = true;
                 }
                 $Query .= ")";
-                if(!Empty($Date)) $Query .= " AND COM_Date > '".str_replace("n"," ",$Date)."'";
+                if((!is_null($Date))&&(strcmp(trim($Date),""))) $Query .= " AND COM_Date > '".str_replace("n"," ",$Date)."'";
                 $Query .= " ORDER BY COM_Date";
                 if(!Empty($Count)) $Query .= " LIMIT $Count";
                 $Result = mysql_query(trim($Query),$Link);
