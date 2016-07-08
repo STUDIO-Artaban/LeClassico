@@ -10,6 +10,35 @@ function strcmp(a, b) {
     return 0;
 }
 
+// OnRemovePublication //////////////////////
+var actuArr = [];
+function OnRemovePublication(actuID) {
+
+
+
+
+
+    //confirm?
+    //actuArr -> row--
+
+
+
+
+}
+
+// OnRemoveCommentaire //////////////////////
+function OnRemoveCommentaire(actuID,row,commentDate) {
+
+
+
+
+    //confirm?
+
+
+
+
+}
+
 // OnPublicationChange //////////////////////
 function OnPublicationChange(link) {
     if (link) document.getElementById("lnkRadio").checked = true;
@@ -48,26 +77,22 @@ var actuRow = {};
 
 function AddCommentaires(data) {
     for (var i = 0; i < data.length; i++) {
+
         if (document.getElementById(TABLE_COMMENTAIRES + data[i].id)) {
-            var comment = data[i].text.replace('<','&lt;').replace('>','&gt;');
+            var htmlComment = data[i].text.replace('<','&lt;').replace('>','&gt;');
+            var htmlRemove = '';
+            if (data[i].remove)
+                htmlRemove = '&nbsp;<img class="remove" src="Images/remove.png" onclick="OnRemoveCommentaire(' + data[i].id + ',' + actuRow[data[i].id] + ',"' + data[i].date + '")">';
+
             // Add comment row
             var row = document.getElementById(TABLE_COMMENTAIRES + data[i].id).insertRow(actuRow[data[i].id]);
             var cell = row.insertCell(0);
-            cell.style.backgroundColor = "#bacc9a";
-            cell = row.insertCell(1);
-            cell.style.backgroundColor = "#d8e1c6";
-            cell = row.insertCell(2);
-            cell.style.backgroundColor = "#d8e1c6";
             cell.innerHTML =
                 HTML_COMMENT_PREV_CAMARDE + '&Cam=' + data[i].camarade +
                     '&Clf=' + clef +
                 HTML_COMMENT_PREV_PSEUDO + data[i].pseudo +
-                HTML_COMMENT_NO_PREV + data[i].text +
+                HTML_COMMENT_NO_PREV + htmlComment + htmlRemove +
                 '</font>';
-            cell = row.insertCell(3);
-            cell.style.backgroundColor = "#d8e1c6";
-            cell = row.insertCell(4);
-            cell.style.backgroundColor = "#bacc9a";
 
             actuRow[data[i].id] += 1;
             if (strcmp(data[i].date, commDate) == 1)
@@ -96,7 +121,7 @@ var HTML_ACTU_PREV_DATE = '</a></td>' +
     '<td bgcolor="#ff8000"></td>' +
     '<td></td>' +
     '<td colspan=2><font ID="Date">Le <font color="green">';
-var HTML_ACTU_PREV_MESSAGE = '</font></font></td>' +
+var HTML_ACTU_PREV_MESSAGE = '</td>' +
     '</tr>' +
     '<tr>' +
     '<td bgcolor="#ff8000" colspan=4></td>' +
@@ -142,8 +167,7 @@ var HTML_COMMENT_PREV_NAME =
     '</tr>' +
     '<tr>' +
     '<td width="100%" valign="top">' +
-        '<table border=0 width="100%" cellspacing=0 cellpadding=0 ID="';
-var HTML_COMMENT_PREV_FILE = '">' +
+        '<table border=0 width="100%" cellspacing=0 cellpadding=0>' +
         '<tr>' +
         '<td><img src="Images/SubFonHG.jpg"></td>' +
         '<td bgcolor="#bacc9a" colspan=3></td>' +
@@ -159,6 +183,19 @@ var HTML_COMMENT_PREV_FILE = '">' +
         '<td><img src="Images/FonCadInHG.jpg"></td>' +
         '<td bgcolor="#d8e1c6"></td>' +
         '<td><img src="Images/FonCadInHD.jpg"></td>' +
+        '<td bgcolor="#bacc9a"></td>' +
+        '</tr>' +
+        '<tr>' +
+        '<td bgcolor="#bacc9a"></td>' +
+        '<td bgcolor="#d8e1c6"></td>' +
+        '<td bgcolor="#d8e1c6">' +
+            '<div style="height:54px;overflow:auto">' +
+            '<table border=0 width="100%" cellspacing=0 cellpadding=0 ID="';
+var HTML_COMMENT_PREV_FILE = '">' +
+            '</table>' +
+            '</div>' +
+        '</td>' +
+        '<td bgcolor="#d8e1c6"></td>' +
         '<td bgcolor="#bacc9a"></td>' +
         '</tr>' +
         '<tr>' +
@@ -198,9 +235,14 @@ var HTML_COMMENT_PREV_NOTHING = '><input type="submit" class="comment" value="Ok
 function AddActualites(data) {
     if (document.getElementById(TABLE_PUBLICATIONS)) {
         for (var i = (data.length - 1); i >= 0; i--) {
+
             var htmlImage = '';
-            if(data[i].image != '')
+            if (data[i].image != '')
                 htmlImage = '<img class="pubImage" src="Photos/' + data[i].image + '" width="100%">';
+            var htmlRemove = '</font></font>';
+            if (data[i].remove)
+                htmlRemove += '&nbsp;<img class="remove" src="Images/delete.png" onclick="OnRemovePublication(' + data[i].id + ')">';
+
             // Add actu row
             var row = document.getElementById(TABLE_PUBLICATIONS).insertRow(1);
             row.insertCell(0);
@@ -210,7 +252,7 @@ function AddActualites(data) {
                 HTML_ACTU_PREV_CAMARADE + data[i].token +
                     '&Cam=' + data[i].camarade +
                     '" target="_top" style="font-size:12pt">' + data[i].pseudo +
-                HTML_ACTU_PREV_DATE + data[i].date + '</font> &agrave; <font color="#ff0000">' + data[i].time +
+                HTML_ACTU_PREV_DATE + data[i].date + '</font> &agrave; <font color="#ff0000">' + data[i].time + htmlRemove +
                 HTML_ACTU_PREV_MESSAGE + data[i].text +
                 HTML_ACTU_PREV_LINK + data[i].link + '" target="_blank">' + data[i].link +
                 HTML_ACTU_PREV_IMAGE + htmlImage +
@@ -227,12 +269,13 @@ function AddActualites(data) {
                     '&Cam=' + camarade +
                 HTML_COMMENT_PREV_ACTUID + data[i].id +
                 HTML_COMMENT_PREV_NOTHING;
+
             row = document.getElementById(TABLE_PUBLICATIONS).insertRow(3);
             row.style.height = '20px';
             row.insertCell(0);
             row.insertCell(1);
 
-            actuRow[data[i].id] = 3;
+            actuRow[data[i].id] = 0;
             if (actuId == '') actuId = data[i].id;
             else actuId += SEPARATOR_ACTU_ID + data[i].id;
             if (strcmp(data[i].date + ' ' + data[i].time, actuDate) == 1)

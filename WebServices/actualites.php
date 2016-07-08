@@ -53,6 +53,7 @@ if(!Empty($Clf))
                     $Reply .= '"text":"'.str_replace('"','\"',trim($aRow["ACT_Text"])).'",';
                     $Reply .= '"link":"'.str_replace('"','\"',trim($aRow["ACT_Link"])).'",';
                     $Reply .= '"image":"'.trim($aRow["ACT_Fichier"]).'",';
+                    $Reply .= '"remove":'.(((!strcmp($Camarade,$aRow["ACT_Pseudo"]))||(!strcmp($Camarade,$aRow["ACT_Camarade"])))? "true":"false").',';
                     $Reply .= '"id":'.strval($aRow["ACT_ActuID"]).'}';
                 }
                 $Reply .= ']}';
