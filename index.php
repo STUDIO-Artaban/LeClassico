@@ -15,7 +15,8 @@ if(Empty($Clf))
    {   // Connexion
        $Link = @mysql_connect(GetMySqlLocalhost(),GetMySqlUser(),GetMySqlPassword());
        if(Empty($Link))
-       {   $Msg = "Connexion au serveur Impossible!";
+       {   $NoBack = true;
+           $Msg = "Connexion au serveur Impossible!";
            include("Message.php");
            die();
        }

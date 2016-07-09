@@ -24,9 +24,8 @@ if(!Empty($Clf))
             $LogDate = stripslashes($aRow["CAM_LogDate"]);
             mysql_free_result($Result);
             // Mise à jour de la date de connexion
-            $aDate = getdate();
-            $Query = "UPDATE Camarades SET CAM_LogDate = '".trim($aDate["year"])."-".trim($aDate["mon"])."-".trim($aDate["mday"])."' WHERE UPPER(CAM_Pseudo) = UPPER('".addslashes($Camarade)."')";
-            $Result = mysql_query(trim($Query),$Link);
+            $Query = "UPDATE Camarades SET CAM_LogDate = NOW() WHERE UPPER(CAM_Pseudo) = UPPER('".addslashes($Camarade)."')";
+            mysql_query(trim($Query),$Link);
         }
         else
         {   mysql_close($Link);
@@ -279,6 +278,7 @@ $bPhtAdd = true;
 $PhtIndex = 0;
 $PhtVot = 0;
 $PhtFirst = true;
+$aDate = getdate();
 $Query = "SELECT COUNT(*) AS PHT_Count FROM Photos";
 $iPhtCnt = mysql_result(mysql_query(trim($Query),$Link),0,"PHT_Count");
 $Query = "SELECT SUM(VOT_Note)+SUM(VOT_Total) AS VOT_Pos,VOT_Fichier FROM Votes WHERE VOT_Type = 0 GROUP BY VOT_Fichier ORDER BY VOT_Pos DESC";

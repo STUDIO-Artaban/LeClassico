@@ -190,7 +190,7 @@ function PrintString($String)
 ///////////////////////////////////
 // GetComments
 ///////////////////////////////////
-function GetComments($clf,$link,$type,$id)
+function GetComments($clf,$camarade,$link,$type,$id)
 {   $query = "SELECT COM_Date,COM_Pseudo,COM_Text FROM Commentaires WHERE COM_ObjType = '$type' AND COM_ObjID = $id ORDER BY COM_Date";
     $result = mysql_query(trim($query),$link);
     $comments = "";
@@ -200,8 +200,10 @@ function GetComments($clf,$link,$type,$id)
     {   // Tant qu'il y a des commentaires
         if(!Empty($comments)) $comments .= "<br>";
         $text = str_replace($search,$replace,$row["COM_Text"]);
-        if(!Empty($clf))
+        if(!Empty($clf)) {
             $comments .= "<a href=\"index.php?Chp=2&Cam=".urlencode(base64_encode($row["COM_Pseudo"]))."&Clf=$clf\" target=\"_top\" style=\"font-size:10pt\">".$row["COM_Pseudo"].":</a>&nbsp;$text";
+            if(!strcmp($camarade,$row["COM_Pseudo"])) $comments .= "&nbsp;<img class=\"remove\" src=\"Images/remove.png\" onclick='OnRemoveCommentaire(\"P\",$id,\"".trim($row["COM_Date"])."\",\"$clf\")'>";
+        }
         else
             $comments .= "<b><u>".$row["COM_Pseudo"].":</u></b>&nbsp;$text";
     }
@@ -365,7 +367,7 @@ function AjoutePublication($link,$camarade)
     $query = "INSERT INTO Actualites (ACT_ActuID,ACT_Date,ACT_Pseudo,ACT_Camarade,ACT_Text,ACT_Link,ACT_Fichier) VALUES (NULL,CURRENT_TIMESTAMP,";
     $query .= "'".addslashes($camarade)."',";
     $query .= ((strcmp($to,""))? "'$to',":"NULL,");
-    $query .= ((strcmp($msg,""))? "'$msg',":"NULL,");
+    $query .= ((strcmp($msg,""))? "'".addslashes($msg)."',":"NULL,");
     if(($join == 0)&&(strcmp($lnk,""))) $query .= "'$lnk',NULL)";
     else if(($join == 1)&&(!Empty($_FILES["img"]["name"]))) $query .= "NULL,'$file')";
     else $query .= "NULL,NULL)";

@@ -652,9 +652,22 @@ else echo "Non";
 ?></i></font></td>
 </tr>
 <tr>
+<td valign="top"><font ID="Entete">En ligne:</font></td>
+<td><font face="Verdana,Lucida,Courier" size=2><i><?php
+if(!is_null($aRow["CAM_LogDate"])) {
+    $logDate = DateTime::createFromFormat("Y-m-d H:i:s",$aRow["CAM_LogDate"]);
+    $logDate->add(new DateInterval('PT3600S'));
+    $curDate = new DateTime();
+    if($logDate > $curDate) echo "Oui";
+    else echo "Non";
+}
+else echo "Non";
+?></i></font></td>
+</tr>
+<tr>
 <td valign="top"><font ID="Entete">Last connection:</font></td>
 <td><font face="Verdana,Lucida,Courier" size=2><i><?php
-if((!Empty($aRow["CAM_LogDate"]))&&(strcmp(trim($aRow["CAM_LogDate"]),"0000-00-00"))) echo stripslashes($aRow["CAM_LogDate"]);
+if(!is_null($aRow["CAM_LogDate"])) echo substr($aRow["CAM_LogDate"],0,10);
 else echo "Jamais connect&eacute;";
 ?></i></font></td>
 </tr>

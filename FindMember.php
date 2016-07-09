@@ -750,7 +750,7 @@ else
         </tr>
         <tr>
         <td><font face="Verdana,Lucida,Courier" size=1><b>&bull;&nbsp;Derni&egrave;re connexion:</b>&nbsp;<?php
-        if((!Empty($aRow["CAM_LogDate"]))&&(strcmp(trim($aRow["CAM_LogDate"]),"0000-00-00"))) echo stripslashes($aRow["CAM_LogDate"]);
+        if(!is_null($aRow["CAM_LogDate"])) echo substr($aRow["CAM_LogDate"],0,10);
         else echo "Jamais connect&eacute;";
         ?></font></td>
         </tr>

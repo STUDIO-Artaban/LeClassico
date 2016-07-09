@@ -62,7 +62,7 @@ function OnPublicationChange(link) {
 }
 
 // StartPubListener /////////////////////////
-var DELAY_UPDATE = 2000; // In milliseconds
+var DELAY_UPDATE = 3000; // In milliseconds
 
 var SEPARATOR_ACTU_ID = 'n';
 var SEPARATOR_DATE_TIME = 'n';
