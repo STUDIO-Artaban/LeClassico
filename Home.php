@@ -57,6 +57,7 @@ else
 <meta name="Description" content="Site officiel du Classico">
 <meta name="Keywords" content="classico; music; deep; country; nashville; amis; amies">
 <link rel="stylesheet" type="text/css" href="http://www.leclassico.fr/font-family.css">
+<link rel="stylesheet" type="text/css" href="http://www.leclassico.fr/publication.css">
 <style type="text/css">
 p {padding: 0px; margin-bottom: 0px; margin-top: 0px; border: 0px}
 a {font-size: 10pt; font-family: Impact,Verdana,Lucida; color: blue}
@@ -73,6 +74,7 @@ table {padding: 0px; margin-bottom: 0px; border: 0px}
 if(!Empty($Clf))
 {   // Connecté
 ?>
+<script src="Librairies/publication.js"></script>
 <script type="text/javascript">
 <!--
 // Constantes ///////////////////////////////////////////////////////////////////////////////
@@ -513,7 +515,7 @@ if(mysql_num_rows($Result) != 0)
         <tr bgcolor="#d8e1c6">
         <td><img src="<?php echo GetFolder(); ?>/Images/nopic.gif"></td>
         <td>
-        <div style="width: 139px; height: 182px; overflow: auto"><font ID="Comment"><?php echo GetComments($Clf,$Link,'P',$aRow["PHT_FichierID"]); ?></font></div>
+        <div style="width: 139px; height: 182px; overflow: auto"><font ID="Comment"><?php echo GetComments($Clf,$Camarade,$Link,'P',$aRow["PHT_FichierID"]); ?></font></div>
         </td>
         <td><img src="<?php echo GetFolder(); ?>/Images/nopic.gif"></td>
         </tr>

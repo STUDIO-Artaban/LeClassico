@@ -1,7 +1,7 @@
 /****************************************************************************************
 FILE: publication.js
 AUHTOR: Pascal Viguie
-DATE: 05/07/2016
+DATE: 04/07/2016
 *****************************************************************************************/
 
 function strcmp(a, b) {
@@ -24,15 +24,14 @@ function remove(message,address) {
             reply = new Object()
             reply.error = 'JSON.parse exception!';
         }
-        if (typeof reply.error != 'undefined') {
+        if ((xhr.responseText) && (typeof reply.error != 'undefined')) {
             console.log('ERROR: ' + reply.error);
             alert('Echec durant la suppression: ' + reply.error + '\nSi le probleme persiste, contactes le Webmaster!');
         }
-        else
-            setTimeout(function() { location.reload(true); }, 100);
+        else setTimeout(function() { location.reload(true); }, 100);
     }
-    //else
-    //    console.log('Web service not ready!');
+    else
+        console.log('ERROR: Web service not ready!');
 }
 
 //
@@ -52,8 +51,8 @@ function OnRemovePublication(actuID) {
 
 // OnRemoveCommentaire //////////////////////
 function OnRemoveCommentaire(type,actuID,commentDate,clf) {
-    remove('Es-tu sur de vouloir supprimer ce commentaire?', LC_WEBSERVICE + LC_COMMENTAIRES + clf + '&Type=A&Cmd=1&Actu=' + actuID +
-            '&Date=' + commentDate.replace(' ',SEPARATOR_DATE_TIME));
+    remove('Es-tu sur de vouloir supprimer ce commentaire?', LC_WEBSERVICE + LC_COMMENTAIRES + clf + '&Type=' + type +
+            '&Cmd=1&Actu=' + actuID + '&Date=' + commentDate.replace(' ',SEPARATOR_DATE_TIME));
 }
 
 // OnPublicationChange //////////////////////
@@ -102,7 +101,7 @@ function AddCommentaires(data) {
             var row = document.getElementById(TABLE_COMMENTAIRES + data[i].id).insertRow(commRow[data[i].id]);
             var cell = row.insertCell(0);
             cell.innerHTML =
-                HTML_COMMENT_PREV_CAMARDE + '&Clf=' + clef +
+                HTML_COMMENT_PREV_CAMARDE + '&Clf=' + clef + '&Cam=' + data[i].from +
                 HTML_COMMENT_PREV_PSEUDO + data[i].pseudo +
                 HTML_COMMENT_NO_PREV + htmlComment + htmlRemove +
                 '</font>';
@@ -111,8 +110,6 @@ function AddCommentaires(data) {
             if (strcmp(data[i].date, commDate) == 1)
                 commDate = data[i].date;
         }
-        //else
-        //    console.log('No "Commentaires" HTML table!');
     }
 }
 
@@ -266,10 +263,10 @@ function AddActualites(data) {
             var cell = row.insertCell(1);
             cell.innerHTML =
                 HTML_ACTU_PREV_PROFILE + data[i].profile +
-                HTML_ACTU_PREV_CAMARADE + clef +
+                HTML_ACTU_PREV_CAMARADE + clef + '&Cam=' + data[i].from +
                     '" target="_top" style="font-size:12pt">' + data[i].pseudo + '</a>' + htmlWall +
                 HTML_ACTU_PREV_DATE + data[i].date + '</font> &agrave; <font color="#ff0000">' + data[i].time + htmlRemove +
-                HTML_ACTU_PREV_MESSAGE + data[i].text.replace('<','&lt;').replace('>','&gt;') +
+                HTML_ACTU_PREV_MESSAGE + data[i].text.replace('<','&lt;').replace('>','&gt;').replace('\n','<br>') +
                 HTML_ACTU_PREV_LINK + data[i].link + '" target="_blank">' + data[i].link +
                 HTML_ACTU_PREV_IMAGE + htmlImage +
                 HTML_ACTU_PREV_COMMENTS;
@@ -298,8 +295,6 @@ function AddActualites(data) {
                 actuDate = data[i].date + ' ' + data[i].time;
         }
     }
-    //else
-    //    console.log('No "Publications" HTML table!');
 }
 
 var xhr = new XMLHttpRequest();
@@ -339,8 +334,8 @@ xhr.onreadystatechange = function() {
                 }
             }
         }
-        //else
-        //    console.log('Web service not ready!');
+        else
+            console.log('ERROR: Web service not ready!');
     }
 };
 
@@ -375,7 +370,6 @@ function SendRequests() {
         }
     }
     try {
-        //console.log('SendRequests: ' + reqAddress);
         xhr.open('GET', reqAddress, false);
         xhr.send();
     }

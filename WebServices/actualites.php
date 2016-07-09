@@ -76,9 +76,10 @@ if(!Empty($Clf))
                         $Reply .= '"camarade":"'.urlencode(base64_encode($aRow["ACT_Camarade"])).'",';
                         $Reply .= '"to":"'.addslashes($aRow["ACT_Camarade"]).'",';
                         $Reply .= '"pseudo":"'.addslashes($aRow["ACT_Pseudo"]).'",';
+                        $Reply .= '"from":"'.urlencode(base64_encode($aRow["ACT_Pseudo"])).'",';
                         $Reply .= '"date":"'.substr($aRow["ACT_Date"],0,10).'",';
                         $Reply .= '"time":"'.substr($aRow["ACT_Date"],11).'",';
-                        $Reply .= '"text":"'.str_replace('"','\"',trim($aRow["ACT_Text"])).'",';
+                        $Reply .= '"text":"'.str_replace('"','\"',str_replace("\r\n","\\n",trim($aRow["ACT_Text"]))).'",';
                         $Reply .= '"link":"'.str_replace('"','\"',trim($aRow["ACT_Link"])).'",';
                         $Reply .= '"image":"'.trim($aRow["ACT_Fichier"]).'",';
                         $Reply .= '"remove":'.(((!strcmp($Camarade,$aRow["ACT_Pseudo"]))||(!strcmp($Camarade,$aRow["ACT_Camarade"])))? "true":"false").',';
