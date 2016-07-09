@@ -1,7 +1,7 @@
 /****************************************************************************************
 FILE: publication.js
 AUHTOR: Pascal Viguie
-DATE: 04/07/2016
+DATE: 05/07/2016
 *****************************************************************************************/
 
 function strcmp(a, b) {
@@ -102,8 +102,7 @@ function AddCommentaires(data) {
             var row = document.getElementById(TABLE_COMMENTAIRES + data[i].id).insertRow(commRow[data[i].id]);
             var cell = row.insertCell(0);
             cell.innerHTML =
-                HTML_COMMENT_PREV_CAMARDE + '&Cam=' + data[i].camarade +
-                    '&Clf=' + clef +
+                HTML_COMMENT_PREV_CAMARDE + '&Clf=' + clef +
                 HTML_COMMENT_PREV_PSEUDO + data[i].pseudo +
                 HTML_COMMENT_NO_PREV + htmlComment + htmlRemove +
                 '</font>';
@@ -131,7 +130,7 @@ var HTML_ACTU_PREV_PROFILE =
     '<td bgcolor="#ff8000"><img class="tinyProfile" src="';
 var HTML_ACTU_PREV_CAMARADE = '"></td>' +
     '<td bgcolor="#ff8000">&nbsp;<a href="index.php?Chp=2&Clf=';
-var HTML_ACTU_PREV_DATE = '</a></td>' +
+var HTML_ACTU_PREV_DATE = '</td>' +
     '<td bgcolor="#ff8000"></td>' +
     '<td></td>' +
     '<td colspan=2><font ID="Date">Le <font color="green">';
@@ -256,6 +255,10 @@ function AddActualites(data) {
             var htmlRemove = '</font></font>';
             if (data[i].remove)
                 htmlRemove += '&nbsp;<img class="remove" src="Images/delete.png" onclick="OnRemovePublication(' + data[i].id + ')">';
+            var htmlWall = '';
+            if ((data[i].camarade != '') && (strcmp(data[i].camarade,camarade) != 0))
+                htmlWall = '&nbsp;&gt;&nbsp;<a href="index.php?Chp=2&Clf=' + clef + '&Cam=' + data[i].camarade +
+                            '" target="_top" style="font-size:12pt">' + data[i].to + '</a>';
 
             // Add actu row
             var row = document.getElementById(TABLE_PUBLICATIONS).insertRow(1);
@@ -263,9 +266,8 @@ function AddActualites(data) {
             var cell = row.insertCell(1);
             cell.innerHTML =
                 HTML_ACTU_PREV_PROFILE + data[i].profile +
-                HTML_ACTU_PREV_CAMARADE + data[i].token +
-                    '&Cam=' + data[i].camarade +
-                    '" target="_top" style="font-size:12pt">' + data[i].pseudo +
+                HTML_ACTU_PREV_CAMARADE + clef +
+                    '" target="_top" style="font-size:12pt">' + data[i].pseudo + '</a>' + htmlWall +
                 HTML_ACTU_PREV_DATE + data[i].date + '</font> &agrave; <font color="#ff0000">' + data[i].time + htmlRemove +
                 HTML_ACTU_PREV_MESSAGE + data[i].text.replace('<','&lt;').replace('>','&gt;') +
                 HTML_ACTU_PREV_LINK + data[i].link + '" target="_blank">' + data[i].link +

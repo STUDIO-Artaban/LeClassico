@@ -50,7 +50,6 @@ if(!Empty($Clf))
                         else $Reply .= ',';
                         $Reply .= '{"id":'.strval($aRow["COM_ObjID"]).',';
                         $Reply .= '"pseudo":"'.addslashes($aRow["COM_Pseudo"]).'",';
-                        $Reply .= '"camarade":"'.urlencode(base64_encode($aRow["COM_Pseudo"])).'",';
                         $Reply .= '"text":"'.str_replace('"','\"',trim($aRow["COM_Text"])).'",';
                         $Reply .= '"remove":'.((!strcmp($Camarade,$aRow["COM_Pseudo"]))? "true":"false").',';
                         $Reply .= '"date":"'.trim($aRow["COM_Date"]).'"}';
@@ -58,13 +57,11 @@ if(!Empty($Clf))
                     $Reply .= ']}';
                 }
             }
-            mysql_close($Link);
             echo $Reply;
         }
         else
-        {   mysql_close($Link);
             echo '{"error":"Invalid user!"}';
-        }
+        mysql_close($Link);
     }
 }
 else

@@ -73,7 +73,8 @@ if(!Empty($Clf))
                         if(strlen($Reply) == 0) $Reply .= '{"publications":[';
                         else $Reply .= ',';
                         $Reply .= '{"profile":"'.trim($Profile).'",';
-                        $Reply .= '"camarade":"'.urlencode(base64_encode($aRow["ACT_Pseudo"])).'",';
+                        $Reply .= '"camarade":"'.urlencode(base64_encode($aRow["ACT_Camarade"])).'",';
+                        $Reply .= '"to":"'.addslashes($aRow["ACT_Camarade"]).'",';
                         $Reply .= '"pseudo":"'.addslashes($aRow["ACT_Pseudo"]).'",';
                         $Reply .= '"date":"'.substr($aRow["ACT_Date"],0,10).'",';
                         $Reply .= '"time":"'.substr($aRow["ACT_Date"],11).'",';
@@ -86,13 +87,11 @@ if(!Empty($Clf))
                     $Reply .= ']}';
                 }
             }
-            mysql_close($Link);
             echo $Reply;
         }
         else
-        {   mysql_close($Link);
             echo '{"error":"Invalid user!"}';
-        }
+        mysql_close($Link);
     }
 }
 else
