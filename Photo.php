@@ -51,7 +51,7 @@ if(!Empty($Clf))
             {   if(!Empty($ope))
                 {   $aDate = getdate();
                     if($ope != 2)
-                    {   // Ajoute un commentaire ///////////////////////////////////////////////////////////////////////////////
+                    {   // Ajoute un commentaire (photo) /////////////////////////////////////////////////////////////
                         $iStatus = AjouteCommentaire($Link,$Camarade,'P',GetPhotoID(base64_decode(urldecode($pht))),"cmmt");
                         if($iStatus != 15)
                         {   mysql_close($Link);

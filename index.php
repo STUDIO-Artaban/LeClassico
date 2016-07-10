@@ -216,17 +216,10 @@ else
                 if(!strcmp($Chp,"5"))
                 {   // Forum
                 ?>
-                <frameset border=0 rows="15,32,*<?php if((!Empty($Clf))&&(strcmp($Clf,""))) echo ",81"; ?>,10">
+                <frameset border=0 rows="15,162,*,10">
                         <frame src="ScrollTop.html" frameborder="no" scrolling="no" noresize>
                         <frame src="FrmTitle.php?Clf=<?php echo $Clf; ?>" frameborder="no" scrolling="no" noresize>
-                        <frame src="FrmMsg.php?Clf=<?php echo $Clf; ?>#EndMsg" frameborder="no" scrolling="yes" style="overflow-x: auto">
-                        <?php
-                        if((!Empty($Clf))&&(strcmp($Clf,"")))
-                        {    // Connecté
-                             ?><frame src="FrmSend.php?Clf=<?php echo $Clf; ?>" frameborder="no" scrolling="no" noresize><?php
-                             // Connecté
-                        }
-                        ?>
+                        <frame src="FrmMsg.php?Clf=<?php echo $Clf; ?>" frameborder="no" scrolling="yes" style="overflow-x: scroll">
                         <frame src="ScrollBot.html" frameborder="no" scrolling="no" noresize>
                 </frameset>
                 <?php

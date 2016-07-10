@@ -1,7 +1,7 @@
 /****************************************************************************************
 FILE: publication.js
 AUHTOR: Pascal Viguie
-DATE: 04/07/2016
+DATE: 05/07/2016
 *****************************************************************************************/
 
 function strcmp(a, b) {
@@ -341,26 +341,29 @@ xhr.onreadystatechange = function() {
 
 var countActu = 0;
 var countComm = 0;
+var profile = false;
 
 function SendRequests() {
     var reqAddress;
     var delay = DELAY_UPDATE;
+    var cam = '';
+    if (profile)
+        cam = '&Cam=' + camarade;
     switch (request) {
         case REQ_NONE: {
             return; // Stop
         }
         case REQ_INIT_ACTU: {
             delay = 10;
-            reqAddress = LC_WEBSERVICE + LC_ACTUALITES + clef + '&Count=' + countActu + '&Cam=' + camarade;
+            reqAddress = LC_WEBSERVICE + LC_ACTUALITES + clef + '&Count=' + countActu + cam;
             break;
         }
         case REQ_INIT_COMMENT: {
-            reqAddress = LC_WEBSERVICE + LC_COMMENTAIRES + clef + '&Type=A&Count=' + countComm + '&Actu=' + actuId;
+            reqAddress = LC_WEBSERVICE + LC_COMMENTAIRES + clef + '&Type=A&Actu=' + actuId;
             break;
         }
         case REQ_NEW_ACTU: {
-            reqAddress = LC_WEBSERVICE + LC_ACTUALITES + clef + '&Cam=' + camarade +
-                            '&Date=' + actuDate.replace(' ',SEPARATOR_DATE_TIME);
+            reqAddress = LC_WEBSERVICE + LC_ACTUALITES + clef + cam + '&Date=' + actuDate.replace(' ',SEPARATOR_DATE_TIME);
             break;
         }
         case REQ_NEW_COMMENT: {
@@ -377,13 +380,14 @@ function SendRequests() {
     setTimeout(SendRequests, delay);
 }
 
-function StartPubListener(clf,cam,cntAct,cntCom,src) {
+function StartPubListener(clf,cam,cntAct,cntCom,src,pro) {
     request = REQ_INIT_ACTU;
     clef = clf;
     camarade = cam;
     countActu = cntAct;
     countComm = cntCom;
     file = src;
+    profile = pro;
 
     //console.log('StartPubListener...');
     setTimeout(SendRequests, 10);

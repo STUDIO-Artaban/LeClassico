@@ -1422,7 +1422,7 @@ if(!Empty($Clf))
     </tr>
     </table>
 </td>
-<td><a href="index.php?Chp=5&Clf=<?php echo $Clf; ?>" target="_top">Le Forum de discussion</a></td>
+<td><a href="index.php?Chp=5&Clf=<?php echo $Clf; ?>" target="_top">Le fil d'atualit&eacute;</a></td>
 </tr>
 <?php
 if(!Empty($Clf))

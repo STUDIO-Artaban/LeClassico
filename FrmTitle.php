@@ -40,21 +40,12 @@ else
 <meta name="Keywords" content="classico; music; deep; country; nashville; amis; amies">
 <link rel="stylesheet" type="text/css" href="http://www.leclassico.fr/font-family.css">
 <style type="text/css">
+#BigTitle {font-size: 24pt; font-family: Cursive,Verdana,Lucida; color: white}
 #Title {font-size: 12pt; font-family: Impact,Verdana,Lucida}
 #TitleRes {font-size: 10pt; font-family: Impact,Verdana,Lucida; font-weight: 100}
 </style>
-<script type="text/javascript">
-<!--
-// ModeAutonome //////////////////////////////////////////////////////////////////////////
-function ModeAutonome()
-{   var WndForum=window.open("FrmAuto.php?Clf=<?php echo $Clf; ?>","WndForum","left=0,top=0,width=570,height=500,resizable=1");
-    WndForum.focus();
-}
--->
-</script>
 </head>
 <body bgcolor="#ffffff" style="margin-top: 0;margin-left: 0;margin-right: 0">
-<!-- ******************************************************************************************************************************* FORUM TITLE -->
 <table border=0 width="100%" cellspacing=0 cellpadding=0>
 <tr>
 <td width=10>
@@ -64,80 +55,85 @@ function ModeAutonome()
     </tr>
     </table>
 </td>
-<td width=5>
-    <table border=0 cellspacing=0 cellpadding=0 bgcolor="#e4e4e4">
-    <tr>
-    <td><img src="<?php echo GetFolder(); ?>/Images/SubMnuHG.jpg"></td>
-    </tr>
+<td>
+<!-- ********************************************************************************************************************* FORUM TITLE -->
+    <table border=0 width="100%" cellspacing=0 cellpadding=0>
     <tr>
     <td>
-        <table border=0 height=10 cellspacing=0 cellpadding=0>
+        <table border=0 cellspacing=0 cellpadding=0>
+        <tr>
+        <td><img src="<?php echo GetFolder(); ?>/Images/TitConHG.jpg"></td>
+        </tr>
+        <tr>
+        <td bgcolor="#ff0000">
+            <table border=0 height=28 cellspacing=0 cellpadding=0>
+            <tr>
+            <td><img src="<?php echo GetFolder(); ?>/Images/nopic.gif"></td>
+            </tr>
+            </table>
+        </td>
+        </tr>
+        <tr>
+        <td><img src="<?php echo GetFolder(); ?>/Images/TitConBG.jpg"></td>
+        </tr>
+        </table>
+    </td>
+    <td bgcolor="#ff0000">
+        <table border=0 cellspacing=0 cellpadding=0>
+        <tr>
+        <td><img src="<?php echo GetFolder(); ?>/Images/nopic.gif"></td>
+        </tr>
+        <tr>
+        <td><img src="<?php echo GetFolder(); ?>/Images/PuceLC.gif"></td>
+        </tr>
         <tr>
         <td><img src="<?php echo GetFolder(); ?>/Images/nopic.gif"></td>
         </tr>
         </table>
     </td>
+    <td width="100%" bgcolor="#ff0000" nowrap><font ID="BigTitle">&nbsp;<b>Fil&nbsp;d'Actualit&eacute;</b></font></td>
+    <td>
+        <table border=0 cellspacing=0 cellpadding=0>
+        <tr>
+        <td><img src="<?php echo GetFolder(); ?>/Images/TitConHD.jpg"></td>
+        </tr>
+        <tr>
+        <td bgcolor="#ff0000">
+            <table border=0 height=28 cellspacing=0 cellpadding=0>
+            <tr>
+            <td><img src="<?php echo GetFolder(); ?>/Images/nopic.gif"></td>
+            </tr>
+            </table>
+        </td>
+        </tr>
+        <tr>
+        <td><img src="<?php echo GetFolder(); ?>/Images/TitConBD.jpg"></td>
+        </tr>
+        </table>
+    </td>
+    </tr>
+    <tr height=15>
+    <td colspan=4></td>
     </tr>
     <tr>
-    <td><img src="<?php echo GetFolder(); ?>/Images/SubMnuBG.jpg"></td>
+    <td colspan=4 height=162 valign="top"><font face="Verdana,Lucida,Courier" size=2>Retrouves ci-dessous toute l'actualit&eacute; de tes
+        camarades du <b>Classico</b>!... Et si tu te demandes pourquoi personne n'a encore rien publi&eacute;, c'est que tu n'es
+        probablement abonn&eacute; à aucun d'entre eux. Tu es donc invit&eacute; &agrave; d&eacute;couvrir leurs publications directement
+        depuis leur profile, et si tu es int&eacute;ress&eacute; alors tu pourras t'abonner et suivre ainsi leur actualité.</font>
+    </td>
     </tr>
     </table>
+<!-- ******************************************************************************************************************************** -->
 </td>
 <td width=10>
-    <table border=0 height=20 cellspacing=0 cellpadding=0 bgcolor="#e4e4e4">
-    <tr>
-    <td height="100%"><img src="<?php echo GetFolder(); ?>/Images/Puce.gif"></td>
-    </tr>
-    </table>
-</td>
-<td width="100%">
-    <table border=0 width="100%" cellspacing=0 cellpadding=0 bgcolor="#e4e4e4">
-    <tr>
-    <td><font ID="Title">&nbsp;Fil&nbsp;d'&nbsp;actualit&eacute;</font></td>
-    </tr>
-    </table>
-</td>
-<td width=5>
-    <table border=0 cellspacing=0 cellpadding=0 bgcolor="#e4e4e4">
-    <tr>
-    <td><img src="<?php echo GetFolder(); ?>/Images/SubMnuHD.jpg"></td>
-    </tr>
-    <tr>
-    <td>
-        <table border=0 height=10 cellspacing=0 cellpadding=0>
-        <tr>
-        <td><img src="<?php echo GetFolder(); ?>/Images/nopic.gif"></td>
-        </tr>
-        </table>
-    </td>
-    </tr>
-    <tr>
-    <td><img src="<?php echo GetFolder(); ?>/Images/SubMnuBD.jpg"></td>
-    </tr>
-    </table>
-</td>
-<td width=60>
-    <table border=0 width=160 cellspacing=0 cellpadding=0>
-    <tr>
-    <td align="center"><input type="button" onclick="javascript:ModeAutonome()" style="font-family: Verdana;font-size: 10pt" value="Mode Enfenêtré"></td>
-    </tr>
-    </table>
-</td>
-<td width=16 bgcolor="#e4e4e4">
-    <table border=0 width=16 cellspacing=0 cellpadding=0>
+    <table border=0 width=10 cellspacing=0 cellpadding=0>
     <tr>
     <td><img src="<?php echo GetFolder(); ?>/Images/nopic.gif"></td>
     </tr>
     </table>
 </td>
-</tr>
-<tr>
-<td><img src="<?php echo GetFolder(); ?>/Images/nopic.gif"></td>
-<td><img src="<?php echo GetFolder(); ?>/Images/nopic.gif"></td>
-<td><img src="<?php echo GetFolder(); ?>/Images/nopic.gif"></td>
-<td><img src="<?php echo GetFolder(); ?>/Images/nopic.gif"></td>
-<td><img src="<?php echo GetFolder(); ?>/Images/nopic.gif"></td>
-<td><img src="<?php echo GetFolder(); ?>/Images/nopic.gif"></td>
+<td valign="top"><img src="<?php echo GetFolder(); ?>/Images/Projo.jpg"></td>
+<td><div style="width:10px"></div></td>
 <td width=16 bgcolor="#e4e4e4">
     <table border=0 width=16 height=8 cellspacing=0 cellpadding=0>
     <tr>
@@ -147,6 +143,5 @@ function ModeAutonome()
 </td>
 </tr>
 </table>
-<!-- ********************************************************************************************************************************************* -->
 </body>
 </html>

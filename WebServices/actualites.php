@@ -45,7 +45,7 @@ if(!Empty($Clf))
                 // Select
                 $Query = "SELECT ACT_ActuID,ACT_Pseudo,CAM_Profile,CAM_Sexe,ACT_Camarade,ACT_Date,ACT_Text,ACT_Link,ACT_Fichier";
                 $Query .= " FROM Actualites LEFT JOIN Camarades ON ACT_Pseudo = CAM_Pseudo";
-                if(!Empty($Cam)) {
+                if((!Empty($Cam))&&(strcmp($Cam,$Camarde))) {
                     $Query .= " WHERE (UPPER(ACT_Pseudo) = UPPER('".addslashes($Cam)."') OR UPPER(ACT_Camarade) = UPPER('".addslashes($Cam)."'))";
                     if((!is_null($Date))&&(strcmp(trim($Date),""))) $Query .= " AND ACT_Date > '".str_replace("n"," ",$Date)."'";
                 }

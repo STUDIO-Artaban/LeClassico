@@ -198,6 +198,7 @@ if(!Empty($Clf))
                             $Query = "UPDATE Camarades SET CAM_".(($isBanner)? "Banner":"Profile")." = '$File'";
                             $Query .= " WHERE UPPER(CAM_Pseudo) = UPPER('".addslashes($Camarade)."')";
                             if(!mysql_query(trim($Query),$Link)) {
+                                mysql_close($Link);
                                 @unlink(GetSrvProFolder()."$File");
                                 $Msg = "Echec de la mise &agrave; jour de ton profile! Contact le <font color=\"#808080\">Webmaster</font>!";
                                 include("Message.php");
@@ -225,6 +226,7 @@ if(!Empty($Clf))
                     }
                     $Query = "UPDATE Camarades SET CAM_Banner = NULL WHERE UPPER(CAM_Pseudo) = UPPER('".addslashes($Camarade)."')";
                     if(!mysql_query(trim($Query),$Link)) {
+                        mysql_close($Link);
                         if(!Empty($File)) @unlink(GetSrvProFolder()."$File");
                         $Msg = "Echec durant la mise &agrave; jour de ton profile! Contact le <font color=\"#808080\">Webmaster</font>!";
                         include("Message.php");
@@ -242,6 +244,7 @@ if(!Empty($Clf))
                     }
                     $Query = "UPDATE Camarades SET CAM_Profile = NULL WHERE UPPER(CAM_Pseudo) = UPPER('".addslashes($Camarade)."')";
                     if(!mysql_query(trim($Query),$Link)) {
+                        mysql_close($Link);
                         if(!Empty($File)) @unlink(GetSrvProFolder()."$File");
                         $Msg = "Echec durant la mise &agrave; jour de ton profile! Contact le <font color=\"#808080\">Webmaster</font>!";
                         include("Message.php");
@@ -253,6 +256,7 @@ if(!Empty($Clf))
                 {   // Ajoute un commentaire (actualité)
                     $iStatus = AjouteCommentaire($Link,$Camarade,'A',$_POST["act"],"txt");
                     if($iStatus != 15) {
+                        mysql_close($Link);
                         $Msg = GetResult($iStatus);
                         include("Message.php");
                         die();
@@ -262,8 +266,10 @@ if(!Empty($Clf))
             }
         }
         else if(!Empty($pub)) {
+            // Ajoute une publication
             $iStatus = AjoutePublication($Link,$Camarade);
             if($iStatus != 15) {
+                mysql_close($Link);
                 $Msg = GetResult($iStatus);
                 include("Message.php");
                 die();
@@ -990,7 +996,7 @@ possibilité de t'abonner à son actualité, ou éventuellement de t'en désabonner s
         <td valign="top"><div style="width:110px"><font ID="Title">Ton message:</font></div></td>
         <td><textarea class="message" name="msg"></textarea></td>
         <td rowspan=3 width="100%" align="right"><div class="separator"></div></td>
-        <td rowspan=3 valign="bottom"><input type="submit" value="Publier"></td>
+        <td rowspan=3 valign="bottom"><img src="<?php echo GetFolder(); ?>/Images/DosActu.jpg" style="margin-bottom:5px"><input type="submit" value="Publier"></td>
         </tr>
         <tr>
         <td><input type="radio" name="join" ID="lnkRadio" value=0><font ID="Title">Lien:</font></td>
@@ -1024,7 +1030,7 @@ possibilité de t'abonner à son actualité, ou éventuellement de t'en désabonner s
 <!--
 // Commandes //////////////////////////////////////////////////////////////////////////////////
 OnResize();
-StartPubListener("<?php echo $Clf; ?>",<?php echo ((Empty($Cam))? "\"".urlencode(base64_encode($Camarade))."\"":"\"".urlencode(base64_encode($Cam))."\""); ?>,4,10,"InfoPerso.php");
+StartPubListener("<?php echo $Clf; ?>",<?php echo ((Empty($Cam))? "\"".urlencode(base64_encode($Camarade))."\"":"\"".urlencode(base64_encode($Cam))."\""); ?>,4,10,"InfoPerso.php",true);
 <?php
 if(Empty($Cam)) {
 ?>
