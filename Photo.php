@@ -489,7 +489,7 @@ $iResCnt = 0;
 $iResStart = 1;
 $aDate = getdate();
 $iPhtCnt = 0;
-$Query = "SELECT COUNT(*) AS PHT_Count FROM Photos";
+$Query = "SELECT COUNT(*) AS PHT_Count FROM Photos WHERE PHT_Album <> 'Journal'";
 $iPhtCnt = mysql_result(mysql_query(trim($Query),$Link),0,"PHT_Count");
 $Query = "SELECT SUM(VOT_Note)+SUM(VOT_Total) AS VOT_Pos,VOT_Fichier FROM Votes WHERE VOT_Type = 0 GROUP BY VOT_Fichier ORDER BY VOT_Pos DESC";
 $Result = mysql_query(trim($Query),$Link);

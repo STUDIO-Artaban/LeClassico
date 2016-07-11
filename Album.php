@@ -35,34 +35,38 @@ else
     if(!Empty($trcfg)) $Tri = $trcfg;
     switch($Tri)
     {   case 0: // Date
-        {   $Query .= " GROUP BY ALB_Nom,ALB_Pseudo,ALB_Shared,ALB_Remark,ALB_Date,EVE_Nom";
+        {   $Query .= " WHERE ALB_Nom <> 'Journal'";
+            $Query .= " GROUP BY ALB_Nom,ALB_Pseudo,ALB_Shared,ALB_Remark,ALB_Date,EVE_Nom";
             $Query .= " ORDER BY ALB_Date DESC, ALB_Nom ASC";
             break;
         }
         case 1: // Nom album
-        {   $Query .= " GROUP BY ALB_Nom,ALB_Pseudo,ALB_Shared,ALB_Remark,ALB_Date,EVE_Nom";
+        {   $Query .= " WHERE ALB_Nom <> 'Journal'";
+            $Query .= " GROUP BY ALB_Nom,ALB_Pseudo,ALB_Shared,ALB_Remark,ALB_Date,EVE_Nom";
             $Query .= " ORDER BY ALB_Nom ASC";
             break;
         }
         case 2: // Pseudo
-        {   $Query .= " GROUP BY ALB_Nom,ALB_Pseudo,ALB_Shared,ALB_Remark,ALB_Date,EVE_Nom";
+        {   $Query .= " WHERE ALB_Nom <> 'Journal'";
+            $Query .= " GROUP BY ALB_Nom,ALB_Pseudo,ALB_Shared,ALB_Remark,ALB_Date,EVE_Nom";
             $Query .= " ORDER BY ALB_Pseudo ASC, ALB_Date DESC";
             break;
         }
         case 3: // Shared
-        {   $Query .= " WHERE ALB_Shared = 1";
+        {   $Query .= " WHERE ALB_Nom <> 'Journal' AND ALB_Shared = 1";
             $Query .= " GROUP BY ALB_Nom,ALB_Pseudo,ALB_Shared,ALB_Remark,ALB_Date,EVE_Nom";
             $Query .= " ORDER BY ALB_Date DESC";
             break;
         }
         case 4: // Evénement
-        {   $Query .= " WHERE ALB_EventID <> 0";
+        {   $Query .= " WHERE ALB_Nom <> 'Journal' AND ALB_EventID <> 0";
             $Query .= " GROUP BY ALB_Nom,ALB_Pseudo,ALB_Shared,ALB_Remark,ALB_Date,EVE_Nom";
             $Query .= " ORDER BY EVE_Nom ASC, ALB_Date DESC";
             break;
         }
         default:
-        {   $Query .= " GROUP BY ALB_Nom,ALB_Pseudo,ALB_Shared,ALB_Remark,ALB_Date,EVE_Nom";
+        {   $Query .= " WHERE ALB_Nom <> 'Journal'";
+            $Query .= " GROUP BY ALB_Nom,ALB_Pseudo,ALB_Shared,ALB_Remark,ALB_Date,EVE_Nom";
             $Query .= " ORDER BY ALB_Date DESC, ALB_Nom ASC";
             break;
         }

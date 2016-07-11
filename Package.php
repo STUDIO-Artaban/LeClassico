@@ -368,10 +368,18 @@ function AjoutePublication($link,$camarade)
     $query .= "'".addslashes($camarade)."',";
     $query .= ((strcmp($to,""))? "'$to',":"NULL,");
     $query .= ((strcmp($msg,""))? "'".addslashes($msg)."',":"NULL,");
+    $journal = false;
     if(($join == 0)&&(strcmp($lnk,""))) $query .= "'$lnk',NULL)";
-    else if(($join == 1)&&(!Empty($_FILES["img"]["name"]))) $query .= "NULL,'$file')";
+    else if(($join == 1)&&(!Empty($_FILES["img"]["name"]))) {
+        $journal = true;
+        $query .= "NULL,'$file')";
+    }
     else $query .= "NULL,NULL)";
     if(!mysql_query(trim($query),$link)) return 21; // Failed to publish
+    if($journal) {
+        $query = "INSERT INTO Photos (PHT_Album,PHT_Pseudo,PHT_Fichier,PHT_FichierID) VALUES ('Journal','".addslashes($camarade)."','$file',".strval(GetPhotoID($file)).")";
+        mysql_query(trim($query),$link);
+    }
     return 15; // Ok...
 }
 ///////////////////////////////////

@@ -32,11 +32,12 @@ if(!Empty($Clf))
                     $Query = "DELETE FROM Actualites WHERE ACT_ActuID = $Actu AND (UPPER(ACT_Pseudo) = UPPER('".addslashes($Camarade)."') OR UPPER(ACT_Camarade) = UPPER('".addslashes($Camarade)."'))";
                     if(!mysql_query(trim($Query),$Link)) $Reply = '{"error":"SQL request failed!"}';
                     else {
-                        // Remove comments
-                        $Query = "DELETE FROM Commentaires WHERE COM_ObjType = 'A' AND COM_ObjID = $Actu";
-                        mysql_query(trim($Query),$Link);
                         // Remove image file (if any)
-                        if(!is_null($File)) @unlink(GetSrvPhtFolder()."$File");
+                        if(!is_null($File)) {
+                            @unlink(GetSrvPhtFolder()."$File");
+                            $Query = "DELETE FROM Photos WHERE PHT_Fichier = '$File'";
+                            mysql_query(trim($Query),$Link);
+                        }
                         $Reply = '{}'; // Ok...
                     }
                 }
@@ -79,7 +80,7 @@ if(!Empty($Clf))
                         $Reply .= '"from":"'.urlencode(base64_encode($aRow["ACT_Pseudo"])).'",';
                         $Reply .= '"date":"'.substr($aRow["ACT_Date"],0,10).'",';
                         $Reply .= '"time":"'.substr($aRow["ACT_Date"],11).'",';
-                        $Reply .= '"text":"'.str_replace('"','\"',str_replace("\r\n","\\n",trim($aRow["ACT_Text"]))).'",';
+                        $Reply .= '"text":"'.str_replace('"','\"',str_replace("\n","\\n",str_replace("\r\n","\n",trim($aRow["ACT_Text"])))).'",';
                         $Reply .= '"link":"'.str_replace('"','\"',trim($aRow["ACT_Link"])).'",';
                         $Reply .= '"image":"'.trim($aRow["ACT_Fichier"]).'",';
                         $Reply .= '"remove":'.(((!strcmp($Camarade,$aRow["ACT_Pseudo"]))||(!strcmp($Camarade,$aRow["ACT_Camarade"])))? "true":"false").',';

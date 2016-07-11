@@ -141,6 +141,24 @@ form {padding: 0px; margin-bottom: 0px; border: 0px}
 #BigTitle {font-size: 24pt; font-family: Cursive,Verdana,Lucida; color: white}
 #Entete {font-size: 12pt; font-family: Impact,Verdana,Lucida}
 </style>
+<script type="text/javascript">
+<!--
+// OnValidate ////////////////////////////////////////////////
+function OnValidate() {
+    // Check no invalid characters: '"<>& and space char
+
+
+
+
+
+
+
+
+
+    return true;
+}
+-->
+</script>
 </head>
 <body bgcolor="#ffffff" style="margin-top: 0;margin-left: 10px">
 <table border=0 width="100%" height="100%" cellspacing=0 cellpadding=0>
@@ -242,7 +260,7 @@ form {padding: 0px; margin-bottom: 0px; border: 0px}
 <td><input type="password" style="font-size: 10pt; font-family: Verdana,Lucida,Courier" name="cnccf" maxlength=20></td>
 </tr>
 <tr>
-<td><br><input type="hidden" name="ope" value=1><input type="submit" style="font-family: Verdana;font-size: 10pt" value="Ajouter"></td>
+<td><br><input type="hidden" name="ope" value=1><input type="submit" style="font-family: Verdana;font-size: 10pt" onclick="return OnValidate()" value="Ajouter"></td>
 </tr>
 </table>
 </form>

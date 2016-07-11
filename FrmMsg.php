@@ -131,9 +131,19 @@ if($Alert) {
 <script type="text/javascript">
 <!--
 // Commandes //////////////////////////////////////////////////////////////////////////////////
-StartPubListener("<?php echo "$Clf\",\"".urlencode(base64_encode($Camarade)); ?>",7,10,"FrmMsg.php",false);
+StartPubListener("<?php echo "$Clf\",\"".urlencode(base64_encode($Camarade)); ?>",10,10,"FrmMsg.php",false);
 //-->
 </script><?php
+}
+else { // Non connecté
+?>
+<table border=0 cellspacing=0 cellpadding=0>
+<tr>
+<td><div style="width:10px"></div></td>
+<td no wrap><a href="/index.php?Chp=11" style="font-size:18pt" target="_top">Connectes-toi!</a></td>
+</tr>
+</table>
+<?php
 }
 ?>
 </body>

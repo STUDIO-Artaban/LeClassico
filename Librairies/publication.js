@@ -1,7 +1,7 @@
 /****************************************************************************************
 FILE: publication.js
 AUHTOR: Pascal Viguie
-DATE: 05/07/2016
+DATE: 04/07/2016
 *****************************************************************************************/
 
 function strcmp(a, b) {
@@ -30,8 +30,7 @@ function remove(message,address) {
         }
         else setTimeout(function() { location.reload(true); }, 100);
     }
-    else
-        console.log('ERROR: Web service not ready!');
+    else console.log('ERROR: Web service not ready!');
 }
 
 //
@@ -266,7 +265,7 @@ function AddActualites(data) {
                 HTML_ACTU_PREV_CAMARADE + clef + '&Cam=' + data[i].from +
                     '" target="_top" style="font-size:12pt">' + data[i].pseudo + '</a>' + htmlWall +
                 HTML_ACTU_PREV_DATE + data[i].date + '</font> &agrave; <font color="#ff0000">' + data[i].time + htmlRemove +
-                HTML_ACTU_PREV_MESSAGE + data[i].text.replace('<','&lt;').replace('>','&gt;').replace('\n','<br>') +
+                HTML_ACTU_PREV_MESSAGE + data[i].text.replace('<','&lt;').replace('>','&gt;').replace('\\n','<br>').replace('\n','<br>') +
                 HTML_ACTU_PREV_LINK + data[i].link + '" target="_blank">' + data[i].link +
                 HTML_ACTU_PREV_IMAGE + htmlImage +
                 HTML_ACTU_PREV_COMMENTS;
