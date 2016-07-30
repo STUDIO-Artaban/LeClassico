@@ -41,7 +41,7 @@ if(!Empty($Clf))
     $Link = @mysql_connect(GetMySqlLocalhost(),GetMySqlUser(),GetMySqlPassword());
     if(!Empty($Link))
     {   $Camarade = UserKeyIdentifier($Clf);
-        $Query = "SELECT CAM_Pseudo,CAM_LogDate FROM Camarades WHERE UPPER(CAM_Pseudo) = UPPER('".addslashes($Camarade)."')";
+        $Query = "SELECT CAM_Pseudo,CAM_LogDate FROM Camarades WHERE CAM_Status <> 2 AND UPPER(CAM_Pseudo) = UPPER('".addslashes($Camarade)."')";
         mysql_select_db(GetMySqlDB(),$Link);
         $Result = mysql_query(trim($Query),$Link);
         if(mysql_num_rows($Result) != 0)
@@ -58,7 +58,7 @@ if(!Empty($Clf))
                     {   $aDate = sscanf(trim($evedate),"%d-%d-%d");
                         if(!checkdate($aDate[1],$aDate[2],$aDate[0])) $iStatus = 23; //****** Date invalide
                         else
-                        {   $Query = "SELECT 'X' FROM Evenements WHERE EVE_Date = '".trim($evedate)."' AND UPPER(EVE_Nom) = UPPER('".trim($evenm)."') AND EVE_EventID <> $eveid";
+                        {   $Query = "SELECT 'X' FROM Evenements WHERE EVE_Status <> 2 AND EVE_Date = '".trim($evedate)."' AND UPPER(EVE_Nom) = UPPER('".trim($evenm)."') AND EVE_EventID <> $eveid";
                             $Result = mysql_query(trim($Query),$Link);
                             if(mysql_num_rows($Result) != 0)
                             {  mysql_free_result($Result);
@@ -99,7 +99,7 @@ if(!Empty($Clf))
                     {   $aDate = sscanf(trim($evedate),"%d-%d-%d");
                         if(!checkdate($aDate[1],$aDate[2],$aDate[0])) $iStatus = 23; //****** Date invalide
                         else
-                        {   $Query = "SELECT 'X' FROM Evenements WHERE EVE_Date = '".trim($evedate)."' AND UPPER(EVE_Nom) = UPPER('".trim($evenm)."')";
+                        {   $Query = "SELECT 'X' FROM Evenements WHERE EVE_Status <> 2 AND EVE_Date = '".trim($evedate)."' AND UPPER(EVE_Nom) = UPPER('".trim($evenm)."')";
                             $Result = mysql_query(trim($Query),$Link);
                             if(mysql_num_rows($Result) != 0)
                             {  mysql_free_result($Result);
@@ -147,7 +147,7 @@ if(!Empty($Clf))
                 {   // Flyer //////////////////////////////////////////////////////////////////////////////////////////
                     if((!Empty($evechgf))&&($evechgf == 1))
                     {   // Retire le flyer
-                        $Query = "SELECT EVE_Flyer FROM Evenements WHERE EVE_EventID = $eveid";
+                        $Query = "SELECT EVE_Flyer FROM Evenements WHERE EVE_Status <> 2 AND EVE_EventID = $eveid";
                         $Result = mysql_query(trim($Query),$Link);
                         if(mysql_num_rows($Result) != 0)
                         {   $aRow = mysql_fetch_array($Result);

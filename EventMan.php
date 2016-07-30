@@ -16,7 +16,7 @@ if(!Empty($Clf))
     }
     else
     {   $Camarade = UserKeyIdentifier($Clf);
-        $Query = "SELECT CAM_Pseudo FROM Camarades WHERE UPPER(CAM_Pseudo) = UPPER('".addslashes($Camarade)."')";
+        $Query = "SELECT CAM_Pseudo FROM Camarades WHERE CAM_Status <> 2 AND UPPER(CAM_Pseudo) = UPPER('".addslashes($Camarade)."')";
         mysql_select_db(GetMySqlDB(),$Link);
         $Result = mysql_query(trim($Query),$Link);
         if(mysql_num_rows($Result) != 0)
@@ -26,7 +26,7 @@ if(!Empty($Clf))
             mysql_free_result($Result);
             if(!Empty($ope))
             {   // Suppression /////////////////////////////////////////////////////////////////////////////////////////////////////////
-                $Query = "SELECT EVE_Flyer FROM Evenements WHERE EVE_EventID = $eveid";
+                $Query = "SELECT EVE_Flyer FROM Evenements WHERE EVE_Status <> 2 AND EVE_EventID = $eveid";
                 $Result = mysql_query(trim($Query),$Link);
                 if(mysql_num_rows($Result) != 0)
                 {   $aRow = mysql_fetch_array($Result);
@@ -36,9 +36,9 @@ if(!Empty($Clf))
                     }
                     mysql_free_result($Result);
                 }
-                $Query = "DELETE FROM Presents WHERE PRE_EventID = $eveid";
+                $Query = "UPDATE Presents SET PRE_Status = 2, PRE_StatusDate = CURRENT_TIMESTAMP WHERE PRE_EventID = $eveid";
                 mysql_query(trim($Query),$Link);
-                $Query = "DELETE FROM Evenements WHERE EVE_EventID = $eveid";
+                $Query = "UPDATE Evenements SET EVE_Status = 2, EVE_StatusDate = CURRENT_TIMESTAMP WHERE EVE_EventID = $eveid";
                 if(mysql_query(trim($Query),$Link))
                 {   // Supprime cet événement dans les albums photos liés à ce dernier
                     $Query = "UPDATE Albums SET ALB_EventID = 0 WHERE ALB_EventID = $eveid";
@@ -218,7 +218,7 @@ function ChgEventList()
             switch(document.getElementById("EveList").selectedIndex)
             {   <?php
                 $CntEve = 0;
-                $Query = "SELECT EVE_EventID,EVE_Nom,EVE_Lieu,EVE_Date,EVE_Flyer,EVE_Remark FROM Evenements WHERE EVE_Pseudo = '".addslashes($Camarade)."' ORDER BY EVE_Date DESC";
+                $Query = "SELECT EVE_EventID,EVE_Nom,EVE_Lieu,EVE_Date,EVE_Flyer,EVE_Remark FROM Evenements WHERE EVE_Status <> 2 AND EVE_Pseudo = '".addslashes($Camarade)."' ORDER BY EVE_Date DESC";
                 $Result = mysql_query(trim($Query),$Link);
                 while($aRow = mysql_fetch_array($Result))
                 {   // Tant qu'il y a des événements

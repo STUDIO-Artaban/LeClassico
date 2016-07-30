@@ -15,7 +15,7 @@ if(!Empty($Clf))
     }
     else
     {   $Camarade = UserKeyIdentifier($Clf);
-        $Query = "SELECT CAM_Pseudo,CAM_LogDate FROM Camarades WHERE UPPER(CAM_Pseudo) = UPPER('".addslashes($Camarade)."')";
+        $Query = "SELECT CAM_Pseudo,CAM_LogDate FROM Camarades WHERE CAM_Status <> 2 AND UPPER(CAM_Pseudo) = UPPER('".addslashes($Camarade)."')";
         mysql_select_db(GetMySqlDB(),$Link);
         $Result = mysql_query(trim($Query),$Link);
         if(mysql_num_rows($Result) != 0)
@@ -89,19 +89,19 @@ function ChgSharedAlbList()
         $CntShdAlb = 0;
         $Count = 0;
         $Query = "SELECT ALB_Nom FROM Albums";
-        $Query .= " WHERE UPPER(ALB_Pseudo) = UPPER('".addslashes($Camarade)."') AND ALB_Shared = 1 ORDER BY ALB_Nom";
+        $Query .= " WHERE ALB_Status <> 2 AND UPPER(ALB_Pseudo) = UPPER('".addslashes($Camarade)."') AND ALB_Shared = 1 ORDER BY ALB_Nom";
         $Result = mysql_query(trim($Query),$Link);
         while($aRow = mysql_fetch_array($Result))
         {   // Tant qu'il y a des albums
         ?>case <?php echo $CntShdAlb; ?>:
         {   document.getElementById("PrgShdAdd").innerHTML=sPrgShdAdd+"<?php
-            $Query = "SELECT COUNT(*) AS PHT_AddCnt FROM Photos WHERE UPPER(PHT_Album) = UPPER('".trim($aRow["ALB_Nom"])."')";
+            $Query = "SELECT COUNT(*) AS PHT_AddCnt FROM Photos WHERE PHT_Status <> 2 AND UPPER(PHT_Album) = UPPER('".trim($aRow["ALB_Nom"])."')";
             $Query .= " AND UPPER(PHT_Pseudo) <> UPPER('".addslashes($Camarade)."')";
             $Count = mysql_result(mysql_query(trim($Query),$Link),0,"PHT_AddCnt");
             echo $Count;
             ?></font></font>";
             document.getElementById("PrgShdTotal").innerHTML=sPrgShdTotal+"<?php
-            $Query = "SELECT COUNT(*) AS PHT_TotalCnt FROM Photos WHERE UPPER(PHT_Album) = UPPER('".trim($aRow["ALB_Nom"])."')";
+            $Query = "SELECT COUNT(*) AS PHT_TotalCnt FROM Photos WHERE PHT_Status <> 2 AND UPPER(PHT_Album) = UPPER('".trim($aRow["ALB_Nom"])."')";
             $Count = mysql_result(mysql_query(trim($Query),$Link),0,"PHT_TotalCnt");
             echo $Count;
             ?></font></font>";
@@ -128,14 +128,14 @@ function ChgNewAlbList()
         $CntNewAlb = 0;
         $Count = 0;
         $Query = "SELECT ALB_Nom,ALB_Date,ALB_Pseudo FROM Albums";
-        $Query .= " WHERE ALB_Date >= '$LogDate' AND UPPER(ALB_Pseudo) <> UPPER('".addslashes($Camarade)."') ORDER BY ALB_Date DESC LIMIT 0,30";
+        $Query .= " WHERE ALB_Status <> 2 AND ALB_Date >= '$LogDate' AND UPPER(ALB_Pseudo) <> UPPER('".addslashes($Camarade)."') ORDER BY ALB_Date DESC LIMIT 0,30";
         $Result = mysql_query(trim($Query),$Link);
         while($aRow = mysql_fetch_array($Result))
         {   // Tant qu'il y a des albums
         ?>case <?php echo $CntNewAlb; ?>:
         {   document.getElementById("PrgNewFrom").innerHTML=sPrgNewFrom+"<?php echo trim($aRow["ALB_Pseudo"]); ?></font></font>";
             document.getElementById("PrgNewPht").innerHTML=sPrgNewPht+"<?php
-            $Query = "SELECT COUNT(*) AS PHT_TotalCnt FROM Photos WHERE UPPER(PHT_Album) = UPPER('".addslashes($aRow["ALB_Nom"])."')";
+            $Query = "SELECT COUNT(*) AS PHT_TotalCnt FROM Photos WHERE PHT_Status <> 2 AND UPPER(PHT_Album) = UPPER('".addslashes($aRow["ALB_Nom"])."')";
             $Count = mysql_result(mysql_query(trim($Query),$Link),0,"PHT_TotalCnt");
             echo $Count;
             ?></font></font>";
@@ -279,9 +279,9 @@ $PhtIndex = 0;
 $PhtVot = 0;
 $PhtFirst = true;
 $aDate = getdate();
-$Query = "SELECT COUNT(*) AS PHT_Count FROM Photos";
+$Query = "SELECT COUNT(*) AS PHT_Count FROM Photos WHERE PHT_Status <> 2";
 $iPhtCnt = mysql_result(mysql_query(trim($Query),$Link),0,"PHT_Count");
-$Query = "SELECT SUM(VOT_Note)+SUM(VOT_Total) AS VOT_Pos,VOT_Fichier FROM Votes WHERE VOT_Type = 0 GROUP BY VOT_Fichier ORDER BY VOT_Pos DESC";
+$Query = "SELECT SUM(VOT_Note)+SUM(VOT_Total) AS VOT_Pos,VOT_Fichier FROM Votes WHERE VOT_Status <> 2 AND VOT_Type = 0 GROUP BY VOT_Fichier ORDER BY VOT_Pos DESC";
 $Result = mysql_query(trim($Query),$Link);
 if(mysql_num_rows($Result) != 0)
 {   $iLastVote = 0;
@@ -311,7 +311,7 @@ if(mysql_num_rows($Result) != 0)
     $iResStart = 1;
     $Query = "SELECT PHT_Album,PHT_Pseudo,PHT_Fichier,PHT_FichierID,V1.VOT_Note AS PHT_Note,V1.VOT_Total AS PHT_Total,SUM(V2.VOT_Note) AS PHT_AllNote,SUM(V2.VOT_Total) AS PHT_AllTotal";
     $Query .= " FROM Photos LEFT JOIN Votes AS V1 ON PHT_Fichier = V1.VOT_Fichier AND UPPER(V1.VOT_Pseudo) = UPPER('".addslashes($Camarade)."') AND V1.VOT_Date = '".trim($aDate["year"])."-".trim($aDate["mon"])."-".trim($aDate["mday"])."' AND V1.VOT_Type = 0 LEFT JOIN Votes AS V2 ON PHT_Fichier = V2.VOT_Fichier AND V2.VOT_Type = 0";
-    $Query .= " WHERE PHT_Fichier LIKE '".trim($aPic[rand(0,($PhtIndex-1))])."'";
+    $Query .= " WHERE PHT_Status <> 2 AND V1.VOT_Status <> 2 AND V2.VOT_Status <> 2 AND PHT_Fichier LIKE '".trim($aPic[rand(0,($PhtIndex-1))])."'";
     $Query .= " GROUP BY PHT_Album,PHT_Pseudo,PHT_Fichier,PHT_FichierID,PHT_Note,PHT_Total ORDER BY PHT_Fichier";
     $Result = mysql_query(trim($Query),$Link);
     $iResCnt = mysql_num_rows($Result);
@@ -760,7 +760,7 @@ if(!Empty($Clf))
         $CntNew = 0;
         $CntWrite = 0;
         $Query = "SELECT COUNT(*) AS MSG_ReadCnt,MSG_LuFlag FROM Messagerie";
-        $Query .= " WHERE UPPER(MSG_Pseudo) = UPPER('".addslashes($Camarade)."') AND MSG_ReadStk = 1 GROUP BY MSG_LuFlag";
+        $Query .= " WHERE MSG_Status <> 2 AND UPPER(MSG_Pseudo) = UPPER('".addslashes($Camarade)."') AND MSG_ReadStk = 1 GROUP BY MSG_LuFlag";
         $Result = mysql_query(trim($Query),$Link);
         while($aRow = mysql_fetch_array($Result))
         {   if(!Empty($aRow["MSG_LuFlag"])) $CntRead += $aRow["MSG_ReadCnt"];
@@ -771,7 +771,7 @@ if(!Empty($Clf))
         }
         mysql_free_result($Result);
         $Query = "SELECT COUNT(*) AS MSG_WriteCnt FROM Messagerie";
-        $Query .= " WHERE UPPER(MSG_From) = UPPER('".addslashes($Camarade)."') AND MSG_WriteStk = 1";
+        $Query .= " WHERE MSG_Status <> 2 AND UPPER(MSG_From) = UPPER('".addslashes($Camarade)."') AND MSG_WriteStk = 1";
         $CntWrite = mysql_result(mysql_query(trim($Query),$Link),0,"MSG_WriteCnt");
         ?>
         <table border=0 width="100%" cellspacing=0 cellpadding=0>
@@ -1076,7 +1076,7 @@ if(!Empty($Clf))
             </td>
             <?php
             $bPass = false;
-            $Query = "SELECT EVE_Pseudo,EVE_Nom,EVE_Lieu,EVE_Flyer FROM Evenements WHERE EVE_Date = '";
+            $Query = "SELECT EVE_Pseudo,EVE_Nom,EVE_Lieu,EVE_Flyer FROM Evenements WHERE EVE_Status <> 2 AND EVE_Date = '";
             $Query .= trim($aDate["year"])."-".trim($aDate["mon"])."-".trim($aDate["mday"])."'";
             $Query .= " ORDER BY EVE_Nom";
             $Result = mysql_query(trim($Query),$Link);
@@ -1188,7 +1188,7 @@ if(!Empty($Clf))
             $bContinue = true;
             $bPass = false;
             $Query = "SELECT EVE_Date,EVE_Pseudo,EVE_Nom,EVE_Lieu,EVE_Flyer FROM Evenements";
-            $Query .= " WHERE EVE_Date > '".trim($aDate["year"])."-".trim($aDate["mon"])."-".trim($aDate["mday"])."' ORDER BY EVE_Date";
+            $Query .= " WHERE EVE_Status <> 2 AND EVE_Date > '".trim($aDate["year"])."-".trim($aDate["mon"])."-".trim($aDate["mday"])."' ORDER BY EVE_Date";
             $Result = mysql_query(trim($Query),$Link);
             if(mysql_num_rows($Result) != 0)
             {   // Evénement trouvé

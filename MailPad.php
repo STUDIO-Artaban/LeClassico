@@ -17,7 +17,7 @@ if(!Empty($Clf))
     }
     else
     {   $Camarade = UserKeyIdentifier($Clf);
-        $Query = "SELECT 'X' FROM Camarades WHERE UPPER(CAM_Pseudo) = UPPER('".addslashes($Camarade)."')";
+        $Query = "SELECT 'X' FROM Camarades WHERE CAM_Status <> 2 AND UPPER(CAM_Pseudo) = UPPER('".addslashes($Camarade)."')";
         mysql_select_db(GetMySqlDB(),$Link);
         $Result = mysql_query(trim($Query),$Link);
         if(mysql_num_rows($Result) != 0)
@@ -27,11 +27,11 @@ if(!Empty($Clf))
                 {   $Query = "SELECT MSG_From,MSG_Pseudo,MSG_LuFlag,MSG_Objet FROM Messagerie";
                     if($msgtpe == 1)
                     {   // Message reçu
-                        $Query .= " WHERE UPPER(MSG_Pseudo) = UPPER('".addslashes($Camarade)."') AND MSG_ReadStk = 1";
+                        $Query .= " WHERE MSG_Status <> 2 AND UPPER(MSG_Pseudo) = UPPER('".addslashes($Camarade)."') AND MSG_ReadStk = 1";
                     }
                     else
                     {   // Message envoyé
-                        $Query .= " WHERE UPPER(MSG_From) = UPPER('".addslashes($Camarade)."') AND MSG_WriteStk = 1";
+                        $Query .= " WHERE MSG_Status <> 2 AND UPPER(MSG_From) = UPPER('".addslashes($Camarade)."') AND MSG_WriteStk = 1";
                     }
                     $Query .= " AND MSG_Date = '".trim($msgdt)."' AND MSG_Time = '".trim($msgtm)."'";
                     $Result = mysql_query(trim($Query),$Link);
@@ -128,7 +128,7 @@ else echo "126px\"";
 if(!Empty($msgtpe)) echo " disabled";
 echo "><option selected>".$Pseudo."</option>";
 // Liste de tous les camarades (excepté le camarade connecté)
-$Query = "SELECT CAM_Pseudo FROM Camarades WHERE UPPER(CAM_Pseudo) <> UPPER('".addslashes($Camarade)."')";
+$Query = "SELECT CAM_Pseudo FROM Camarades WHERE CAM_Status <> 2 AND UPPER(CAM_Pseudo) <> UPPER('".addslashes($Camarade)."')";
 mysql_select_db(GetMySqlDB(),$Link);
 $Result = mysql_query(trim($Query),$Link);
 while($aRow = mysql_fetch_array($Result))

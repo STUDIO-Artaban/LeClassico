@@ -29,7 +29,7 @@ else
 {   mysql_select_db(GetMySqlDB(),$Link);
     if(!Empty($Clf))
     {   $Camarade = UserKeyIdentifier($Clf);
-        $Query = "SELECT 'X' FROM Camarades WHERE UPPER(CAM_Pseudo) = UPPER('".addslashes($Camarade)."')";
+        $Query = "SELECT 'X' FROM Camarades WHERE CAM_Status <> 2 AND UPPER(CAM_Pseudo) = UPPER('".addslashes($Camarade)."')";
         $Result = mysql_query(trim($Query),$Link);
         if(mysql_num_rows($Result) != 0) mysql_free_result($Result);
         else
@@ -41,7 +41,7 @@ else
     }
     if((!Empty($ope))&&($ope == 1))
     {   // Création de la requête ////////////////////////////////////////////////////////////////////////////////////////////////////////
-        $Query = "SELECT * FROM Camarades";
+        $Query = "SELECT * FROM Camarades WHERE CAM_Status <> 2";
         if((!Empty($rpsd))&&(strcmp(trim($rpsd),"")))
         {   $Query .= " WHERE CAM_Pseudo LIKE '%".trim($rpsd)."%'";
             $bWhere = true;

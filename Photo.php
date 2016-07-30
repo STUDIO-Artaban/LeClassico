@@ -34,7 +34,7 @@ if(!Empty($Clf))
     }
     else
     {   $Camarade = UserKeyIdentifier($Clf);
-        $Query = "SELECT CAM_Pseudo FROM Camarades WHERE UPPER(CAM_Pseudo) = UPPER('".addslashes($Camarade)."')";
+        $Query = "SELECT CAM_Pseudo FROM Camarades WHERE CAM_Status <> 2 AND UPPER(CAM_Pseudo) = UPPER('".addslashes($Camarade)."')";
         mysql_select_db(GetMySqlDB(),$Link);
         $Result = mysql_query(trim($Query),$Link);
         if(mysql_num_rows($Result) != 0)
@@ -83,7 +83,7 @@ if(!Empty($Clf))
                                     break;
                                 }
                             }
-                            $Query = "SELECT VOT_Date, VOT_Note, VOT_Total FROM Votes WHERE VOT_Fichier LIKE '".base64_decode(urldecode($pht1))."'";
+                            $Query = "SELECT VOT_Date, VOT_Note, VOT_Total FROM Votes WHERE VOT_Status <> 2 AND VOT_Fichier LIKE '".base64_decode(urldecode($pht1))."'";
                             $Query .= " AND UPPER(VOT_Pseudo) = UPPER('".addslashes($Camarade)."')";
                             $Result = mysql_query(trim($Query),$Link);
                             if(mysql_num_rows($Result) != 0)
@@ -147,7 +147,7 @@ if(!Empty($Clf))
                                     break;
                                 }
                             }
-                            $Query = "SELECT VOT_Date, VOT_Note, VOT_Total FROM Votes WHERE VOT_Fichier LIKE '".base64_decode(urldecode($pht2))."'";
+                            $Query = "SELECT VOT_Date, VOT_Note, VOT_Total FROM Votes WHERE VOT_Status <> 2 AND VOT_Fichier LIKE '".base64_decode(urldecode($pht2))."'";
                             $Query .= " AND UPPER(VOT_Pseudo) = UPPER('".addslashes($Camarade)."')";
                             $Result = mysql_query(trim($Query),$Link);
                             if(mysql_num_rows($Result) != 0)
@@ -211,7 +211,7 @@ if(!Empty($Clf))
                                     break;
                                 }
                             }
-                            $Query = "SELECT VOT_Date, VOT_Note, VOT_Total FROM Votes WHERE VOT_Fichier LIKE '".base64_decode(urldecode($pht3))."'";
+                            $Query = "SELECT VOT_Date, VOT_Note, VOT_Total FROM Votes WHERE VOT_Status <> 2 AND VOT_Fichier LIKE '".base64_decode(urldecode($pht3))."'";
                             $Query .= " AND UPPER(VOT_Pseudo) = UPPER('".addslashes($Camarade)."')";
                             $Result = mysql_query(trim($Query),$Link);
                             if(mysql_num_rows($Result) != 0)
@@ -275,7 +275,7 @@ if(!Empty($Clf))
                                     break;
                                 }
                             }
-                            $Query = "SELECT VOT_Date, VOT_Note, VOT_Total FROM Votes WHERE VOT_Fichier LIKE '".base64_decode(urldecode($pht4))."'";
+                            $Query = "SELECT VOT_Date, VOT_Note, VOT_Total FROM Votes WHERE VOT_Status <> 2 AND VOT_Fichier LIKE '".base64_decode(urldecode($pht4))."'";
                             $Query .= " AND UPPER(VOT_Pseudo) = UPPER('".addslashes($Camarade)."')";
                             $Result = mysql_query(trim($Query),$Link);
                             if(mysql_num_rows($Result) != 0)
@@ -339,7 +339,7 @@ if(!Empty($Clf))
                                     break;
                                 }
                             }
-                            $Query = "SELECT VOT_Date, VOT_Note, VOT_Total FROM Votes WHERE VOT_Fichier LIKE '".base64_decode(urldecode($pht5))."'";
+                            $Query = "SELECT VOT_Date, VOT_Note, VOT_Total FROM Votes WHERE VOT_Status <> 2 AND VOT_Fichier LIKE '".base64_decode(urldecode($pht5))."'";
                             $Query .= " AND UPPER(VOT_Pseudo) = UPPER('".addslashes($Camarade)."')";
                             $Result = mysql_query(trim($Query),$Link);
                             if(mysql_num_rows($Result) != 0)
@@ -489,9 +489,9 @@ $iResCnt = 0;
 $iResStart = 1;
 $aDate = getdate();
 $iPhtCnt = 0;
-$Query = "SELECT COUNT(*) AS PHT_Count FROM Photos WHERE PHT_Album <> 'Journal'";
+$Query = "SELECT COUNT(*) AS PHT_Count FROM Photos WHERE PHT_Status <> 2 AND PHT_Album <> 'Journal'";
 $iPhtCnt = mysql_result(mysql_query(trim($Query),$Link),0,"PHT_Count");
-$Query = "SELECT SUM(VOT_Note)+SUM(VOT_Total) AS VOT_Pos,VOT_Fichier FROM Votes WHERE VOT_Type = 0 GROUP BY VOT_Fichier ORDER BY VOT_Pos DESC";
+$Query = "SELECT SUM(VOT_Note)+SUM(VOT_Total) AS VOT_Pos,VOT_Fichier FROM Votes WHERE VOT_Status <> 2 AND VOT_Type = 0 GROUP BY VOT_Fichier ORDER BY VOT_Pos DESC";
 $Result = mysql_query(trim($Query),$Link);
 $iLastVote = 0;
 while($aRow = mysql_fetch_array($Result))
@@ -501,7 +501,7 @@ while($aRow = mysql_fetch_array($Result))
 mysql_free_result($Result);
 $Query = "SELECT PHT_Pseudo,PHT_Fichier,PHT_FichierID,V1.VOT_Note AS PHT_Note,V1.VOT_Total AS PHT_Total,SUM(V2.VOT_Note) AS PHT_AllNote,SUM(V2.VOT_Total) AS PHT_AllTotal";
 $Query .= " FROM Photos LEFT JOIN Votes AS V1 ON PHT_Fichier = V1.VOT_Fichier AND UPPER(V1.VOT_Pseudo) = UPPER('".addslashes($Camarade)."') AND V1.VOT_Date = '".trim($aDate["year"])."-".trim($aDate["mon"])."-".trim($aDate["mday"])."' AND V1.VOT_Type = 0 LEFT JOIN Votes AS V2 ON PHT_Fichier = V2.VOT_Fichier AND V2.VOT_Type = 0";
-$Query .= " WHERE UPPER(PHT_Album) = UPPER('".addslashes(base64_decode(urldecode(trim($albnm))))."')";
+$Query .= " WHERE PHT_Status <> 2 AND V1.VOT_Status <> 2 AND V2.VOT_Status <> 2 AND UPPER(PHT_Album) = UPPER('".addslashes(base64_decode(urldecode(trim($albnm))))."')";
 // Gestion de l'affichage d'1 photo
 if(!Empty($vwpht)) $Query .= " AND PHT_Fichier LIKE '".base64_decode(urldecode($vwpht))."'";
 //

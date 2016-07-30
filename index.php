@@ -21,7 +21,7 @@ if(Empty($Clf))
            die();
        }
        else
-       {   $Query = "SELECT CAM_Pseudo FROM Camarades WHERE UPPER(CAM_Pseudo) = UPPER('".trim($psd)."')";
+       {   $Query = "SELECT CAM_Pseudo FROM Camarades WHERE CAM_Status <> 2 AND UPPER(CAM_Pseudo) = UPPER('".trim($psd)."')";
            mysql_select_db(GetMySqlDB(),$Link);
            $Result = mysql_query(trim($Query),$Link);
            if(!mysql_num_rows($Result))
@@ -32,7 +32,7 @@ if(Empty($Clf))
            {   $aRow = mysql_fetch_array($Result);
                $Camarade = stripslashes($aRow["CAM_Pseudo"]);
                mysql_free_result($Result);
-               $Query = "SELECT 'X' FROM Camarades WHERE UPPER(CAM_Pseudo) = UPPER('".trim($psd)."') AND UPPER(CAM_CodeConf) = UPPER('".trim($ccf)."')";
+               $Query = "SELECT 'X' FROM Camarades WHERE CAM_Status <> 2 AND UPPER(CAM_Pseudo) = UPPER('".trim($psd)."') AND UPPER(CAM_CodeConf) = UPPER('".trim($ccf)."')";
                $Result = mysql_query(trim($Query),$Link);
                if(!mysql_num_rows($Result))
                {   $Msg = "Code Erron&eacute;!";

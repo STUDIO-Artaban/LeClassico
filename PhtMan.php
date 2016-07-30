@@ -23,7 +23,7 @@ if(!Empty($Clf))
     }
     else
     {   $Camarade = UserKeyIdentifier($Clf);
-        $Query = "SELECT CAM_Pseudo,CAM_LogDate FROM Camarades WHERE UPPER(CAM_Pseudo) = UPPER('".addslashes($Camarade)."')";
+        $Query = "SELECT CAM_Pseudo,CAM_LogDate FROM Camarades WHERE CAM_Status <> 2 AND UPPER(CAM_Pseudo) = UPPER('".addslashes($Camarade)."')";
         mysql_select_db(GetMySqlDB(),$Link);
         $Result = mysql_query(trim($Query),$Link);
         if(mysql_num_rows($Result) != 0)
@@ -33,29 +33,29 @@ if(!Empty($Clf))
             if((!Empty($ope))&&($ope == 1))
             {   // Supprimer 1 Photo ///////////////////////////////////////////////////////////////////////////////////////////////////
                 $iSuppRes = 1; // Ok
-                $Query = "SELECT 'X' FROM Albums WHERE UPPER(ALB_Nom) = UPPER('".trim($albnm)."') AND UPPER(ALB_Pseudo) = UPPER('".addslashes($Camarade)."')";
+                $Query = "SELECT 'X' FROM Albums WHERE CAM_Status <> 2 AND UPPER(ALB_Nom) = UPPER('".trim($albnm)."') AND UPPER(ALB_Pseudo) = UPPER('".addslashes($Camarade)."')";
                 $Result = mysql_query(trim($Query),$Link);
                 if(mysql_num_rows($Result) != 0)
                 {   mysql_free_result($Result);
-                    $Query = "SELECT DISTINCT 'X' FROM Photos WHERE PHT_Fichier LIKE '$pht'";
+                    $Query = "SELECT DISTINCT 'X' FROM Photos WHERE PHT_Status <> 2 AND PHT_Fichier LIKE '$pht'";
                     $Query .= " AND UPPER(PHT_Album) <> UPPER('".trim($albnm)."')";
                     $Result = mysql_query(trim($Query),$Link);
                     if(mysql_num_rows($Result) != 0)
                     {   mysql_free_result($Result);
                         // Supprime la photo de la table Photos pour cet album
-                        $Query = "DELETE FROM Photos WHERE UPPER(PHT_Album) = UPPER('".trim($albnm)."') AND PHT_Fichier LIKE '$pht'";
+                        $Query = "UPDATE Photos SET PHT_Status = 2, PHT_StatusDate = CURRENT_TIMESTAMP WHERE UPPER(PHT_Album) = UPPER('".trim($albnm)."') AND PHT_Fichier LIKE '$pht'";
                         if(!mysql_query(trim($Query),$Link)) $iSuppRes = 3; // Suppression
                     }
                     else
                     {   // Supprime la photo de toute la table Photos
-                        $Query = "DELETE FROM Photos WHERE PHT_Fichier LIKE '$pht'";
+                        $Query = "UPDATE Photos SET PHT_Status = 2, PHT_StatusDate = CURRENT_TIMESTAMP WHERE PHT_Fichier LIKE '$pht'";
                         if(mysql_query(trim($Query),$Link))
                         {   // Supprime la photo de la table Votes
-                            $Query = "DELETE FROM Votes WHERE VOT_Fichier LIKE '$pht'";
+                            $Query = "UPDATE Votes SET VOT_Status = 2, VOT_StatusDate = CURRENT_TIMESTAMP WHERE VOT_Fichier LIKE '$pht'";
                             mysql_query(trim($Query),$Link);
                             // Supprime la photo de la table Commentaires
                             $phtID = GetPhotoID($pht);
-                            $Query = "DELETE FROM Commentaires WHERE COM_ObjType = 'P' AND COM_ObjID = $phtID";
+                            $Query = "UPDATE Commentaires SET COM_Status = 2, COM_StatusDate = CURRENT_TIMESTAMP WHERE COM_ObjType = 'P' AND COM_ObjID = $phtID";
                             mysql_query(trim($Query),$Link);
                             // Supprime la photo du serveur
                             @unlink(GetSrvPhtFolder()."$pht");
@@ -122,9 +122,9 @@ switch($iSuppRes)
     // Affiche le résultat de la suppression
 }
 $iPhtCnt = 0;
-$Query = "SELECT COUNT(*) AS PHT_Count FROM Photos";
+$Query = "SELECT COUNT(*) AS PHT_Count FROM Photos WHERE PHT_Status <> 2";
 $iPhtCnt = mysql_result(mysql_query(trim($Query),$Link),0,"PHT_Count");
-$Query = "SELECT SUM(VOT_Note)+SUM(VOT_Total) AS VOT_Pos,VOT_Fichier FROM Votes WHERE VOT_Type = 0 GROUP BY VOT_Fichier ORDER BY VOT_Pos DESC";
+$Query = "SELECT SUM(VOT_Note)+SUM(VOT_Total) AS VOT_Pos,VOT_Fichier FROM Votes WHERE VOT_Status <> 2 AND VOT_Type = 0 GROUP BY VOT_Fichier ORDER BY VOT_Pos DESC";
 $Result = mysql_query(trim($Query),$Link);
 $iLastVote = 0;
 while($aRow = mysql_fetch_array($Result))
@@ -165,7 +165,7 @@ function FillPhotoArray()
     $CurAlbum = "";
     $Query = "SELECT ALB_Nom,PHT_Pseudo,PHT_Fichier,SUM(VOT_Note) AS PHT_Note,SUM(VOT_Total) AS PHT_Total";
     $Query .= " FROM Albums LEFT JOIN Photos ON ALB_Nom = PHT_Album LEFT JOIN Votes ON PHT_Fichier = VOT_Fichier AND VOT_Type = 0";
-    $Query .= " WHERE UPPER(ALB_Pseudo) = UPPER('".addslashes($Camarade)."') GROUP BY ALB_Nom,PHT_Pseudo,PHT_Fichier ORDER BY ALB_Nom,PHT_Fichier";
+    $Query .= " WHERE ALB_Status <> 2 AND VOT_Status <> 2 AND UPPER(ALB_Pseudo) = UPPER('".addslashes($Camarade)."') GROUP BY ALB_Nom,PHT_Pseudo,PHT_Fichier ORDER BY ALB_Nom,PHT_Fichier";
     $Result = mysql_query(trim($Query),$Link);
     while($aRow = mysql_fetch_array($Result))
     {   if(!strcmp($aRow["ALB_Nom"],"Journal")) continue;
@@ -249,7 +249,7 @@ function FillPhotoArray()
     $CurAlbum = "";
     $Query = "SELECT ALB_Nom,PHT_Pseudo,PHT_Fichier,SUM(VOT_Note) AS PHT_Note,SUM(VOT_Total) AS PHT_Total";
     $Query .= " FROM Albums LEFT JOIN Photos ON ALB_Nom = PHT_Album LEFT JOIN Votes ON PHT_Fichier = VOT_Fichier AND VOT_Type = 0";
-    $Query .= " WHERE ALB_Shared = 1 AND UPPER(ALB_Pseudo) <> UPPER('".addslashes($Camarade)."') GROUP BY ALB_Nom,PHT_Pseudo,PHT_Fichier ORDER BY ALB_Nom,PHT_Fichier";
+    $Query .= " WHERE ALB_Status <> 2 AND PHT_Status <> 2 AND VOT_Status <> 2 AND ALB_Shared = 1 AND UPPER(ALB_Pseudo) <> UPPER('".addslashes($Camarade)."') GROUP BY ALB_Nom,PHT_Pseudo,PHT_Fichier ORDER BY ALB_Nom,PHT_Fichier";
     $Result = mysql_query(trim($Query),$Link);
     while($aRow = mysql_fetch_array($Result))
     {   // Tant qu'il y a des photos dans l'album

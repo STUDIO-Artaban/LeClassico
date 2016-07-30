@@ -14,7 +14,7 @@ if(!Empty($Clf))
     }
     else
     {   $Camarade = UserKeyIdentifier($Clf);
-        $Query = "SELECT CAM_Pseudo FROM Camarades WHERE UPPER(CAM_Pseudo) = UPPER('".addslashes($Camarade)."')";
+        $Query = "SELECT CAM_Pseudo FROM Camarades WHERE CAM_Status <> 2 AND UPPER(CAM_Pseudo) = UPPER('".addslashes($Camarade)."')";
         mysql_select_db(GetMySqlDB(),$Link);
         $Result = mysql_query(trim($Query),$Link);
         if(mysql_num_rows($Result) != 0)
@@ -32,7 +32,7 @@ if(!Empty($Clf))
                 if((!Empty($albnm))&&(strcmp(trim($albnm),"")))
                 {   switch($ope)
                     {   case 1: // Ajoute un album /////////////////////////////////////////////////////////////////////////////
-                        {   $Query = "SELECT 'X' FROM Albums WHERE UPPER(ALB_Nom) = UPPER('".trim($albnm)."')";
+                        {   $Query = "SELECT 'X' FROM Albums WHERE ALB_Status <> 2 AND UPPER(ALB_Nom) = UPPER('".trim($albnm)."')";
                             $Result = mysql_query(trim($Query),$Link);
                             if(mysql_num_rows($Result) != 0)
                             {   mysql_free_result($Result);
@@ -68,7 +68,7 @@ if(!Empty($Clf))
                         }
                         case 2: // Modifie un album ////////////////////////////////////////////////////////////////////////////
                         {   if(strcmp(trim($albnm),trim($alblnm)))
-                            {   $Query = "SELECT 'X' FROM Albums WHERE UPPER(ALB_Nom) = UPPER('".trim($albnm)."')";
+                            {   $Query = "SELECT 'X' FROM Albums WHERE ALB_Status <> 2 AND UPPER(ALB_Nom) = UPPER('".trim($albnm)."')";
                                 $Result = mysql_query(trim($Query),$Link);
                                 if(mysql_num_rows($Result) != 0)
                                 {   mysql_free_result($Result);
@@ -109,25 +109,25 @@ if(!Empty($Clf))
                             break;
                         }
                         case 3: // Supprime un album ///////////////////////////////////////////////////////////////////////////
-                        {   $Query = "SELECT PHT_Fichier FROM Photos WHERE UPPER(PHT_Album) = UPPER('".trim($albnm)."')";
+                        {   $Query = "SELECT PHT_Fichier FROM Photos WHERE PHT_Status <> 2 AND UPPER(PHT_Album) = UPPER('".trim($albnm)."')";
                             $Result = mysql_query(trim($Query),$Link);
                             if(mysql_num_rows($Result) != 0)
                             {   while($aRow = mysql_fetch_array($Result))
-                                {   $Query = "SELECT DISTINCT 'X' FROM Photos WHERE PHT_Fichier LIKE '".$aRow["PHT_Fichier"]."'";
+                                {   $Query = "SELECT DISTINCT 'X' FROM Photos WHERE PHT_Status <> 2 AND PHT_Fichier LIKE '".$aRow["PHT_Fichier"]."'";
                                     $Query .= " AND UPPER(PHT_Album) <> UPPER('".trim($albnm)."')";
                                     $PhtRes = mysql_query(trim($Query),$Link);
                                     if(mysql_num_rows($PhtRes) != 0)
                                     {   mysql_free_result($PhtRes);
                                         // Supprime la photo de la table Photos pour cet album
-                                        $Query = "DELETE FROM Photos WHERE UPPER(PHT_Album) = UPPER('".trim($albnm)."') AND PHT_Fichier LIKE '".$aRow["PHT_Fichier"]."'";
+                                        $Query = "UPDATE Photos SET PHT_Status = 2, PHT_StatusDate = CURRENT_TIMESTAMP WHERE UPPER(PHT_Album) = UPPER('".trim($albnm)."') AND PHT_Fichier LIKE '".$aRow["PHT_Fichier"]."'";
                                         mysql_query(trim($Query),$Link);
                                     }
                                     else
                                     {   // Supprime la photo de toute la table Photos
-                                        $Query = "DELETE FROM Photos WHERE PHT_Fichier LIKE '".$aRow["PHT_Fichier"]."'";
+                                        $Query = "UPDATE Photos SET PHT_Status = 2, PHT_StatusDate = CURRENT_TIMESTAMP WHERE PHT_Fichier LIKE '".$aRow["PHT_Fichier"]."'";
                                         if(mysql_query(trim($Query),$Link))
                                         {   // Supprime la photo de la table Votes
-                                            $Query = "DELETE FROM Votes WHERE VOT_Fichier LIKE '".$aRow["PHT_Fichier"]."'";
+                                            $Query = "UPDATE Votes SET VOT_Status = 2, VOT_StatusDate = CURRENT_TIMESTAMP WHERE VOT_Fichier LIKE '".$aRow["PHT_Fichier"]."'";
                                             mysql_query(trim($Query),$Link);
                                             // Supprime la photo du serveur
                                             @unlink(GetSrvPhtFolder().$aRow["PHT_Fichier"]);
@@ -136,7 +136,7 @@ if(!Empty($Clf))
                                 }
                                 mysql_free_result($Result);
                             }
-                            $Query = "DELETE FROM Albums WHERE UPPER(ALB_Pseudo) = UPPER('".addslashes($Camarade)."') AND UPPER(ALB_Nom) = UPPER('".trim($albnm)."')";
+                            $Query = "UPDATE Albums SET ALB_Status = 2, ALB_StatusDate = CURRENT_TIMESTAMP WHERE UPPER(ALB_Pseudo) = UPPER('".addslashes($Camarade)."') AND UPPER(ALB_Nom) = UPPER('".trim($albnm)."')";
                             if(!mysql_query(trim($Query),$Link))
                             {   mysql_close($Link);
                                 $Msg = "Echec durant la suppression de l'album <font color=\"#808080\">".trim(stripslashes($albnm))."</font>! Contacts le <font color=\"#808080\">Webmaster</font>!";
@@ -189,7 +189,7 @@ form {padding: 0px; margin-bottom: 0px; border: 0px}
 <!--
 // Variables //////////////////////////////////////////////////////////////////////////////////
 var aEventTab=new Array(0<?php
-$Query = "SELECT EVE_Nom,EVE_Date,EVE_EventID FROM Evenements WHERE EVE_Date <= '".trim($aDate["year"])."-".trim($aDate["mon"])."-".trim($aDate["mday"])."' ORDER BY EVE_Date DESC LIMIT 0,30";
+$Query = "SELECT EVE_Nom,EVE_Date,EVE_EventID FROM Evenements WHERE EVE_Status <> 2 AND EVE_Date <= '".trim($aDate["year"])."-".trim($aDate["mon"])."-".trim($aDate["mday"])."' ORDER BY EVE_Date DESC LIMIT 0,30";
 $Result = mysql_query(trim($Query),$Link);
 while($aRow = mysql_fetch_array($Result))
 {   if(strlen(trim($aRow["EVE_Nom"])) <= 15) $aEvent[] = substr($aRow["EVE_Date"],8,10)."/".substr($aRow["EVE_Date"],5,2)."/".substr($aRow["EVE_Date"],2,2)." - ".str_replace($aSearch,$aReplace,trim($aRow["EVE_Nom"]));
@@ -266,7 +266,7 @@ function ChgAlbumList()
             {   <?php
                 $CntAlb = 0;
                 $Query = "SELECT ALB_Nom,ALB_Pseudo,ALB_Shared,ALB_EventID,ALB_Remark,ALB_Date,COUNT(PHT_Fichier) AS PHT_Count FROM Albums LEFT JOIN Photos ON ALB_Nom = PHT_Album";
-                $Query .= " WHERE UPPER(ALB_Pseudo) = UPPER('".addslashes($Camarade)."')";
+                $Query .= " WHERE ALB_Status <> 2 AND PHT_Status <> 2 AND UPPER(ALB_Pseudo) = UPPER('".addslashes($Camarade)."')";
                 $Query .= " GROUP BY ALB_Nom,ALB_Pseudo,ALB_Shared,ALB_EventID,ALB_Remark,ALB_Date";
                 $Query .= " ORDER BY ALB_Nom";
                 $Result = mysql_query(trim($Query),$Link);

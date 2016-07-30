@@ -29,7 +29,7 @@ $aReplace = array("&lt;","&gt;");
     {   mysql_select_db(GetMySqlDB(),$Link);
         if(!Empty($Clf))
         {   $Camarade = DistUserKeyId($Clf);
-            $Query = "SELECT 'X' FROM Camarades WHERE UPPER(CAM_Pseudo) = UPPER('".addslashes($Camarade)."')";
+            $Query = "SELECT 'X' FROM Camarades WHERE CAM_Status <> 2 AND UPPER(CAM_Pseudo) = UPPER('".addslashes($Camarade)."')";
             mysql_select_db(GetMySqlDB(),$Link);
             $Result = mysql_query(trim($Query),$Link);
             if(mysql_num_rows($Result) != 0) mysql_free_result($Result);
@@ -45,7 +45,7 @@ $aReplace = array("&lt;","&gt;");
         if((!Empty($lck))&&($lck == 1)) $SelLock = true;
         if((!Empty($auto))&&($auto == 1)) $SelPlay = true;
         if((!Empty($lp))&&($lp == 1)) $SelLoop = true;
-        $Query = "SELECT * FROM Music";
+        $Query = "SELECT * FROM Music WHERE MSC_Status <> 2";
         switch($Tri)
         {   case 0: // Artiste
             {   $Query .= " ORDER BY MSC_Artiste, MSC_Album, MSC_Morceau, MSC_Pseudo";

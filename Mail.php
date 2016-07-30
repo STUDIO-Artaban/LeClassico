@@ -23,7 +23,7 @@ if(!Empty($Clf))
     }
     else
     {   $Camarade = UserKeyIdentifier($Clf);
-        $Query = "SELECT CAM_Pseudo FROM Camarades WHERE UPPER(CAM_Pseudo) = UPPER('".addslashes($Camarade)."')";
+        $Query = "SELECT CAM_Pseudo FROM Camarades WHERE CAM_Status <> 2 AND UPPER(CAM_Pseudo) = UPPER('".addslashes($Camarade)."')";
         mysql_select_db(GetMySqlDB(),$Link);
         $Result = mysql_query(trim($Query),$Link);
         if(mysql_num_rows($Result) != 0)
@@ -37,7 +37,7 @@ if(!Empty($Clf))
                    (!Empty($msgstk)))
                 {   if((!Empty($msgcntt))&&(strcmp(trim($msgcntt),"")))
                     {   if((!Empty($msgpsd))&&(strcmp(trim($msgpsd),"")))
-                        {   $Query = "SELECT 'X' FROM Camarades WHERE UPPER(CAM_Pseudo) = UPPER('".trim($msgpsd)."')";
+                        {   $Query = "SELECT 'X' FROM Camarades WHERE CAM_Status <> 2 AND UPPER(CAM_Pseudo) = UPPER('".trim($msgpsd)."')";
                             $Result = mysql_query(trim($Query),$Link);
                             if(mysql_num_rows($Result) != 0)
                             {   mysql_free_result($Result);
@@ -116,11 +116,11 @@ if(!Empty($Clf))
                 {   $Query = "SELECT MSG_Message FROM Messagerie";
                     if($msgtpe == 1)
                     {   // Message reçu
-                        $Query .= " WHERE UPPER(MSG_Pseudo) = UPPER('".addslashes($Camarade)."') AND MSG_ReadStk = 1";
+                        $Query .= " WHERE MSG_Status <> 2 AND UPPER(MSG_Pseudo) = UPPER('".addslashes($Camarade)."') AND MSG_ReadStk = 1";
                     }
                     else
                     {   // Message envoyé
-                        $Query .= " WHERE UPPER(MSG_From) = UPPER('".addslashes($Camarade)."') AND MSG_WriteStk = 1";
+                        $Query .= " WHERE MSG_Status <> 2 AND UPPER(MSG_From) = UPPER('".addslashes($Camarade)."') AND MSG_WriteStk = 1";
                     }
                     $Query .= " AND MSG_Date = '".trim($msgdt)."' AND MSG_Time = '".trim($msgtm)."'";
                     if($Result = mysql_query(trim($Query),$Link))

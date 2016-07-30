@@ -159,7 +159,7 @@ if(!Empty($Clf))
                             include("Message.php");
                             die();
                         }
-                        $Query = "DELETE FROM Abonnements WHERE UPPER(ABO_Pseudo) = UPPER('".addslashes($Camarade)."') AND ABO_Camarade LIKE '".addslashes($abo)."'";
+                        $Query = "UPDATE Abonnements SET ABO_Status = 2, ABO_StatusDate = CURRENT_TIMESTAMP WHERE UPPER(ABO_Pseudo) = UPPER('".addslashes($Camarade)."') AND ABO_Camarade LIKE '".addslashes($abo)."'";
                         if(!mysql_query(trim($Query),$Link))
                         {   mysql_close($Link);
                             $Msg = "Echec de la mise &agrave; jour de tes abonnements! Contact le <font color=\"#808080\">Webmaster</font>!";
@@ -218,7 +218,7 @@ if(!Empty($Clf))
                 }
                 case 6:
                 {   // Retire la bannière
-                    $Query = "SELECT CAM_Banner FROM Camarades WHERE UPPER(CAM_Pseudo) = UPPER('".addslashes($Camarade)."')";
+                    $Query = "SELECT CAM_Banner FROM Camarades WHERE CAM_Status <> 2 AND UPPER(CAM_Pseudo) = UPPER('".addslashes($Camarade)."')";
                     $Result = mysql_query(trim($Query),$Link);
                     if($aRow = mysql_fetch_array($Result))
                     {   $File = $aRow["CAM_Banner"];
@@ -236,7 +236,7 @@ if(!Empty($Clf))
                 }
                 case 7:
                 {   // Retire la photo du profile
-                    $Query = "SELECT CAM_Profile FROM Camarades WHERE UPPER(CAM_Pseudo) = UPPER('".addslashes($Camarade)."')";
+                    $Query = "SELECT CAM_Profile FROM Camarades WHERE CAM_Status <> 2 AND UPPER(CAM_Pseudo) = UPPER('".addslashes($Camarade)."')";
                     $Result = mysql_query(trim($Query),$Link);
                     if($aRow = mysql_fetch_array($Result))
                     {   $File = $aRow["CAM_Profile"];
@@ -278,14 +278,14 @@ if(!Empty($Clf))
         // Lecture des infos personnels/d'un camarade
         $Abonne = false;
         if(Empty($Cam))
-            $Query = "SELECT * FROM Camarades WHERE UPPER(CAM_Pseudo) = UPPER('".addslashes($Camarade)."')";
+            $Query = "SELECT * FROM Camarades WHERE CAM_Status <> 2 AND UPPER(CAM_Pseudo) = UPPER('".addslashes($Camarade)."')";
         else {
-            $Query = "SELECT 'X' FROM Abonnements WHERE UPPER(ABO_Pseudo) = UPPER('".addslashes($Camarade)."') AND ABO_Camarade = '".addslashes($Cam)."'";
+            $Query = "SELECT 'X' FROM Abonnements WHERE CAM_Status <> 2 AND UPPER(ABO_Pseudo) = UPPER('".addslashes($Camarade)."') AND ABO_Camarade = '".addslashes($Cam)."'";
             $Result = mysql_query(trim($Query),$Link);
             $Abonne = mysql_num_rows($Result) > 0;
             mysql_free_result($Result);
             //
-            $Query = "SELECT * FROM Camarades WHERE UPPER(CAM_Pseudo) = UPPER('".addslashes($Cam)."')";
+            $Query = "SELECT * FROM Camarades WHERE CAM_Status <> 2 AND UPPER(CAM_Pseudo) = UPPER('".addslashes($Cam)."')";
         }
         $Result = mysql_query(trim($Query),$Link);
         if($aRow = mysql_fetch_array($Result))
@@ -876,11 +876,11 @@ possibilité de t'abonner à son actualité, ou éventuellement de t'en désabonner s
         <select style="width:310px"<?php if(Empty($Cam)) echo " name=\"abo\" onChange=\"document.getElementById('desAbon').disabled = false;\""; ?> size=7>
         <?php
         if(Empty($Cam)) {
-            $Query = "SELECT ABO_Camarade FROM Abonnements WHERE UPPER(ABO_Pseudo) = UPPER('".addslashes($Camarade)."')";
+            $Query = "SELECT ABO_Camarade FROM Abonnements WHERE ABO_Status <> 2 AND UPPER(ABO_Pseudo) = UPPER('".addslashes($Camarade)."')";
             $CurCam = $Camarade;
         }
         else {
-            $Query = "SELECT ABO_Camarade FROM Abonnements WHERE UPPER(ABO_Pseudo) = UPPER('".addslashes($Cam)."')";
+            $Query = "SELECT ABO_Camarade FROM Abonnements WHERE ABO_Status <> 2 AND UPPER(ABO_Pseudo) = UPPER('".addslashes($Cam)."')";
             $CurCam = $Cam;
         }
         $Result = mysql_query(trim($Query),$Link);

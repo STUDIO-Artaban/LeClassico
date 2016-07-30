@@ -21,7 +21,7 @@ else
 {   mysql_select_db(GetMySqlDB(),$Link);
     if(!Empty($Clf))
     {   $Camarade = UserKeyIdentifier($Clf);
-        $Query = "SELECT 'X' FROM Camarades WHERE UPPER(CAM_Pseudo) = UPPER('".addslashes($Camarade)."')";
+        $Query = "SELECT 'X' FROM Camarades WHERE CAM_Status <> 2 AND UPPER(CAM_Pseudo) = UPPER('".addslashes($Camarade)."')";
         $Result = mysql_query(trim($Query),$Link);
         if(mysql_num_rows($Result) != 0) mysql_free_result($Result);
         else
@@ -32,41 +32,38 @@ else
         }
     }
     $Query = "SELECT ALB_Nom,ALB_Pseudo,ALB_Shared,ALB_Remark,ALB_Date,EVE_Nom,COUNT(PHT_Fichier) AS PHT_Count FROM Albums LEFT JOIN Evenements ON ALB_EventID = EVE_EventID LEFT JOIN Photos ON ALB_Nom = PHT_Album";
+    $Query .= " WHERE ALB_Status <> 2 AND EVE_Status <> 2 AND ALB_Nom <> 'Journal'";
     if(!Empty($trcfg)) $Tri = $trcfg;
     switch($Tri)
     {   case 0: // Date
-        {   $Query .= " WHERE ALB_Nom <> 'Journal'";
-            $Query .= " GROUP BY ALB_Nom,ALB_Pseudo,ALB_Shared,ALB_Remark,ALB_Date,EVE_Nom";
+        {   $Query .= " GROUP BY ALB_Nom,ALB_Pseudo,ALB_Shared,ALB_Remark,ALB_Date,EVE_Nom";
             $Query .= " ORDER BY ALB_Date DESC, ALB_Nom ASC";
             break;
         }
         case 1: // Nom album
-        {   $Query .= " WHERE ALB_Nom <> 'Journal'";
-            $Query .= " GROUP BY ALB_Nom,ALB_Pseudo,ALB_Shared,ALB_Remark,ALB_Date,EVE_Nom";
+        {   $Query .= " GROUP BY ALB_Nom,ALB_Pseudo,ALB_Shared,ALB_Remark,ALB_Date,EVE_Nom";
             $Query .= " ORDER BY ALB_Nom ASC";
             break;
         }
         case 2: // Pseudo
-        {   $Query .= " WHERE ALB_Nom <> 'Journal'";
-            $Query .= " GROUP BY ALB_Nom,ALB_Pseudo,ALB_Shared,ALB_Remark,ALB_Date,EVE_Nom";
+        {   $Query .= " GROUP BY ALB_Nom,ALB_Pseudo,ALB_Shared,ALB_Remark,ALB_Date,EVE_Nom";
             $Query .= " ORDER BY ALB_Pseudo ASC, ALB_Date DESC";
             break;
         }
         case 3: // Shared
-        {   $Query .= " WHERE ALB_Nom <> 'Journal' AND ALB_Shared = 1";
+        {   $Query .= " AND ALB_Shared = 1";
             $Query .= " GROUP BY ALB_Nom,ALB_Pseudo,ALB_Shared,ALB_Remark,ALB_Date,EVE_Nom";
             $Query .= " ORDER BY ALB_Date DESC";
             break;
         }
         case 4: // Evénement
-        {   $Query .= " WHERE ALB_Nom <> 'Journal' AND ALB_EventID <> 0";
+        {   $Query .= " AND ALB_EventID <> 0";
             $Query .= " GROUP BY ALB_Nom,ALB_Pseudo,ALB_Shared,ALB_Remark,ALB_Date,EVE_Nom";
             $Query .= " ORDER BY EVE_Nom ASC, ALB_Date DESC";
             break;
         }
         default:
-        {   $Query .= " WHERE ALB_Nom <> 'Journal'";
-            $Query .= " GROUP BY ALB_Nom,ALB_Pseudo,ALB_Shared,ALB_Remark,ALB_Date,EVE_Nom";
+        {   $Query .= " GROUP BY ALB_Nom,ALB_Pseudo,ALB_Shared,ALB_Remark,ALB_Date,EVE_Nom";
             $Query .= " ORDER BY ALB_Date DESC, ALB_Nom ASC";
             break;
         }

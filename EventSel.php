@@ -20,7 +20,7 @@ if(!Empty($Clf))
     }
     else
     {   $Camarade = UserKeyIdentifier($Clf);
-        $Query = "SELECT CAM_Pseudo,CAM_LogDate FROM Camarades WHERE UPPER(CAM_Pseudo) = UPPER('".addslashes($Camarade)."')";
+        $Query = "SELECT CAM_Pseudo,CAM_LogDate FROM Camarades WHERE CAM_Status <> 2 AND UPPER(CAM_Pseudo) = UPPER('".addslashes($Camarade)."')";
         mysql_select_db(GetMySqlDB(),$Link);
         $Result = mysql_query(trim($Query),$Link);
         if(mysql_num_rows($Result) != 0)
@@ -36,7 +36,7 @@ if(!Empty($Clf))
                 }
                 else
                 {   // Je Viens Pas //////////////////////////////////////////////////////////////////////////////////////////////
-                    $Query = "DELETE FROM Presents WHERE PRE_EventID = $evnt AND PRE_Pseudo = '".addslashes($Camarade)."'";
+                    $Query = "UPDATE Presents SET PRE_Status = 2, PRE_StatusDate = CURRENT_TIMESTAMP WHERE PRE_EventID = $evnt AND PRE_Pseudo = '".addslashes($Camarade)."'";
                     mysql_query(trim($Query),$Link);
                 }
             }
@@ -108,7 +108,7 @@ $bPass = false;
 $bPresent = false;
 $BckColor = "#D8E1C6";
 $CntView = 0;
-$Query = "SELECT EVE_EventID,EVE_Pseudo,EVE_Nom,EVE_Lieu,EVE_Flyer,EVE_Remark FROM Evenements WHERE EVE_Date = '";
+$Query = "SELECT EVE_EventID,EVE_Pseudo,EVE_Nom,EVE_Lieu,EVE_Flyer,EVE_Remark FROM Evenements WHERE EVE_Status <> 2 AND EVE_Date = '";
 if((!Empty($dy))&&(!Empty($mn))&&(!Empty($yr)))
 {   $Query .= "$yr-$mn-$dy'";
     if((strtotime("now") >= strtotime("$dy ".$aMonth[$mn-1]." $yr"))&&
@@ -295,7 +295,7 @@ while($aRow = mysql_fetch_array($Result))
         <tr>
         <?php
         $bPresent = false;
-        $Query = "SELECT PRE_Pseudo FROM Presents WHERE PRE_EventID = ".trim($aRow["EVE_EventID"]);
+        $Query = "SELECT PRE_Pseudo FROM Presents WHERE PRE_Status <> 2 AND PRE_EventID = ".trim($aRow["EVE_EventID"]);
         $ResPrt = mysql_query(trim($Query),$Link);
         ?>
         <td><font ID="Title"><font style="font-size: 12pt">Camarade(s) pr&eacute;sent(s):&nbsp;&nbsp;<font color="#ff0000"><?php echo mysql_num_rows($ResPrt); ?></font></font></font></td>

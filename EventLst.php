@@ -16,7 +16,7 @@ if(!Empty($Clf))
     }
     else
     {   $Camarade = UserKeyIdentifier($Clf);
-        $Query = "SELECT CAM_Pseudo,CAM_LogDate FROM Camarades WHERE UPPER(CAM_Pseudo) = UPPER('".addslashes($Camarade)."')";
+        $Query = "SELECT CAM_Pseudo,CAM_LogDate FROM Camarades WHERE CAM_Status <> 2 AND UPPER(CAM_Pseudo) = UPPER('".addslashes($Camarade)."')";
         mysql_select_db(GetMySqlDB(),$Link);
         $Result = mysql_query(trim($Query),$Link);
         if(mysql_num_rows($Result) != 0)
@@ -359,7 +359,7 @@ function AfficherEvent(iViewYear,iViewMnth,iViewDay,sKey)
     $bContinue = true;
     $bPass = false;
     $Query = "SELECT EVE_Date,EVE_Nom,COUNT(PRE_Pseudo) AS EVE_CamCnt FROM Evenements LEFT JOIN Presents ON EVE_EventID = PRE_EventID";
-    $Query .= " WHERE EVE_Date >= '".trim($aDate["year"])."-".trim($aDate["mon"])."-".trim($aDate["mday"])."' GROUP BY EVE_Date,EVE_Nom ORDER BY EVE_Date";
+    $Query .= " WHERE EVE_Status <> 2 AND EVE_Date >= '".trim($aDate["year"])."-".trim($aDate["mon"])."-".trim($aDate["mday"])."' GROUP BY EVE_Date,EVE_Nom ORDER BY EVE_Date";
     $Result = mysql_query(trim($Query),$Link);
     if(mysql_num_rows($Result) != 0)
     {   // Evénement trouvé
@@ -619,7 +619,7 @@ function AfficherEvent(iViewYear,iViewMnth,iViewDay,sKey)
     $iTmp = 0;
     $iResCnt = 0;
     $Query = "SELECT EVE_Date,EVE_Nom,COUNT(PRE_Pseudo) AS EVE_CamCnt FROM Evenements LEFT JOIN Presents ON EVE_EventID = PRE_EventID";
-    $Query .= " GROUP BY EVE_Date,EVE_Nom";
+    $Query .= " WHERE PRE_Status <> 2 AND EVE_Status <> 2 GROUP BY EVE_Date,EVE_Nom";
     if(!Empty($trcfg))
     {   switch($trcfg)
         {   case 1:

@@ -90,9 +90,9 @@ form {padding: 0px; margin-bottom: 0px; margin-top: 0px; border: 0px}
 </td>
 </tr>
 </table><br>
-<font face="Verdana,Lucida,Courier" size=2>Tu n’est pas inscrit ! Dommage ! Tu veux savoir comment t’inscrire ?<br>
- C’est facile, tire bien sur la chaîne d’évènements qui t’as permis d’arriver jusqu’ici...<br><br>
- Et si c’est le hasard qui ta conduit là, alors exerces toi encore un peu en saisissant un pseudo et un code confidentiel au hasard. On ne sait jamais...Ah! Ah!</font>
+<font face="Verdana,Lucida,Courier" size=2>Tu n'est pas inscrit ! Dommage ! Tu veux savoir comment t'inscrire ?<br>
+ C'est facile, tire bien sur la chaîne d'évènements qui t'as permis d'arriver jusqu'ici...<br><br>
+ Et si c'est le hasard qui ta conduit là, alors exerces toi encore un peu en saisissant un pseudo et un code confidentiel au hasard. On ne sait jamais...Ah! Ah!</font>
 <br><br>
 <form action="index.php" target="_top" method="post">
 <table border=0 width="100%" cellspacing=0 cellpadding=0>

@@ -191,7 +191,7 @@ function PrintString($String)
 // GetComments
 ///////////////////////////////////
 function GetComments($clf,$camarade,$link,$type,$id)
-{   $query = "SELECT COM_Date,COM_Pseudo,COM_Text FROM Commentaires WHERE COM_ObjType = '$type' AND COM_ObjID = $id ORDER BY COM_Date";
+{   $query = "SELECT COM_Date,COM_Pseudo,COM_Text FROM Commentaires WHERE COM_Status <> 2 AND COM_ObjType = '$type' AND COM_ObjID = $id ORDER BY COM_Date";
     $result = mysql_query(trim($query),$link);
     $comments = "";
     $search = array("<",">");

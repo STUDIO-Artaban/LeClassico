@@ -20,7 +20,7 @@ if(!Empty($Clf))
     }
     else
     {   $Camarade = UserKeyIdentifier($Clf);
-        $Query = "SELECT 'X' FROM Camarades WHERE UPPER(CAM_Pseudo) = UPPER('".addslashes($Camarade)."')";
+        $Query = "SELECT 'X' FROM Camarades WHERE CAM_Status <> 2 AND UPPER(CAM_Pseudo) = UPPER('".addslashes($Camarade)."')";
         mysql_select_db(GetMySqlDB(),$Link);
         $Result = mysql_query(trim($Query),$Link);
         if(mysql_num_rows($Result) != 0)
@@ -30,7 +30,7 @@ if(!Empty($Clf))
                 {   $Query = "SELECT MSG_ReadStk, MSG_WriteStk FROM Messagerie";
                     if($ope == 1)
                     {   // Retire un message reçu //////////////////////////////////////////////////////////////////////////////////////
-                        $Query .= " WHERE UPPER(MSG_Pseudo) = UPPER('".addslashes($Camarade)."')";
+                        $Query .= " WHERE MSG_Status <> 2 AND UPPER(MSG_Pseudo) = UPPER('".addslashes($Camarade)."')";
                         $Query .= " AND MSG_Date = '".trim($msgdt)."' AND MSG_Time = '".trim($msgtm)."'";
                         $Result = mysql_query(trim($Query),$Link);
                         $aRow = mysql_fetch_array($Result);
@@ -40,7 +40,7 @@ if(!Empty($Clf))
                         }
                         else
                         {   // Supprime le message
-                            $Query = "DELETE FROM Messagerie";
+                            $Query = "UPDATE Messagerie SET MSG_Status = 2, MSG_StatusDate = CURRENT_TIMESTAMP";
                         }
                         $Query .= " WHERE UPPER(MSG_Pseudo) = UPPER('".addslashes($Camarade)."')";
                         $Query .= " AND MSG_Date = '".trim($msgdt)."' AND MSG_Time = '".trim($msgtm)."'";
@@ -54,7 +54,7 @@ if(!Empty($Clf))
                     }
                     else
                     {   // Retire un message envoyé ///////////////////////////////////////////////////////////////////////////////////
-                        $Query .= " WHERE UPPER(MSG_From) = UPPER('".addslashes($Camarade)."')";
+                        $Query .= " WHERE MSG_Status <> 2 AND UPPER(MSG_From) = UPPER('".addslashes($Camarade)."')";
                         $Query .= " AND MSG_Date = '".trim($msgdt)."' AND MSG_Time = '".trim($msgtm)."'";
                         $Result = mysql_query(trim($Query),$Link);
                         $aRow = mysql_fetch_array($Result);
@@ -64,7 +64,7 @@ if(!Empty($Clf))
                         }
                         else
                         {   // Supprime le message
-                            $Query = "DELETE FROM Messagerie";
+                            $Query = "UPDATE Messagerie SET MSG_Status = 2, MSG_StatusDate = CURRENT_TIMESTAMP";
                         }
                         $Query .= " WHERE UPPER(MSG_From) = UPPER('".addslashes($Camarade)."')";
                         $Query .= " AND MSG_Date = '".trim($msgdt)."' AND MSG_Time = '".trim($msgtm)."'";
@@ -120,7 +120,7 @@ function ChgMsgRecus()
 {   switch(document.getElementById("RcMsgList").selectedIndex)
     {   <?php
         $Query = "SELECT MSG_From,MSG_Date,MSG_Time,MSG_LuFlag,MSG_Objet FROM Messagerie";
-        $Query .= " WHERE UPPER(MSG_Pseudo) = UPPER('".addslashes($Camarade)."') AND MSG_ReadStk = 1";
+        $Query .= " WHERE MSG_Status <> 2 AND UPPER(MSG_Pseudo) = UPPER('".addslashes($Camarade)."') AND MSG_ReadStk = 1";
         $Query .= " ORDER BY MSG_Date DESC, MSG_Time DESC";
         $Result = mysql_query(trim($Query),$Link);
         while($aRow = mysql_fetch_array($Result))
@@ -177,7 +177,7 @@ function ChgMsgEnvoyes()
 {   switch(document.getElementById("SdMsgList").selectedIndex)
     {   <?php
         $Query = "SELECT MSG_Pseudo,MSG_Date,MSG_Time,MSG_LuFlag,MSG_Objet FROM Messagerie";
-        $Query .= " WHERE UPPER(MSG_From) = UPPER('".addslashes($Camarade)."') AND MSG_WriteStk = 1";
+        $Query .= " WHERE MSG_Status <> 2 AND UPPER(MSG_From) = UPPER('".addslashes($Camarade)."') AND MSG_WriteStk = 1";
         $Query .= " ORDER BY MSG_Date DESC, MSG_Time DESC";
         $Result = mysql_query(trim($Query),$Link);
         while($aRow = mysql_fetch_array($Result))
