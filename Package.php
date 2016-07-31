@@ -364,7 +364,7 @@ function AjoutePublication($link,$camarade)
     if(($join == 1)&&(!Empty($_FILES["img"]["name"]))&&(DownloadImageFile($link,GetSrvPhtFolder(),"img") != 14)) return 12; // Download failed
     $file = GetPhotoFile($link,true).GetImageExtension("img");
     // MAJ database
-    $query = "INSERT INTO Actualites (ACT_ActuID,ACT_Date,ACT_Pseudo,ACT_Camarade,ACT_Text,ACT_Link,ACT_Fichier) VALUES (NULL,CURRENT_TIMESTAMP,";
+    $query = "INSERT INTO Actualites (ACT_ActuID,ACT_Date,ACT_Pseudo,ACT_Camarade,ACT_Text,ACT_Link,ACT_Fichier,ACT_StatusDate) VALUES (NULL,CURRENT_TIMESTAMP,";
     $query .= "'".addslashes($camarade)."',";
     $query .= ((strcmp($to,""))? "'$to',":"NULL,");
     $query .= ((strcmp($msg,""))? "'".addslashes($msg)."',":"NULL,");
@@ -372,9 +372,9 @@ function AjoutePublication($link,$camarade)
     if(($join == 0)&&(strcmp($lnk,""))) $query .= "'$lnk',NULL)";
     else if(($join == 1)&&(!Empty($_FILES["img"]["name"]))) {
         $journal = true;
-        $query .= "NULL,'$file')";
+        $query .= "NULL,'$file',CURRENT_TIMESTAMP)";
     }
-    else $query .= "NULL,NULL)";
+    else $query .= "NULL,NULL,CURRENT_TIMESTAMP)";
     if(!mysql_query(trim($query),$link)) return 21; // Failed to publish
     if($journal) {
         $query = "INSERT INTO Photos (PHT_Album,PHT_Pseudo,PHT_Fichier,PHT_FichierID) VALUES ('Journal','".addslashes($camarade)."','$file',".strval(GetPhotoID($file)).")";

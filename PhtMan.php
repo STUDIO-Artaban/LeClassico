@@ -51,7 +51,7 @@ if(!Empty($Clf))
                         $Query = "UPDATE Photos SET PHT_Status = 2, PHT_StatusDate = CURRENT_TIMESTAMP WHERE PHT_Fichier LIKE '$pht'";
                         if(mysql_query(trim($Query),$Link))
                         {   // Supprime la photo de la table Votes
-                            $Query = "UPDATE Votes SET VOT_Status = 2, VOT_StatusDate = CURRENT_TIMESTAMP WHERE VOT_Fichier LIKE '$pht'";
+                            $Query = "DELETE FROM Votes WHERE VOT_Fichier LIKE '$pht'";
                             mysql_query(trim($Query),$Link);
                             // Supprime la photo de la table Commentaires
                             $phtID = GetPhotoID($pht);
@@ -124,7 +124,7 @@ switch($iSuppRes)
 $iPhtCnt = 0;
 $Query = "SELECT COUNT(*) AS PHT_Count FROM Photos WHERE PHT_Status <> 2";
 $iPhtCnt = mysql_result(mysql_query(trim($Query),$Link),0,"PHT_Count");
-$Query = "SELECT SUM(VOT_Note)+SUM(VOT_Total) AS VOT_Pos,VOT_Fichier FROM Votes WHERE VOT_Status <> 2 AND VOT_Type = 0 GROUP BY VOT_Fichier ORDER BY VOT_Pos DESC";
+$Query = "SELECT SUM(VOT_Note)+SUM(VOT_Total) AS VOT_Pos,VOT_Fichier FROM Votes WHERE VOT_Type = 0 GROUP BY VOT_Fichier ORDER BY VOT_Pos DESC";
 $Result = mysql_query(trim($Query),$Link);
 $iLastVote = 0;
 while($aRow = mysql_fetch_array($Result))
@@ -165,7 +165,7 @@ function FillPhotoArray()
     $CurAlbum = "";
     $Query = "SELECT ALB_Nom,PHT_Pseudo,PHT_Fichier,SUM(VOT_Note) AS PHT_Note,SUM(VOT_Total) AS PHT_Total";
     $Query .= " FROM Albums LEFT JOIN Photos ON ALB_Nom = PHT_Album LEFT JOIN Votes ON PHT_Fichier = VOT_Fichier AND VOT_Type = 0";
-    $Query .= " WHERE ALB_Status <> 2 AND VOT_Status <> 2 AND UPPER(ALB_Pseudo) = UPPER('".addslashes($Camarade)."') GROUP BY ALB_Nom,PHT_Pseudo,PHT_Fichier ORDER BY ALB_Nom,PHT_Fichier";
+    $Query .= " WHERE ALB_Status <> 2 AND UPPER(ALB_Pseudo) = UPPER('".addslashes($Camarade)."') GROUP BY ALB_Nom,PHT_Pseudo,PHT_Fichier ORDER BY ALB_Nom,PHT_Fichier";
     $Result = mysql_query(trim($Query),$Link);
     while($aRow = mysql_fetch_array($Result))
     {   if(!strcmp($aRow["ALB_Nom"],"Journal")) continue;
@@ -249,7 +249,7 @@ function FillPhotoArray()
     $CurAlbum = "";
     $Query = "SELECT ALB_Nom,PHT_Pseudo,PHT_Fichier,SUM(VOT_Note) AS PHT_Note,SUM(VOT_Total) AS PHT_Total";
     $Query .= " FROM Albums LEFT JOIN Photos ON ALB_Nom = PHT_Album LEFT JOIN Votes ON PHT_Fichier = VOT_Fichier AND VOT_Type = 0";
-    $Query .= " WHERE ALB_Status <> 2 AND PHT_Status <> 2 AND VOT_Status <> 2 AND ALB_Shared = 1 AND UPPER(ALB_Pseudo) <> UPPER('".addslashes($Camarade)."') GROUP BY ALB_Nom,PHT_Pseudo,PHT_Fichier ORDER BY ALB_Nom,PHT_Fichier";
+    $Query .= " WHERE ALB_Status <> 2 AND PHT_Status <> 2 AND ALB_Shared = 1 AND UPPER(ALB_Pseudo) <> UPPER('".addslashes($Camarade)."') GROUP BY ALB_Nom,PHT_Pseudo,PHT_Fichier ORDER BY ALB_Nom,PHT_Fichier";
     $Result = mysql_query(trim($Query),$Link);
     while($aRow = mysql_fetch_array($Result))
     {   // Tant qu'il y a des photos dans l'album

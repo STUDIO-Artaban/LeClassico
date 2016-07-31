@@ -172,12 +172,15 @@ if(!Empty($Clf))
                 case 4:
                 {   // Abonnement
                     if((!Empty($abo))&&(strcmp(trim($abo),"")))
-                    {   $Query = "INSERT INTO Abonnements (ABO_Pseudo,ABO_Camarade) VALUES ('".addslashes($Camarade)."','".addslashes($abo)."')";
-                        if(!mysql_query(trim($Query),$Link))
-                        {   mysql_close($Link);
-                            $Msg = "Echec de la mise &agrave; jour de tes abonnements! Contact le <font color=\"#808080\">Webmaster</font>!";
-                            include("Message.php");
-                            die();
+                    {   $Query = "UPDATE Abonnements SET ABO_Status = 0, ABO_StatusDate = CURRENT_TIMESTAMP WHERE UPPER(ABO_Pseudo) = UPPER('".addslashes($Camarade)."') AND ABO_Camarade LIKE '".addslashes($abo)."'";
+                        if(!mysql_query(trim($Query),$Link)) {
+                            $Query = "INSERT INTO Abonnements (ABO_Pseudo,ABO_Camarade) VALUES ('".addslashes($Camarade)."','".addslashes($abo)."')";
+                            if(!mysql_query(trim($Query),$Link))
+                            {   mysql_close($Link);
+                                $Msg = "Echec de la mise &agrave; jour de tes abonnements! Contact le <font color=\"#808080\">Webmaster</font>!";
+                                include("Message.php");
+                                die();
+                            }
                         }
                     }
                     break;

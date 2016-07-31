@@ -30,7 +30,7 @@ if(!Empty($Clf))
                 {   $Query = "SELECT MSG_ReadStk, MSG_WriteStk FROM Messagerie";
                     if($ope == 1)
                     {   // Retire un message reçu //////////////////////////////////////////////////////////////////////////////////////
-                        $Query .= " WHERE MSG_Status <> 2 AND UPPER(MSG_Pseudo) = UPPER('".addslashes($Camarade)."')";
+                        $Query .= " WHERE UPPER(MSG_Pseudo) = UPPER('".addslashes($Camarade)."')";
                         $Query .= " AND MSG_Date = '".trim($msgdt)."' AND MSG_Time = '".trim($msgtm)."'";
                         $Result = mysql_query(trim($Query),$Link);
                         $aRow = mysql_fetch_array($Result);
@@ -40,7 +40,7 @@ if(!Empty($Clf))
                         }
                         else
                         {   // Supprime le message
-                            $Query = "UPDATE Messagerie SET MSG_Status = 2, MSG_StatusDate = CURRENT_TIMESTAMP";
+                            $Query = "DELETE FROM Messagerie";
                         }
                         $Query .= " WHERE UPPER(MSG_Pseudo) = UPPER('".addslashes($Camarade)."')";
                         $Query .= " AND MSG_Date = '".trim($msgdt)."' AND MSG_Time = '".trim($msgtm)."'";
@@ -54,7 +54,7 @@ if(!Empty($Clf))
                     }
                     else
                     {   // Retire un message envoyé ///////////////////////////////////////////////////////////////////////////////////
-                        $Query .= " WHERE MSG_Status <> 2 AND UPPER(MSG_From) = UPPER('".addslashes($Camarade)."')";
+                        $Query .= " WHERE UPPER(MSG_From) = UPPER('".addslashes($Camarade)."')";
                         $Query .= " AND MSG_Date = '".trim($msgdt)."' AND MSG_Time = '".trim($msgtm)."'";
                         $Result = mysql_query(trim($Query),$Link);
                         $aRow = mysql_fetch_array($Result);
@@ -64,7 +64,7 @@ if(!Empty($Clf))
                         }
                         else
                         {   // Supprime le message
-                            $Query = "UPDATE Messagerie SET MSG_Status = 2, MSG_StatusDate = CURRENT_TIMESTAMP";
+                            $Query = "DELETE FROM Messagerie";
                         }
                         $Query .= " WHERE UPPER(MSG_From) = UPPER('".addslashes($Camarade)."')";
                         $Query .= " AND MSG_Date = '".trim($msgdt)."' AND MSG_Time = '".trim($msgtm)."'";
@@ -120,7 +120,7 @@ function ChgMsgRecus()
 {   switch(document.getElementById("RcMsgList").selectedIndex)
     {   <?php
         $Query = "SELECT MSG_From,MSG_Date,MSG_Time,MSG_LuFlag,MSG_Objet FROM Messagerie";
-        $Query .= " WHERE MSG_Status <> 2 AND UPPER(MSG_Pseudo) = UPPER('".addslashes($Camarade)."') AND MSG_ReadStk = 1";
+        $Query .= " WHERE UPPER(MSG_Pseudo) = UPPER('".addslashes($Camarade)."') AND MSG_ReadStk = 1";
         $Query .= " ORDER BY MSG_Date DESC, MSG_Time DESC";
         $Result = mysql_query(trim($Query),$Link);
         while($aRow = mysql_fetch_array($Result))
@@ -177,7 +177,7 @@ function ChgMsgEnvoyes()
 {   switch(document.getElementById("SdMsgList").selectedIndex)
     {   <?php
         $Query = "SELECT MSG_Pseudo,MSG_Date,MSG_Time,MSG_LuFlag,MSG_Objet FROM Messagerie";
-        $Query .= " WHERE MSG_Status <> 2 AND UPPER(MSG_From) = UPPER('".addslashes($Camarade)."') AND MSG_WriteStk = 1";
+        $Query .= " WHERE UPPER(MSG_From) = UPPER('".addslashes($Camarade)."') AND MSG_WriteStk = 1";
         $Query .= " ORDER BY MSG_Date DESC, MSG_Time DESC";
         $Result = mysql_query(trim($Query),$Link);
         while($aRow = mysql_fetch_array($Result))

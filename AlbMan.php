@@ -127,7 +127,7 @@ if(!Empty($Clf))
                                         $Query = "UPDATE Photos SET PHT_Status = 2, PHT_StatusDate = CURRENT_TIMESTAMP WHERE PHT_Fichier LIKE '".$aRow["PHT_Fichier"]."'";
                                         if(mysql_query(trim($Query),$Link))
                                         {   // Supprime la photo de la table Votes
-                                            $Query = "UPDATE Votes SET VOT_Status = 2, VOT_StatusDate = CURRENT_TIMESTAMP WHERE VOT_Fichier LIKE '".$aRow["PHT_Fichier"]."'";
+                                            $Query = "DELETE FROM Votes WHERE VOT_Fichier LIKE '".$aRow["PHT_Fichier"]."'";
                                             mysql_query(trim($Query),$Link);
                                             // Supprime la photo du serveur
                                             @unlink(GetSrvPhtFolder().$aRow["PHT_Fichier"]);

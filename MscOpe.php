@@ -81,7 +81,7 @@ $Status = "<font ID='Status'>Pr&ecirc;t</font>";
                         $Query = "UPDATE Music SET MSC_Status = 2, MSC_StatusDate = CURRENT_TIMESTAMP WHERE MSC_Fichier LIKE '$SelFile%'";
                         if(mysql_query(trim($Query),$Link))
                         {   // Supprime la photo de la table Votes
-                            $Query = "UPDATE Votes SET VOT_Status = 2, VOT_StatusDate = CURRENT_TIMESTAMP WHERE VOT_Fichier LIKE '$SelFile%'";
+                            $Query = "DELETE FROM Votes WHERE VOT_Fichier LIKE '$SelFile%'";
                             mysql_query(trim($Query),$Link);
                             // Supprime la photo du serveur
                             @unlink(GetSrvMscFolder()."$SelFile.$Extension");
@@ -113,7 +113,7 @@ $Status = "<font ID='Status'>Pr&ecirc;t</font>";
                                 break;
                             }
                         }
-                        $Query = "SELECT VOT_Date, VOT_Note, VOT_Total FROM Votes WHERE VOT_Status <> 2 AND VOT_Fichier LIKE '$SelFile.$Extension'";
+                        $Query = "SELECT VOT_Date, VOT_Note, VOT_Total FROM Votes WHERE VOT_Fichier LIKE '$SelFile.$Extension'";
                         $Query .= " AND UPPER(VOT_Pseudo) = UPPER('".addslashes($Camarade)."')";
                         $Result = mysql_query(trim($Query),$Link);
                         if(mysql_num_rows($Result) != 0)
@@ -257,7 +257,7 @@ $Status = "<font ID='Status'>Pr&ecirc;t</font>";
             }
             $Query = "SELECT COUNT(*) AS MSC_Count FROM Music WHERE MSC_Status <> 2";
             $iMscCnt = mysql_result(mysql_query(trim($Query),$Link),0,"MSC_Count");
-            $Query = "SELECT SUM(VOT_Note)+SUM(VOT_Total) AS VOT_Pos,VOT_Fichier FROM Votes WHERE VOT_Status <> 2 AND VOT_Type = 1 GROUP BY VOT_Fichier ORDER BY VOT_Pos DESC";
+            $Query = "SELECT SUM(VOT_Note)+SUM(VOT_Total) AS VOT_Pos,VOT_Fichier FROM Votes WHERE VOT_Type = 1 GROUP BY VOT_Fichier ORDER BY VOT_Pos DESC";
             $Result = mysql_query(trim($Query),$Link);
             if(mysql_num_rows($Result) != 0)
             {   while($aRow = mysql_fetch_array($Result))
@@ -269,7 +269,7 @@ $Status = "<font ID='Status'>Pr&ecirc;t</font>";
             //
             $Query = "SELECT MSC_Source,MSC_Fichier,MSC_Pseudo,MSC_Artiste,MSC_Album,MSC_Morceau,V1.VOT_Note AS MSC_Note,V1.VOT_Total AS MSC_Total,SUM(V2.VOT_Note) AS MSC_AllNote,SUM(V2.VOT_Total) AS MSC_AllTotal";
             $Query .= " FROM Music LEFT JOIN Votes AS V1 ON MSC_Fichier = V1.VOT_Fichier AND UPPER(V1.VOT_Pseudo) = UPPER('".addslashes($Camarade)."') AND V1.VOT_Date = '".trim($aDate["year"])."-".trim($aDate["mon"])."-".trim($aDate["mday"])."' AND V1.VOT_Type = 1 LEFT JOIN Votes AS V2 ON MSC_Fichier = V2.VOT_Fichier AND V2.VOT_Type = 1";
-            $Query .= " WHERE MSC_Status <> 2 AND V1.VOT_Status <> 2 AND V2.VOT_Status <> 2 GROUP BY MSC_Fichier,MSC_Pseudo,MSC_Artiste,MSC_Album,MSC_Morceau,MSC_Note,MSC_Total";
+            $Query .= " WHERE MSC_Status <> 2 GROUP BY MSC_Fichier,MSC_Pseudo,MSC_Artiste,MSC_Album,MSC_Morceau,MSC_Note,MSC_Total";
             switch($Tri)
             {   case 0: // Artiste
                 {   $Query .= " ORDER BY MSC_Artiste, MSC_Album, MSC_Morceau, MSC_Pseudo";

@@ -15,20 +15,20 @@ if(!Empty($Clf))
     else
     {   $Camarade = UserKeyIdentifier($Clf);
         mysql_select_db(GetMySqlDB(),$Link);
-        $Query = "SELECT CAM_Pseudo FROM Camarades WHERE UPPER(CAM_Pseudo) = UPPER('".addslashes($Camarade)."')";
+        $Query = "SELECT CAM_Pseudo FROM Camarades WHERE CAM_Status <> 2 AND UPPER(CAM_Pseudo) = UPPER('".addslashes($Camarade)."')";
         $Result = mysql_query(trim($Query),$Link);
         if(mysql_num_rows($Result) != 0)
         {   $aRow = mysql_fetch_array($Result);
             $Camarade = stripslashes($aRow["CAM_Pseudo"]);
             mysql_free_result($Result);
             if(!Empty($Cmd)) {
-                $Query = "DELETE FROM Commentaires WHERE COM_ObjType = '$Type' AND COM_ObjID = $Actu AND COM_Date = '".str_replace("n"," ",$Date)."'";
+                $Query = "UPDATE Commentaires SET COM_Status = 2, COM_StatusDate = CURRENT_TIMESTAMP WHERE COM_ObjType = '$Type' AND COM_ObjID = $Actu AND COM_Date = '".str_replace("n"," ",$Date)."'";
                 if(!mysql_query(trim($Query),$Link)) $Reply = '{"error":"SQL request failed!"}';
                 else $Reply = '{}'; // Ok...
             }
             else {
                 // Select
-                $Query = "SELECT COM_ObjID,COM_Pseudo,COM_Text,COM_Date FROM Commentaires WHERE COM_ObjType = '$Type' AND COM_ObjID IN (";
+                $Query = "SELECT COM_ObjID,COM_Pseudo,COM_Text,COM_Date FROM Commentaires WHERE COM_Status <> 2 AND COM_ObjType = '$Type' AND COM_ObjID IN (";
                 $ActuIDs = explode('n', $Actu);
                 $PrevID = false;
                 foreach($ActuIDs as &$ActuId) {

@@ -15,7 +15,7 @@ if(!Empty($Clf))
     else
     {   $Camarade = UserKeyIdentifier($Clf);
         mysql_select_db(GetMySqlDB(),$Link);
-        $Query = "SELECT CAM_Pseudo FROM Camarades WHERE UPPER(CAM_Pseudo) = UPPER('".addslashes($Camarade)."')";
+        $Query = "SELECT CAM_Pseudo FROM Camarades WHERE CAM_Status <> 2 AND UPPER(CAM_Pseudo) = UPPER('".addslashes($Camarade)."')";
         $Result = mysql_query(trim($Query),$Link);
         if(mysql_num_rows($Result) != 0)
         {   $aRow = mysql_fetch_array($Result);
@@ -25,17 +25,17 @@ if(!Empty($Clf))
                 // Delete
                 if(Empty($Actu)) $Reply = '{"error":"ID invalid!"}';
                 else {
-                    $Query = "SELECT ACT_Fichier FROM Actualites WHERE ACT_ActuID = $Actu";
+                    $Query = "SELECT ACT_Fichier FROM Actualites WHERE ACT_Status <> 2 AND ACT_ActuID = $Actu";
                     $Result = mysql_query(trim($Query),$Link);
                     if($aRow = mysql_fetch_array($Result)) $File = $aRow["ACT_Fichier"];
                     mysql_free_result($Result);
-                    $Query = "DELETE FROM Actualites WHERE ACT_ActuID = $Actu AND (UPPER(ACT_Pseudo) = UPPER('".addslashes($Camarade)."') OR UPPER(ACT_Camarade) = UPPER('".addslashes($Camarade)."'))";
+                    $Query = "UPDATE Actualites SET ACT_Status = 2, ACT_StatusDate = CURRENT_TIMESTAMP WHERE ACT_ActuID = $Actu AND (UPPER(ACT_Pseudo) = UPPER('".addslashes($Camarade)."') OR UPPER(ACT_Camarade) = UPPER('".addslashes($Camarade)."'))";
                     if(!mysql_query(trim($Query),$Link)) $Reply = '{"error":"SQL request failed!"}';
                     else {
                         // Remove image file (if any)
                         if(!is_null($File)) {
                             @unlink(GetSrvPhtFolder()."$File");
-                            $Query = "DELETE FROM Photos WHERE PHT_Fichier = '$File'";
+                            $Query = "UPDATE Photos SET PHT_Status = 2, PHT_StatusDate = CURRENT_TIMESTAMP WHERE PHT_Fichier = '$File'";
                             mysql_query(trim($Query),$Link);
                         }
                         $Reply = '{}'; // Ok...
@@ -47,12 +47,13 @@ if(!Empty($Clf))
                 $Query = "SELECT ACT_ActuID,ACT_Pseudo,CAM_Profile,CAM_Sexe,ACT_Camarade,ACT_Date,ACT_Text,ACT_Link,ACT_Fichier";
                 $Query .= " FROM Actualites LEFT JOIN Camarades ON ACT_Pseudo = CAM_Pseudo";
                 if((!Empty($Cam))&&(strcmp($Cam,$Camarde))) {
-                    $Query .= " WHERE (UPPER(ACT_Pseudo) = UPPER('".addslashes($Cam)."') OR UPPER(ACT_Camarade) = UPPER('".addslashes($Cam)."'))";
+                    $Query .= " WHERE ACT_Status <> 2 AND (UPPER(ACT_Pseudo) = UPPER('".addslashes($Cam)."') OR UPPER(ACT_Camarade) = UPPER('".addslashes($Cam)."'))";
                     if((!is_null($Date))&&(strcmp(trim($Date),""))) $Query .= " AND ACT_Date > '".str_replace("n"," ",$Date)."'";
                 }
                 else {
                     $Query .= " INNER JOIN Abonnements ON ACT_Pseudo = ABO_Camarade AND UPPER(ABO_Pseudo) = UPPER('".addslashes($Camarade)."')";
-                    if((!is_null($Date))&&(strcmp(trim($Date),""))) $Query .= " WHERE ACT_Date > '".str_replace("n"," ",$Date)."'";
+                    $Query .= " WHERE ACT_Status <> 2";
+                    if((!is_null($Date))&&(strcmp(trim($Date),""))) $Query .= " AND ACT_Date > '".str_replace("n"," ",$Date)."'";
                 }
                 $Query .= " ORDER BY ACT_Date DESC";
                 if(!Empty($Count)) $Query .= " LIMIT $Count";

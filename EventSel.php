@@ -31,8 +31,11 @@ if(!Empty($Clf))
             if(!Empty($ope))
             {   if($ope == 1)
                 {   // Je Viens //////////////////////////////////////////////////////////////////////////////////////////////////
-                    $Query = "INSERT INTO Presents (PRE_EventID,PRE_Pseudo) VALUES ($evnt,'".addslashes($Camarade)."')";
-                    mysql_query(trim($Query),$Link);
+                    $Query = "UPDATE Presents SET PRE_Status = 0, PRE_StatusDate = CURRENT_TIMESTAMP WHERE PRE_EventID = $evnt AND PRE_Pseudo = '".addslashes($Camarade)."'";
+                    if (!mysql_query(trim($Query),$Link)) {
+                        $Query = "INSERT INTO Presents (PRE_EventID,PRE_Pseudo) VALUES ($evnt,'".addslashes($Camarade)."')";
+                        mysql_query(trim($Query),$Link);
+                    }
                 }
                 else
                 {   // Je Viens Pas //////////////////////////////////////////////////////////////////////////////////////////////
