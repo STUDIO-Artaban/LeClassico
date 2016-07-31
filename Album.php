@@ -31,8 +31,8 @@ else
             die();
         }
     }
-    $Query = "SELECT ALB_Nom,ALB_Pseudo,ALB_Shared,ALB_Remark,ALB_Date,EVE_Nom,COUNT(PHT_Fichier) AS PHT_Count FROM Albums LEFT JOIN Evenements ON ALB_EventID = EVE_EventID LEFT JOIN Photos ON ALB_Nom = PHT_Album";
-    $Query .= " WHERE ALB_Status <> 2 AND EVE_Status <> 2 AND ALB_Nom <> 'Journal'";
+    $Query = "SELECT ALB_Nom,ALB_Pseudo,ALB_Shared,ALB_Remark,ALB_Date,EVE_Nom,COUNT(PHT_Fichier) AS PHT_Count FROM Albums LEFT JOIN Evenements ON ALB_EventID = EVE_EventID AND EVE_Status <> 2 LEFT JOIN Photos ON ALB_Nom = PHT_Album AND PHT_Status <> 2";
+    $Query .= " WHERE ALB_Status <> 2 AND ALB_Nom <> 'Journal'";
     if(!Empty($trcfg)) $Tri = $trcfg;
     switch($Tri)
     {   case 0: // Date

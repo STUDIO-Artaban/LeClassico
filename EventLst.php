@@ -358,7 +358,7 @@ function AfficherEvent(iViewYear,iViewMnth,iViewDay,sKey)
     $sNextDate = "";
     $bContinue = true;
     $bPass = false;
-    $Query = "SELECT EVE_Date,EVE_Nom,COUNT(PRE_Pseudo) AS EVE_CamCnt FROM Evenements LEFT JOIN Presents ON EVE_EventID = PRE_EventID";
+    $Query = "SELECT EVE_Date,EVE_Nom,COUNT(PRE_Pseudo) AS EVE_CamCnt FROM Evenements LEFT JOIN Presents ON EVE_EventID = PRE_EventID AND PRE_Status <> 2";
     $Query .= " WHERE EVE_Status <> 2 AND EVE_Date >= '".trim($aDate["year"])."-".trim($aDate["mon"])."-".trim($aDate["mday"])."' GROUP BY EVE_Date,EVE_Nom ORDER BY EVE_Date";
     $Result = mysql_query(trim($Query),$Link);
     if(mysql_num_rows($Result) != 0)
@@ -618,8 +618,8 @@ function AfficherEvent(iViewYear,iViewMnth,iViewDay,sKey)
     <?php
     $iTmp = 0;
     $iResCnt = 0;
-    $Query = "SELECT EVE_Date,EVE_Nom,COUNT(PRE_Pseudo) AS EVE_CamCnt FROM Evenements LEFT JOIN Presents ON EVE_EventID = PRE_EventID";
-    $Query .= " WHERE PRE_Status <> 2 AND EVE_Status <> 2 GROUP BY EVE_Date,EVE_Nom";
+    $Query = "SELECT EVE_Date,EVE_Nom,COUNT(PRE_Pseudo) AS EVE_CamCnt FROM Evenements LEFT JOIN Presents ON EVE_EventID = PRE_EventID AND PRE_Status <> 2";
+    $Query .= " WHERE EVE_Status <> 2 GROUP BY EVE_Date,EVE_Nom";
     if(!Empty($trcfg))
     {   switch($trcfg)
         {   case 1:

@@ -164,7 +164,7 @@ function FillPhotoArray()
     $iAlbPht = 1;
     $CurAlbum = "";
     $Query = "SELECT ALB_Nom,PHT_Pseudo,PHT_Fichier,SUM(VOT_Note) AS PHT_Note,SUM(VOT_Total) AS PHT_Total";
-    $Query .= " FROM Albums LEFT JOIN Photos ON ALB_Nom = PHT_Album LEFT JOIN Votes ON PHT_Fichier = VOT_Fichier AND VOT_Type = 0";
+    $Query .= " FROM Albums LEFT JOIN Photos ON ALB_Nom = PHT_Album AND PHT_Status <> 2 LEFT JOIN Votes ON PHT_Fichier = VOT_Fichier AND VOT_Type = 0";
     $Query .= " WHERE ALB_Status <> 2 AND UPPER(ALB_Pseudo) = UPPER('".addslashes($Camarade)."') GROUP BY ALB_Nom,PHT_Pseudo,PHT_Fichier ORDER BY ALB_Nom,PHT_Fichier";
     $Result = mysql_query(trim($Query),$Link);
     while($aRow = mysql_fetch_array($Result))
@@ -248,8 +248,8 @@ function FillPhotoArray()
     $iAlbPht = 1;
     $CurAlbum = "";
     $Query = "SELECT ALB_Nom,PHT_Pseudo,PHT_Fichier,SUM(VOT_Note) AS PHT_Note,SUM(VOT_Total) AS PHT_Total";
-    $Query .= " FROM Albums LEFT JOIN Photos ON ALB_Nom = PHT_Album LEFT JOIN Votes ON PHT_Fichier = VOT_Fichier AND VOT_Type = 0";
-    $Query .= " WHERE ALB_Status <> 2 AND PHT_Status <> 2 AND ALB_Shared = 1 AND UPPER(ALB_Pseudo) <> UPPER('".addslashes($Camarade)."') GROUP BY ALB_Nom,PHT_Pseudo,PHT_Fichier ORDER BY ALB_Nom,PHT_Fichier";
+    $Query .= " FROM Albums LEFT JOIN Photos ON ALB_Nom = PHT_Album AND PHT_Status <> 2 LEFT JOIN Votes ON PHT_Fichier = VOT_Fichier AND VOT_Type = 0";
+    $Query .= " WHERE ALB_Status <> 2 AND ALB_Shared = 1 AND UPPER(ALB_Pseudo) <> UPPER('".addslashes($Camarade)."') GROUP BY ALB_Nom,PHT_Pseudo,PHT_Fichier ORDER BY ALB_Nom,PHT_Fichier";
     $Result = mysql_query(trim($Query),$Link);
     while($aRow = mysql_fetch_array($Result))
     {   // Tant qu'il y a des photos dans l'album
