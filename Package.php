@@ -369,7 +369,7 @@ function AjoutePublication($link,$camarade)
     $query .= ((strcmp($to,""))? "'$to',":"NULL,");
     $query .= ((strcmp($msg,""))? "'".addslashes($msg)."',":"NULL,");
     $journal = false;
-    if(($join == 0)&&(strcmp($lnk,""))) $query .= "'$lnk',NULL)";
+    if(($join == 0)&&(strcmp($lnk,""))) $query .= "'$lnk',NULL,CURRENT_TIMESTAMP)";
     else if(($join == 1)&&(!Empty($_FILES["img"]["name"]))) {
         $journal = true;
         $query .= "NULL,'$file',CURRENT_TIMESTAMP)";
