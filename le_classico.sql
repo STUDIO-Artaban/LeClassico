@@ -1,196 +1,885 @@
-﻿-- phpMyAdmin SQL Dump
--- version 3.1.5
+-- phpMyAdmin SQL Dump
+-- version 4.4.15.6
 -- http://www.phpmyadmin.net
 --
--- Serveur: vp.magellan.sql.free.fr
--- Généré le : Ven 24 Juin 2016 à 15:00
--- Version du serveur: 5.0.83
--- Version de PHP: 5.3.9
+-- Host: localhost
+-- Generation Time: Aug 01, 2016 at 07:13 PM
+-- Server version: 5.5.47-0+deb7u1-log
+-- PHP Version: 5.4.45-0+deb7u2
 
-SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
 
 --
--- Base de données: `vp_magellan`
+-- Database: `le_classico`
 --
+
+DELIMITER $$
+--
+-- Procedures
+--
+CREATE DEFINER=`root`@`localhost` PROCEDURE `create_camarade`(IN `pseudo` VARCHAR(30) CHARSET latin1)
+    NO SQL
+BEGIN
+INSERT INTO Abonnements (ABO_Pseudo,ABO_Camarade) VALUES (`pseudo`,'Webmaster');
+INSERT INTO Abonnements (ABO_Pseudo,ABO_Camarade) VALUES (`pseudo`,`pseudo`);
+INSERT INTO Albums (ALB_Nom,ALB_Pseudo,ALB_Shared,ALB_EventID,ALB_Remark,ALB_Date) VALUES ('Journal',`pseudo`,0,0,'Album de publication',CURRENT_TIMESTAMP);
+INSERT INTO Actualites (ACT_ActuID,ACT_Pseudo,ACT_Date,ACT_Camarade,ACT_Text,ACT_Link,ACT_Fichier) VALUES (NULL,'Webmaster',CURRENT_TIMESTAMP,NULL,CONCAT('CECI EST UN MESSAGE DU WEBMASTER! STOP!\nAJOUT D''UN NOUVEAU CAMARADE! STOP!\nPSEUDO DU NOUVEAU CAMARADE: ',`pseudo`,'! STOP!\nFIN DU MESSAGE! STOP!...STOP! STOP!'),NULL,NULL);
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `notify_new_photo`(IN `album` VARCHAR(30), IN `photo` INT(4))
+    MODIFIES SQL DATA
+BEGIN
+DECLARE shared INT(1);
+DECLARE pseudo VARCHAR(30);
+DECLARE walk CURSOR FOR SELECT ALB_Shared,ALB_Pseudo FROM Albums WHERE CONVERT(ALB_Nom USING latin1) = CONVERT(album USING latin1);
+OPEN walk;
+FETCH walk INTO shared,pseudo;
+IF shared <> 0 THEN
+INSERT INTO `Notifications` (NOT_Pseudo,NOT_Date,NOT_ObjType,NOT_ObjID) VALUES (pseudo,CURRENT_TIMESTAMP,'P',photo);
+END IF;
+CLOSE walk;
+END$$
+
+--
+-- Functions
+--
+CREATE DEFINER=`root`@`localhost` FUNCTION `get_object_owner`(`type` VARCHAR(1) CHARSET latin1, `id` INT(4)) RETURNS varchar(30) CHARSET latin1
+    READS SQL DATA
+BEGIN
+DECLARE pseudo VARCHAR(30);
+DECLARE actu CURSOR FOR SELECT ACT_Pseudo FROM Actualites WHERE ACT_ActuID = id;
+DECLARE photo CURSOR FOR SELECT PHT_Pseudo FROM Photos WHERE PHT_FichierID = id;
+IF CONVERT(type USING latin1) = CONVERT('A' USING latin1) THEN
+OPEN actu;
+FETCH actu INTO pseudo;
+CLOSE actu;
+ELSE
+OPEN photo;
+FETCH photo INTO pseudo;
+CLOSE photo;
+END IF;
+RETURN pseudo;
+END$$
+
+DELIMITER ;
 
 -- --------------------------------------------------------
 
 --
--- Structure de la table `Albums`
+-- Table structure for table `Abonnements`
+--
+
+CREATE TABLE IF NOT EXISTS `Abonnements` (
+  `ABO_Pseudo` varchar(30) CHARACTER SET latin1 COLLATE latin1_general_ci NOT NULL,
+  `ABO_Camarade` varchar(30) CHARACTER SET latin1 COLLATE latin1_general_ci NOT NULL,
+  `ABO_Status` int(1) NOT NULL DEFAULT '0',
+  `ABO_StatusDate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `Abonnements`
+--
+
+INSERT INTO `Abonnements` (`ABO_Pseudo`, `ABO_Camarade`, `ABO_Status`, `ABO_StatusDate`) VALUES
+('Ana', 'Ana', 0, '2016-07-30 19:49:50'),
+('Ana', 'Azerty', 0, '2016-07-30 19:49:50'),
+('Ana', 'Benoit', 0, '2016-07-30 19:49:50'),
+('Ana', 'Chrispski', 0, '2016-07-30 19:49:50'),
+('Ana', 'Fab', 0, '2016-07-30 19:49:50'),
+('Ana', 'Fred', 0, '2016-07-30 19:49:50'),
+('Ana', 'Gautier', 0, '2016-07-30 19:49:50'),
+('Ana', 'James', 0, '2016-07-30 19:49:50'),
+('Ana', 'JM', 0, '2016-07-30 19:49:50'),
+('Ana', 'JPA', 0, '2016-07-30 19:49:50'),
+('Ana', 'Julie', 0, '2016-07-30 19:49:50'),
+('Ana', 'Karine', 0, '2016-07-30 19:49:50'),
+('Ana', 'Laurent', 0, '2016-07-30 19:49:50'),
+('Ana', 'Pascal', 0, '2016-07-30 19:49:50'),
+('Ana', 'Rico', 0, '2016-07-30 19:49:50'),
+('Ana', 'Sam', 0, '2016-07-30 19:49:50'),
+('Ana', 'Seik', 0, '2016-07-30 19:49:50'),
+('Ana', 'Sylvain', 0, '2016-07-30 19:49:50'),
+('Ana', 'Tonio', 0, '2016-07-30 19:49:50'),
+('Ana', 'TotenFest', 0, '2016-07-30 19:49:50'),
+('Ana', 'Webmaster', 0, '2016-07-30 19:49:50'),
+('Azerty', 'Ana', 0, '2016-07-30 19:49:50'),
+('Azerty', 'Azerty', 0, '2016-07-30 19:49:50'),
+('Azerty', 'Benoit', 0, '2016-07-30 19:49:50'),
+('Azerty', 'Chrispski', 0, '2016-07-30 19:49:50'),
+('Azerty', 'Fab', 0, '2016-07-30 19:49:50'),
+('Azerty', 'Fred', 0, '2016-07-30 19:49:50'),
+('Azerty', 'Gautier', 0, '2016-07-30 19:49:50'),
+('Azerty', 'James', 0, '2016-07-30 19:49:50'),
+('Azerty', 'JM', 0, '2016-07-30 19:49:50'),
+('Azerty', 'JPA', 0, '2016-07-30 19:49:50'),
+('Azerty', 'Julie', 0, '2016-07-30 19:49:50'),
+('Azerty', 'Karine', 0, '2016-07-30 19:49:50'),
+('Azerty', 'Laurent', 0, '2016-07-30 19:49:50'),
+('Azerty', 'Pascal', 0, '2016-07-30 19:49:50'),
+('Azerty', 'Rico', 0, '2016-07-30 19:49:50'),
+('Azerty', 'Sam', 0, '2016-07-30 19:49:50'),
+('Azerty', 'Seik', 0, '2016-07-30 19:49:50'),
+('Azerty', 'Sylvain', 0, '2016-07-30 19:49:50'),
+('Azerty', 'Tonio', 0, '2016-07-30 19:49:50'),
+('Azerty', 'TotenFest', 0, '2016-07-30 19:49:50'),
+('Azerty', 'Webmaster', 0, '2016-07-30 19:49:50'),
+('Benoit', 'Ana', 0, '2016-07-30 19:49:50'),
+('Benoit', 'Azerty', 0, '2016-07-30 19:49:50'),
+('Benoit', 'Benoit', 0, '2016-07-30 19:49:50'),
+('Benoit', 'Chrispski', 0, '2016-07-30 19:49:50'),
+('Benoit', 'Fab', 0, '2016-07-30 19:49:50'),
+('Benoit', 'Fred', 0, '2016-07-30 19:49:50'),
+('Benoit', 'Gautier', 0, '2016-07-30 19:49:50'),
+('Benoit', 'James', 0, '2016-07-30 19:49:50'),
+('Benoit', 'JM', 0, '2016-07-30 19:49:50'),
+('Benoit', 'JPA', 0, '2016-07-30 19:49:50'),
+('Benoit', 'Julie', 0, '2016-07-30 19:49:50'),
+('Benoit', 'Karine', 0, '2016-07-30 19:49:50'),
+('Benoit', 'Laurent', 0, '2016-07-30 19:49:50'),
+('Benoit', 'Pascal', 0, '2016-07-30 19:49:50'),
+('Benoit', 'Rico', 0, '2016-07-30 19:49:50'),
+('Benoit', 'Sam', 0, '2016-07-30 19:49:50'),
+('Benoit', 'Seik', 0, '2016-07-30 19:49:50'),
+('Benoit', 'Sylvain', 0, '2016-07-30 19:49:50'),
+('Benoit', 'Tonio', 0, '2016-07-30 19:49:50'),
+('Benoit', 'TotenFest', 0, '2016-07-30 19:49:50'),
+('Benoit', 'Webmaster', 0, '2016-07-30 19:49:50'),
+('Chrispski', 'Ana', 0, '2016-07-30 19:49:50'),
+('Chrispski', 'Azerty', 0, '2016-07-30 19:49:50'),
+('Chrispski', 'Benoit', 0, '2016-07-30 19:49:50'),
+('Chrispski', 'Chrispski', 0, '2016-07-30 19:49:50'),
+('Chrispski', 'Fab', 0, '2016-07-30 19:49:50'),
+('Chrispski', 'Fred', 0, '2016-07-30 19:49:50'),
+('Chrispski', 'Gautier', 0, '2016-07-30 19:49:50'),
+('Chrispski', 'James', 0, '2016-07-30 19:49:50'),
+('Chrispski', 'JM', 0, '2016-07-30 19:49:50'),
+('Chrispski', 'JPA', 0, '2016-07-30 19:49:50'),
+('Chrispski', 'Julie', 0, '2016-07-30 19:49:50'),
+('Chrispski', 'Karine', 0, '2016-07-30 19:49:50'),
+('Chrispski', 'Laurent', 0, '2016-07-30 19:49:50'),
+('Chrispski', 'Pascal', 0, '2016-07-30 19:49:50'),
+('Chrispski', 'Rico', 0, '2016-07-30 19:49:50'),
+('Chrispski', 'Sam', 0, '2016-07-30 19:49:50'),
+('Chrispski', 'Seik', 0, '2016-07-30 19:49:50'),
+('Chrispski', 'Sylvain', 0, '2016-07-30 19:49:50'),
+('Chrispski', 'Tonio', 0, '2016-07-30 19:49:50'),
+('Chrispski', 'TotenFest', 0, '2016-07-30 19:49:50'),
+('Chrispski', 'Webmaster', 0, '2016-07-30 19:49:50'),
+('Fab', 'Ana', 0, '2016-07-30 19:49:50'),
+('Fab', 'Azerty', 0, '2016-07-30 19:49:50'),
+('Fab', 'Benoit', 0, '2016-07-30 19:49:50'),
+('Fab', 'Chrispski', 0, '2016-07-30 19:49:50'),
+('Fab', 'Fab', 0, '2016-07-30 19:49:50'),
+('Fab', 'Fred', 0, '2016-07-30 19:49:50'),
+('Fab', 'Gautier', 0, '2016-07-30 19:49:50'),
+('Fab', 'James', 0, '2016-07-30 19:49:50'),
+('Fab', 'JM', 0, '2016-07-30 19:49:50'),
+('Fab', 'JPA', 0, '2016-07-30 19:49:50'),
+('Fab', 'Julie', 0, '2016-07-30 19:49:50'),
+('Fab', 'Karine', 0, '2016-07-30 19:49:50'),
+('Fab', 'Laurent', 0, '2016-07-30 19:49:50'),
+('Fab', 'Pascal', 0, '2016-07-30 19:49:50'),
+('Fab', 'Rico', 0, '2016-07-30 19:49:50'),
+('Fab', 'Sam', 0, '2016-07-30 19:49:50'),
+('Fab', 'Seik', 0, '2016-07-30 19:49:50'),
+('Fab', 'Sylvain', 0, '2016-07-30 19:49:50'),
+('Fab', 'Tonio', 0, '2016-07-30 19:49:50'),
+('Fab', 'TotenFest', 0, '2016-07-30 19:49:50'),
+('Fab', 'Webmaster', 0, '2016-07-30 19:49:50'),
+('Fred', 'Ana', 0, '2016-07-30 19:49:50'),
+('Fred', 'Azerty', 0, '2016-07-30 19:49:50'),
+('Fred', 'Benoit', 0, '2016-07-30 19:49:50'),
+('Fred', 'Chrispski', 0, '2016-07-30 19:49:50'),
+('Fred', 'Fab', 0, '2016-07-30 19:49:50'),
+('Fred', 'Fred', 0, '2016-07-30 19:49:50'),
+('Fred', 'Gautier', 0, '2016-07-30 19:49:50'),
+('Fred', 'James', 0, '2016-07-30 19:49:50'),
+('Fred', 'JM', 0, '2016-07-30 19:49:50'),
+('Fred', 'JPA', 0, '2016-07-30 19:49:50'),
+('Fred', 'Julie', 0, '2016-07-30 19:49:50'),
+('Fred', 'Karine', 0, '2016-07-30 19:49:50'),
+('Fred', 'Laurent', 0, '2016-07-30 19:49:50'),
+('Fred', 'Pascal', 0, '2016-07-30 19:49:50'),
+('Fred', 'Rico', 0, '2016-07-30 19:49:50'),
+('Fred', 'Sam', 0, '2016-07-30 19:49:50'),
+('Fred', 'Seik', 0, '2016-07-30 19:49:50'),
+('Fred', 'Sylvain', 0, '2016-07-30 19:49:50'),
+('Fred', 'Tonio', 0, '2016-07-30 19:49:50'),
+('Fred', 'TotenFest', 0, '2016-07-30 19:49:50'),
+('Fred', 'Webmaster', 0, '2016-07-30 19:49:50'),
+('Gautier', 'Ana', 0, '2016-07-30 19:49:50'),
+('Gautier', 'Azerty', 0, '2016-07-30 19:49:50'),
+('Gautier', 'Benoit', 0, '2016-07-30 19:49:50'),
+('Gautier', 'Chrispski', 0, '2016-07-30 19:49:50'),
+('Gautier', 'Fab', 0, '2016-07-30 19:49:50'),
+('Gautier', 'Fred', 0, '2016-07-30 19:49:50'),
+('Gautier', 'Gautier', 0, '2016-07-30 19:49:50'),
+('Gautier', 'James', 0, '2016-07-30 19:49:50'),
+('Gautier', 'JM', 0, '2016-07-30 19:49:50'),
+('Gautier', 'JPA', 0, '2016-07-30 19:49:50'),
+('Gautier', 'Julie', 0, '2016-07-30 19:49:50'),
+('Gautier', 'Karine', 0, '2016-07-30 19:49:50'),
+('Gautier', 'Laurent', 0, '2016-07-30 19:49:50'),
+('Gautier', 'Pascal', 0, '2016-07-30 19:49:50'),
+('Gautier', 'Rico', 0, '2016-07-30 19:49:50'),
+('Gautier', 'Sam', 0, '2016-07-30 19:49:50'),
+('Gautier', 'Seik', 0, '2016-07-30 19:49:50'),
+('Gautier', 'Sylvain', 0, '2016-07-30 19:49:50'),
+('Gautier', 'Tonio', 0, '2016-07-30 19:49:50'),
+('Gautier', 'TotenFest', 0, '2016-07-30 19:49:50'),
+('Gautier', 'Webmaster', 0, '2016-07-30 19:49:50'),
+('James', 'Ana', 0, '2016-07-30 19:49:50'),
+('James', 'Azerty', 0, '2016-07-30 19:49:50'),
+('James', 'Benoit', 0, '2016-07-30 19:49:50'),
+('James', 'Chrispski', 0, '2016-07-30 19:49:50'),
+('James', 'Fab', 0, '2016-07-30 19:49:50'),
+('James', 'Fred', 0, '2016-07-30 19:49:50'),
+('James', 'Gautier', 0, '2016-07-30 19:49:50'),
+('James', 'James', 0, '2016-07-30 19:49:50'),
+('James', 'JM', 0, '2016-07-30 19:49:50'),
+('James', 'JPA', 0, '2016-07-30 19:49:50'),
+('James', 'Julie', 0, '2016-07-30 19:49:50'),
+('James', 'Karine', 0, '2016-07-30 19:49:50'),
+('James', 'Laurent', 0, '2016-07-30 19:49:50'),
+('James', 'Pascal', 0, '2016-07-30 19:49:50'),
+('James', 'Rico', 0, '2016-07-30 19:49:50'),
+('James', 'Sam', 0, '2016-07-30 19:49:50'),
+('James', 'Seik', 0, '2016-07-30 19:49:50'),
+('James', 'Sylvain', 0, '2016-07-30 19:49:50'),
+('James', 'Tonio', 0, '2016-07-30 19:49:50'),
+('James', 'TotenFest', 0, '2016-07-30 19:49:50'),
+('James', 'Webmaster', 0, '2016-07-30 19:49:50'),
+('JM', 'Ana', 0, '2016-07-30 19:49:50'),
+('JM', 'Azerty', 0, '2016-07-30 19:49:50'),
+('JM', 'Benoit', 0, '2016-07-30 19:49:50'),
+('JM', 'Chrispski', 0, '2016-07-30 19:49:50'),
+('JM', 'Fab', 0, '2016-07-30 19:49:50'),
+('JM', 'Fred', 0, '2016-07-30 19:49:50'),
+('JM', 'Gautier', 0, '2016-07-30 19:49:50'),
+('JM', 'James', 0, '2016-07-30 19:49:50'),
+('JM', 'JM', 0, '2016-07-30 19:49:50'),
+('JM', 'JPA', 0, '2016-07-30 19:49:50'),
+('JM', 'Julie', 0, '2016-07-30 19:49:50'),
+('JM', 'Karine', 0, '2016-07-30 19:49:50'),
+('JM', 'Laurent', 0, '2016-07-30 19:49:50'),
+('JM', 'Pascal', 0, '2016-07-30 19:49:50'),
+('JM', 'Rico', 0, '2016-07-30 19:49:50'),
+('JM', 'Sam', 0, '2016-07-30 19:49:50'),
+('JM', 'Seik', 0, '2016-07-30 19:49:50'),
+('JM', 'Sylvain', 0, '2016-07-30 19:49:50'),
+('JM', 'Tonio', 0, '2016-07-30 19:49:50'),
+('JM', 'TotenFest', 0, '2016-07-30 19:49:50'),
+('JM', 'Webmaster', 0, '2016-07-30 19:49:50'),
+('JPA', 'Ana', 0, '2016-07-30 19:49:50'),
+('JPA', 'Azerty', 0, '2016-07-30 19:49:50'),
+('JPA', 'Benoit', 0, '2016-07-30 19:49:50'),
+('JPA', 'Chrispski', 0, '2016-07-30 19:49:50'),
+('JPA', 'Fab', 0, '2016-07-30 19:49:50'),
+('JPA', 'Fred', 0, '2016-07-30 19:49:50'),
+('JPA', 'Gautier', 0, '2016-07-30 19:49:50'),
+('JPA', 'James', 0, '2016-07-30 19:49:50'),
+('JPA', 'JM', 0, '2016-07-30 19:49:50'),
+('JPA', 'JPA', 0, '2016-07-30 19:49:50'),
+('JPA', 'Julie', 0, '2016-07-30 19:49:50'),
+('JPA', 'Karine', 0, '2016-07-30 19:49:50'),
+('JPA', 'Laurent', 0, '2016-07-30 19:49:50'),
+('JPA', 'Pascal', 0, '2016-07-30 19:49:50'),
+('JPA', 'Rico', 0, '2016-07-30 19:49:50'),
+('JPA', 'Sam', 0, '2016-07-30 19:49:50'),
+('JPA', 'Seik', 0, '2016-07-30 19:49:50'),
+('JPA', 'Sylvain', 0, '2016-07-30 19:49:50'),
+('JPA', 'Tonio', 0, '2016-07-30 19:49:50'),
+('JPA', 'TotenFest', 0, '2016-07-30 19:49:50'),
+('JPA', 'Webmaster', 0, '2016-07-30 19:49:50'),
+('Julie', 'Ana', 0, '2016-07-30 19:49:50'),
+('Julie', 'Azerty', 0, '2016-07-30 19:49:50'),
+('Julie', 'Benoit', 0, '2016-07-30 19:49:50'),
+('Julie', 'Chrispski', 0, '2016-07-30 19:49:50'),
+('Julie', 'Fab', 0, '2016-07-30 19:49:50'),
+('Julie', 'Fred', 0, '2016-07-30 19:49:50'),
+('Julie', 'Gautier', 0, '2016-07-30 19:49:50'),
+('Julie', 'James', 0, '2016-07-30 19:49:50'),
+('Julie', 'JM', 0, '2016-07-30 19:49:50'),
+('Julie', 'JPA', 0, '2016-07-30 19:49:50'),
+('Julie', 'Julie', 0, '2016-07-30 19:49:50'),
+('Julie', 'Karine', 0, '2016-07-30 19:49:50'),
+('Julie', 'Laurent', 0, '2016-07-30 19:49:50'),
+('Julie', 'Pascal', 0, '2016-07-30 19:49:50'),
+('Julie', 'Rico', 0, '2016-07-30 19:49:50'),
+('Julie', 'Sam', 0, '2016-07-30 19:49:50'),
+('Julie', 'Seik', 0, '2016-07-30 19:49:50'),
+('Julie', 'Sylvain', 0, '2016-07-30 19:49:50'),
+('Julie', 'Tonio', 0, '2016-07-30 19:49:50'),
+('Julie', 'TotenFest', 0, '2016-07-30 19:49:50'),
+('Julie', 'Webmaster', 0, '2016-07-30 19:49:50'),
+('Karine', 'Ana', 0, '2016-07-30 19:49:50'),
+('Karine', 'Azerty', 0, '2016-07-30 19:49:50'),
+('Karine', 'Benoit', 0, '2016-07-30 19:49:50'),
+('Karine', 'Chrispski', 0, '2016-07-30 19:49:50'),
+('Karine', 'Fab', 0, '2016-07-30 19:49:50'),
+('Karine', 'Fred', 0, '2016-07-30 19:49:50'),
+('Karine', 'Gautier', 0, '2016-07-30 19:49:50'),
+('Karine', 'James', 0, '2016-07-30 19:49:50'),
+('Karine', 'JM', 0, '2016-07-30 19:49:50'),
+('Karine', 'JPA', 0, '2016-07-30 19:49:50'),
+('Karine', 'Julie', 0, '2016-07-30 19:49:50'),
+('Karine', 'Karine', 0, '2016-07-30 19:49:50'),
+('Karine', 'Laurent', 0, '2016-07-30 19:49:50'),
+('Karine', 'Pascal', 0, '2016-07-30 19:49:50'),
+('Karine', 'Rico', 0, '2016-07-30 19:49:50'),
+('Karine', 'Sam', 0, '2016-07-30 19:49:50'),
+('Karine', 'Seik', 0, '2016-07-30 19:49:50'),
+('Karine', 'Sylvain', 0, '2016-07-30 19:49:50'),
+('Karine', 'Tonio', 0, '2016-07-30 19:49:50'),
+('Karine', 'TotenFest', 0, '2016-07-30 19:49:50'),
+('Karine', 'Webmaster', 0, '2016-07-30 19:49:50'),
+('Kriss', 'Kriss', 0, '2016-07-30 19:49:50'),
+('Kriss', 'Webmaster', 0, '2016-07-30 19:49:50'),
+('Laurent', 'Ana', 0, '2016-07-30 19:49:50'),
+('Laurent', 'Azerty', 0, '2016-07-30 19:49:50'),
+('Laurent', 'Benoit', 0, '2016-07-30 19:49:50'),
+('Laurent', 'Chrispski', 0, '2016-07-30 19:49:50'),
+('Laurent', 'Fab', 0, '2016-07-30 19:49:50'),
+('Laurent', 'Fred', 0, '2016-07-30 19:49:50'),
+('Laurent', 'Gautier', 0, '2016-07-30 19:49:50'),
+('Laurent', 'James', 0, '2016-07-30 19:49:50'),
+('Laurent', 'JM', 0, '2016-07-30 19:49:50'),
+('Laurent', 'JPA', 0, '2016-07-30 19:49:50'),
+('Laurent', 'Julie', 0, '2016-07-30 19:49:50'),
+('Laurent', 'Karine', 0, '2016-07-30 19:49:50'),
+('Laurent', 'Laurent', 0, '2016-07-30 19:49:50'),
+('Laurent', 'Pascal', 0, '2016-07-30 19:49:50'),
+('Laurent', 'Rico', 0, '2016-07-30 19:49:50'),
+('Laurent', 'Sam', 0, '2016-07-30 19:49:50'),
+('Laurent', 'Seik', 0, '2016-07-30 19:49:50'),
+('Laurent', 'Sylvain', 0, '2016-07-30 19:49:50'),
+('Laurent', 'Tonio', 0, '2016-07-30 19:49:50'),
+('Laurent', 'TotenFest', 0, '2016-07-30 19:49:50'),
+('Laurent', 'Webmaster', 0, '2016-07-30 19:49:50'),
+('Pascal', 'Ana', 0, '2016-07-30 19:49:50'),
+('Pascal', 'Benoit', 0, '2016-07-30 19:49:50'),
+('Pascal', 'Chrispski', 0, '2016-07-30 19:49:50'),
+('Pascal', 'Fab', 0, '2016-07-30 19:49:50'),
+('Pascal', 'Fred', 0, '2016-07-30 19:49:50'),
+('Pascal', 'Gautier', 0, '2016-07-30 19:49:50'),
+('Pascal', 'JM', 0, '2016-07-30 19:49:50'),
+('Pascal', 'JPA', 0, '2016-07-30 19:49:50'),
+('Pascal', 'Julie', 0, '2016-07-30 19:49:50'),
+('Pascal', 'Karine', 0, '2016-07-30 19:49:50'),
+('Pascal', 'Kriss', 0, '2016-07-30 19:49:50'),
+('Pascal', 'Laurent', 0, '2016-07-30 19:49:50'),
+('Pascal', 'Pascal', 0, '2016-07-30 19:49:50'),
+('Pascal', 'Rico', 0, '2016-07-30 19:49:50'),
+('Pascal', 'Sam', 0, '2016-07-30 19:49:50'),
+('Pascal', 'Seik', 0, '2016-07-30 19:49:50'),
+('Pascal', 'Tonio', 0, '2016-07-30 19:49:50'),
+('Pascal', 'TotenFest', 0, '2016-07-30 19:49:50'),
+('Pascal', 'Webmaster', 0, '2016-07-30 19:49:50'),
+('Rico', 'Ana', 0, '2016-07-30 19:49:50'),
+('Rico', 'Azerty', 0, '2016-07-30 19:49:50'),
+('Rico', 'Benoit', 0, '2016-07-30 19:49:50'),
+('Rico', 'Chrispski', 0, '2016-07-30 19:49:50'),
+('Rico', 'Fab', 0, '2016-07-30 19:49:50'),
+('Rico', 'Fred', 0, '2016-07-30 19:49:50'),
+('Rico', 'Gautier', 0, '2016-07-30 19:49:50'),
+('Rico', 'James', 0, '2016-07-30 19:49:50'),
+('Rico', 'JM', 0, '2016-07-30 19:49:50'),
+('Rico', 'JPA', 0, '2016-07-30 19:49:50'),
+('Rico', 'Julie', 0, '2016-07-30 19:49:50'),
+('Rico', 'Karine', 0, '2016-07-30 19:49:50'),
+('Rico', 'Laurent', 0, '2016-07-30 19:49:50'),
+('Rico', 'Pascal', 0, '2016-07-30 19:49:50'),
+('Rico', 'Rico', 0, '2016-07-30 19:49:50'),
+('Rico', 'Sam', 0, '2016-07-30 19:49:50'),
+('Rico', 'Seik', 0, '2016-07-30 19:49:50'),
+('Rico', 'Sylvain', 0, '2016-07-30 19:49:50'),
+('Rico', 'Tonio', 0, '2016-07-30 19:49:50'),
+('Rico', 'TotenFest', 0, '2016-07-30 19:49:50'),
+('Rico', 'Webmaster', 0, '2016-07-30 19:49:50'),
+('Sam', 'Ana', 0, '2016-07-30 19:49:50'),
+('Sam', 'Azerty', 0, '2016-07-30 19:49:50'),
+('Sam', 'Benoit', 0, '2016-07-30 19:49:50'),
+('Sam', 'Chrispski', 0, '2016-07-30 19:49:50'),
+('Sam', 'Fab', 0, '2016-07-30 19:49:50'),
+('Sam', 'Fred', 0, '2016-07-30 19:49:50'),
+('Sam', 'Gautier', 0, '2016-07-30 19:49:50'),
+('Sam', 'James', 0, '2016-07-30 19:49:50'),
+('Sam', 'JM', 0, '2016-07-30 19:49:50'),
+('Sam', 'JPA', 0, '2016-07-30 19:49:50'),
+('Sam', 'Julie', 0, '2016-07-30 19:49:50'),
+('Sam', 'Karine', 0, '2016-07-30 19:49:50'),
+('Sam', 'Laurent', 0, '2016-07-30 19:49:50'),
+('Sam', 'Pascal', 0, '2016-07-30 19:49:50'),
+('Sam', 'Rico', 0, '2016-07-30 19:49:50'),
+('Sam', 'Sam', 0, '2016-07-30 19:49:50'),
+('Sam', 'Seik', 0, '2016-07-30 19:49:50'),
+('Sam', 'Sylvain', 0, '2016-07-30 19:49:50'),
+('Sam', 'Tonio', 0, '2016-07-30 19:49:50'),
+('Sam', 'TotenFest', 0, '2016-07-30 19:49:50'),
+('Sam', 'Webmaster', 0, '2016-07-30 19:49:50'),
+('Seik', 'Ana', 0, '2016-07-30 19:49:50'),
+('Seik', 'Azerty', 0, '2016-07-30 19:49:50'),
+('Seik', 'Benoit', 0, '2016-07-30 19:49:50'),
+('Seik', 'Chrispski', 0, '2016-07-30 19:49:50'),
+('Seik', 'Fab', 0, '2016-07-30 19:49:50'),
+('Seik', 'Fred', 0, '2016-07-30 19:49:50'),
+('Seik', 'Gautier', 0, '2016-07-30 19:49:50'),
+('Seik', 'James', 0, '2016-07-30 19:49:50'),
+('Seik', 'JM', 0, '2016-07-30 19:49:50'),
+('Seik', 'JPA', 0, '2016-07-30 19:49:50'),
+('Seik', 'Julie', 0, '2016-07-30 19:49:50'),
+('Seik', 'Karine', 0, '2016-07-30 19:49:50'),
+('Seik', 'Laurent', 0, '2016-07-30 19:49:50'),
+('Seik', 'Pascal', 0, '2016-07-30 19:49:50'),
+('Seik', 'Rico', 0, '2016-07-30 19:49:50'),
+('Seik', 'Sam', 0, '2016-07-30 19:49:50'),
+('Seik', 'Seik', 0, '2016-07-30 19:49:50'),
+('Seik', 'Sylvain', 0, '2016-07-30 19:49:50'),
+('Seik', 'Tonio', 0, '2016-07-30 19:49:50'),
+('Seik', 'TotenFest', 0, '2016-07-30 19:49:50'),
+('Seik', 'Webmaster', 0, '2016-07-30 19:49:50'),
+('Sylvain', 'Ana', 0, '2016-07-30 19:49:50'),
+('Sylvain', 'Azerty', 0, '2016-07-30 19:49:50'),
+('Sylvain', 'Benoit', 0, '2016-07-30 19:49:50'),
+('Sylvain', 'Chrispski', 0, '2016-07-30 19:49:50'),
+('Sylvain', 'Fab', 0, '2016-07-30 19:49:50'),
+('Sylvain', 'Fred', 0, '2016-07-30 19:49:50'),
+('Sylvain', 'Gautier', 0, '2016-07-30 19:49:50'),
+('Sylvain', 'James', 0, '2016-07-30 19:49:50'),
+('Sylvain', 'JM', 0, '2016-07-30 19:49:50'),
+('Sylvain', 'JPA', 0, '2016-07-30 19:49:50'),
+('Sylvain', 'Julie', 0, '2016-07-30 19:49:50'),
+('Sylvain', 'Karine', 0, '2016-07-30 19:49:50'),
+('Sylvain', 'Laurent', 0, '2016-07-30 19:49:50'),
+('Sylvain', 'Pascal', 0, '2016-07-30 19:49:50'),
+('Sylvain', 'Rico', 0, '2016-07-30 19:49:50'),
+('Sylvain', 'Sam', 0, '2016-07-30 19:49:50'),
+('Sylvain', 'Seik', 0, '2016-07-30 19:49:50'),
+('Sylvain', 'Sylvain', 0, '2016-07-30 19:49:50'),
+('Sylvain', 'Tonio', 0, '2016-07-30 19:49:50'),
+('Sylvain', 'TotenFest', 0, '2016-07-30 19:49:50'),
+('Sylvain', 'Webmaster', 0, '2016-07-30 19:49:50'),
+('Tonio', 'Ana', 0, '2016-07-30 19:49:50'),
+('Tonio', 'Azerty', 0, '2016-07-30 19:49:50'),
+('Tonio', 'Benoit', 0, '2016-07-30 19:49:50'),
+('Tonio', 'Chrispski', 0, '2016-07-30 19:49:50'),
+('Tonio', 'Fab', 0, '2016-07-30 19:49:50'),
+('Tonio', 'Fred', 0, '2016-07-30 19:49:50'),
+('Tonio', 'Gautier', 0, '2016-07-30 19:49:50'),
+('Tonio', 'James', 0, '2016-07-30 19:49:50'),
+('Tonio', 'JM', 0, '2016-07-30 19:49:50'),
+('Tonio', 'JPA', 0, '2016-07-30 19:49:50'),
+('Tonio', 'Julie', 0, '2016-07-30 19:49:50'),
+('Tonio', 'Karine', 0, '2016-07-30 19:49:50'),
+('Tonio', 'Laurent', 0, '2016-07-30 19:49:50'),
+('Tonio', 'Pascal', 0, '2016-07-30 19:49:50'),
+('Tonio', 'Rico', 0, '2016-07-30 19:49:50'),
+('Tonio', 'Sam', 0, '2016-07-30 19:49:50'),
+('Tonio', 'Seik', 0, '2016-07-30 19:49:50'),
+('Tonio', 'Sylvain', 0, '2016-07-30 19:49:50'),
+('Tonio', 'Tonio', 0, '2016-07-30 19:49:50'),
+('Tonio', 'TotenFest', 0, '2016-07-30 19:49:50'),
+('Tonio', 'Webmaster', 0, '2016-07-30 19:49:50'),
+('TotenFest', 'Ana', 0, '2016-07-30 19:49:50'),
+('TotenFest', 'Azerty', 0, '2016-07-30 19:49:50'),
+('TotenFest', 'Benoit', 0, '2016-07-30 19:49:50'),
+('TotenFest', 'Chrispski', 0, '2016-07-30 19:49:50'),
+('TotenFest', 'Fab', 0, '2016-07-30 19:49:50'),
+('TotenFest', 'Fred', 0, '2016-07-30 19:49:50'),
+('TotenFest', 'Gautier', 0, '2016-07-30 19:49:50'),
+('TotenFest', 'James', 0, '2016-07-30 19:49:50'),
+('TotenFest', 'JM', 0, '2016-07-30 19:49:50'),
+('TotenFest', 'JPA', 0, '2016-07-30 19:49:50'),
+('TotenFest', 'Julie', 0, '2016-07-30 19:49:50'),
+('TotenFest', 'Karine', 0, '2016-07-30 19:49:50'),
+('TotenFest', 'Laurent', 0, '2016-07-30 19:49:50'),
+('TotenFest', 'Pascal', 0, '2016-07-30 19:49:50'),
+('TotenFest', 'Rico', 0, '2016-07-30 19:49:50'),
+('TotenFest', 'Sam', 0, '2016-07-30 19:49:50'),
+('TotenFest', 'Seik', 0, '2016-07-30 19:49:50'),
+('TotenFest', 'Sylvain', 0, '2016-07-30 19:49:50'),
+('TotenFest', 'Tonio', 0, '2016-07-30 19:49:50'),
+('TotenFest', 'TotenFest', 0, '2016-07-30 19:49:50'),
+('TotenFest', 'Webmaster', 0, '2016-07-30 19:49:50'),
+('Webmaster', 'Ana', 0, '2016-07-30 19:49:50'),
+('Webmaster', 'Azerty', 0, '2016-07-30 19:49:50'),
+('Webmaster', 'Benoit', 0, '2016-07-30 19:49:50'),
+('Webmaster', 'Chrispski', 0, '2016-07-30 19:49:50'),
+('Webmaster', 'Fab', 0, '2016-07-30 19:49:50'),
+('Webmaster', 'Fred', 0, '2016-07-30 19:49:50'),
+('Webmaster', 'Gautier', 0, '2016-07-30 19:49:50'),
+('Webmaster', 'James', 0, '2016-07-30 19:49:50'),
+('Webmaster', 'JM', 0, '2016-07-30 19:49:50'),
+('Webmaster', 'JPA', 0, '2016-07-30 19:49:50'),
+('Webmaster', 'Julie', 0, '2016-07-30 19:49:50'),
+('Webmaster', 'Karine', 0, '2016-07-30 19:49:50'),
+('Webmaster', 'Laurent', 0, '2016-07-30 19:49:50'),
+('Webmaster', 'Pascal', 0, '2016-07-30 19:49:50'),
+('Webmaster', 'Rico', 0, '2016-07-30 19:49:50'),
+('Webmaster', 'Sam', 0, '2016-07-30 19:49:50'),
+('Webmaster', 'Seik', 0, '2016-07-30 19:49:50'),
+('Webmaster', 'Sylvain', 0, '2016-07-30 19:49:50'),
+('Webmaster', 'Tonio', 0, '2016-07-30 19:49:50'),
+('Webmaster', 'TotenFest', 0, '2016-07-30 19:49:50'),
+('Webmaster', 'Webmaster', 0, '2016-07-30 19:49:50');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `Actualites`
+--
+
+CREATE TABLE IF NOT EXISTS `Actualites` (
+  `ACT_ActuID` int(4) NOT NULL,
+  `ACT_Pseudo` varchar(30) CHARACTER SET latin1 COLLATE latin1_general_ci NOT NULL,
+  `ACT_Date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `ACT_Camarade` varchar(30) CHARACTER SET latin1 COLLATE latin1_general_ci DEFAULT NULL,
+  `ACT_Text` text CHARACTER SET latin1 COLLATE latin1_general_ci,
+  `ACT_Link` varchar(256) CHARACTER SET ascii DEFAULT NULL,
+  `ACT_Fichier` varchar(20) CHARACTER SET latin1 COLLATE latin1_general_ci DEFAULT NULL,
+  `ACT_Status` int(1) NOT NULL DEFAULT '0',
+  `ACT_StatusDate` datetime NOT NULL
+) ENGINE=InnoDB AUTO_INCREMENT=62 DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `Actualites`
+--
+
+INSERT INTO `Actualites` (`ACT_ActuID`, `ACT_Pseudo`, `ACT_Date`, `ACT_Camarade`, `ACT_Text`, `ACT_Link`, `ACT_Fichier`, `ACT_Status`, `ACT_StatusDate`) VALUES
+(25, 'Pascal', '2016-07-08 22:18:09', 'Seik', 'Post sûr le mur du camarade Seik!', NULL, NULL, 0, '2016-07-30 21:55:30'),
+(30, 'Ana', '2016-07-09 09:35:45', NULL, 'Je teste le post de Ana sur son mur!\r\nOk!', NULL, NULL, 0, '2016-07-30 21:55:30'),
+(31, 'Pascal', '2016-07-10 14:27:00', NULL, 'Mon premier post sur le fil d''actualité!', 'http://www.voila.fr', NULL, 0, '2016-07-30 21:55:30'),
+(32, 'Seik', '2016-07-10 14:41:12', NULL, 'Je suis Seik et je viens de partager... ce qui suit!', NULL, 'LC0207.jpg', 0, '2016-07-30 21:55:30'),
+(35, 'Webmaster', '2016-07-11 12:42:39', NULL, 'CECI EST UN MESSAGE DU WEBMASTER! STOP!\nAJOUT D''UN NOUVEAU CAMARADE! STOP!\nPSEUDO DU NOUVEAU CAMARADE: Kriss! STOP!\nFIN DU MESSAGE! STOP!...STOP! STOP!', NULL, NULL, 0, '2016-07-30 21:55:30'),
+(36, 'Pascal', '2016-07-11 12:44:45', NULL, 'Autre test avec\r\nretour chariot!', NULL, NULL, 0, '2016-07-30 21:55:30'),
+(37, 'Pascal', '2016-07-11 13:01:03', 'Kriss', 'Ola Kriss!\r\nBienvenue sur le site du classico.\r\nA+', NULL, NULL, 0, '2016-07-30 21:55:30'),
+(38, 'fab', '2005-11-18 05:45:53', 'Seik', 'c''est vrai je suis trop impatient....c''est l''halu les photo de seik,j''ai jamais des trucs aussi enormes!!!\r\nsur mon petit bout de terre perdu au milieu de l''ocean indien j''ai du mal a réaliser qu''il existe des regroupements aussi garguentuesque!!!\r\nbiz les copains', NULL, NULL, 0, '2016-07-30 21:55:30'),
+(39, 'Seik', '2005-11-25 12:02:42', 'Fab', 'Malheureusemnt c''est grosse teufs n''existent plus en France, il faut faire quelques kilometre pour les trouver! Ces photos sont toutes des soirées où je suis allé, en Hollande. Musique top et tres tres bonne ambiance. C''est sur que ca fait un peu loin de l''ocean indien... Mais si t''as l''occasion de venir en europe et que tu souhaite d''eclter en Hollande, fais moi signe... @+ camarade!', NULL, NULL, 0, '2016-07-30 21:55:30'),
+(40, 'Fab', '2005-12-08 06:16:47', 'Seik', 'salut seik c''est vrai tout ceci n''existe plus en france.....a mon grand desespoir,a une epoque ce genre de regroupement existait a montpellier(boréalis)on pouvait y voir jeff mills qui debutait a 2 platines ,laurent garnier qui faisait hurler la foule avec "ecstasy" .....nostalgique le fab....!\r\nen tout cas ta proposition n''est pas rentée dans l''oreillle d''un sourd!!!je laccepte avec joie!!\r\na+camarade!!', NULL, NULL, 0, '2016-07-30 21:55:30'),
+(41, 'Pascal', '2005-12-08 15:35:04', 'Fab', 'Oui, camarade Fab !! Mais dès que ton jet privé sera réparé, et que ton pilote aura décuvé !! MDR\r\nBye, Camarades...', NULL, NULL, 0, '2016-07-30 21:55:30'),
+(42, 'Seik', '2005-12-20 15:52:54', 'Fab', 't''as ka venir en train wwhhaa!!!!', NULL, NULL, 0, '2016-07-30 21:55:30'),
+(43, 'Fab', '2005-12-22 16:48:45', 'Seik', 'MDR, ben pourquoi pas le tram ?!!!j''hesite ,je vous tiens au courant...en attendant bonnes fetes et piano piano sur la gouache   ;)', NULL, NULL, 0, '2016-07-30 21:55:30'),
+(44, 'Pascal', '2005-12-23 11:51:04', 'Fab', 'Bonnes fêtes de fin d''année à toi aussi Fab !!!\r\nA+', NULL, NULL, 0, '2016-07-30 21:55:30'),
+(45, 'Fab', '2005-12-26 07:26:04', 'Pascal', 'yes merci pascal!!le reggae coule a flots ainsi que le rhum et le zamal,a bon entendeur....', NULL, NULL, 0, '2016-07-30 21:55:30'),
+(46, 'Fab', '2005-12-28 11:53:54', NULL, 'eh les gars!ya le volcan la fournaise qui pete et la lave arrive bientot a la mer !!c pas cool comme cadeau de noel ca??', NULL, NULL, 0, '2016-07-30 21:55:30'),
+(47, 'Fab', '2006-01-01 12:17:07', NULL, 'bonne année a tous les camarades gling gling voeux!!!', NULL, NULL, 0, '2016-07-30 21:55:30'),
+(48, 'Pascal', '2006-01-04 10:46:25', NULL, 'Ouais, très bonne année 2006 à tous !!!...', NULL, NULL, 0, '2016-07-30 21:55:30'),
+(49, 'Seik', '2006-01-13 17:33:54', NULL, 'Salut!!! Bonne année a tous!!!!\r\nJ''arrive pas a poser les photos d''une teuf que j''ai fais le 01 janvier (en hollande encore, bien sur hhaa!!!) probleme de serveur??', NULL, NULL, 0, '2016-07-30 21:55:30'),
+(50, 'Pascal', '2006-01-18 15:24:49', 'Seik', 'Effectivement il y a un PB.\r\nJe regarde ça et je te tien au courant. A+', NULL, NULL, 0, '2016-07-30 21:55:30'),
+(51, 'Seik', '2006-01-18 20:03:14', 'Pascal', 'ok camarade Pascal, envoie moi un email quand ca fonctionne a nouveau @+', NULL, NULL, 0, '2016-07-30 21:55:30'),
+(52, 'Pascal', '2006-02-01 14:06:41', 'Seik', 'C bon ça fonctionne...', NULL, NULL, 0, '2016-07-30 21:55:30'),
+(53, 'Seik', '2006-02-01 20:36:50', NULL, 'ok! Nouvelles photos en ligne, "teufs", crazyland le 1 janvier... Bon surf à tous!', NULL, NULL, 0, '2016-07-30 21:55:30'),
+(54, 'Seik', '2006-02-02 17:21:23', NULL, 'Et aujourd''hui, encore des nouvelles photos d''une teufs early hardcore/oldschool où je suis allé le 21 janvier. Les prochaines ce sera en mars.', NULL, NULL, 0, '2016-07-30 21:55:30'),
+(55, 'Pascal', '2006-02-10 15:52:10', NULL, 'Je m''avancerai pas trop, mais on dirait qu''il y a du son sur le site du Cl@ssico !!!\r\nJe vous en dirais plus dès lundi prochain.\r\nBon week-end. Bz', NULL, NULL, 0, '2016-07-30 21:55:30'),
+(56, 'Pascal', '2006-02-17 11:29:39', NULL, 'Ou plutôt le lundi de la semaine d''aprés...', NULL, NULL, 0, '2016-07-30 21:55:30'),
+(57, 'Pascal', '2006-05-04 13:10:48', NULL, 'Voilà ce qui peut arriver quand on administre une base de données sans réelles précautions: Il n''y a plus aucun commentaire sur les photos !!! \r\nDésolé.', NULL, NULL, 0, '2016-07-30 21:55:30'),
+(58, 'Julie', '2016-07-21 09:56:19', NULL, 'Très bon site web! :)', 'http://studio-artaban.com', NULL, 0, '2016-07-30 21:55:30'),
+(59, 'Pascal', '2016-07-21 10:04:55', NULL, 'De quel film est-ce tiré?', NULL, 'LC0212.jpg', 0, '2016-07-30 21:55:30'),
+(61, 'Pascal', '2016-08-01 13:09:01', 'Ana', 'Ola! Voici un lien qui pourrait t''intéresser...\r\n;)', 'http://www.perdu.com', NULL, 0, '2016-08-01 15:09:01');
+
+--
+-- Triggers `Actualites`
+--
+DELIMITER $$
+CREATE TRIGGER `ACTU_NOTIFICATION` AFTER INSERT ON `Actualites`
+ FOR EACH ROW IF NEW.ACT_Camarade IS NOT NULL THEN
+INSERT INTO `Notifications` (NOT_Pseudo,NOT_Date,NOT_ObjType,NOT_ObjID) VALUES (NEW.ACT_Camarade,CURRENT_TIMESTAMP,'A',NEW.ACT_ActuID);
+END IF
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `RMV_COMMENTS` AFTER DELETE ON `Actualites`
+ FOR EACH ROW DELETE FROM Commentaires WHERE COM_ObjID = OLD.ACT_ActuID
+$$
+DELIMITER ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `Albums`
 --
 
 CREATE TABLE IF NOT EXISTS `Albums` (
-  `ALB_Nom` varchar(30) collate latin1_general_ci NOT NULL default '',
-  `ALB_Pseudo` varchar(30) collate latin1_general_ci NOT NULL default '',
-  `ALB_Shared` tinyint(1) NOT NULL default '0',
-  `ALB_EventID` int(4) NOT NULL default '0',
-  `ALB_Remark` varchar(100) collate latin1_general_ci default NULL,
-  `ALB_Date` date default NULL,
-  UNIQUE KEY `ALB_Nom` (`ALB_Nom`),
-  KEY `ALB_Pseudo` (`ALB_Pseudo`,`ALB_Shared`,`ALB_EventID`)
+  `ALB_Nom` varchar(30) COLLATE latin1_general_ci NOT NULL DEFAULT '',
+  `ALB_Pseudo` varchar(30) COLLATE latin1_general_ci NOT NULL DEFAULT '',
+  `ALB_Shared` tinyint(1) NOT NULL DEFAULT '0',
+  `ALB_EventID` int(4) NOT NULL DEFAULT '0',
+  `ALB_Remark` varchar(100) COLLATE latin1_general_ci DEFAULT NULL,
+  `ALB_Date` date DEFAULT NULL,
+  `ALB_Status` int(1) NOT NULL DEFAULT '0',
+  `ALB_StatusDate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 --
--- Contenu de la table `Albums`
+-- Dumping data for table `Albums`
 --
 
-INSERT INTO `Albums` (`ALB_Nom`, `ALB_Pseudo`, `ALB_Shared`, `ALB_EventID`, `ALB_Remark`, `ALB_Date`) VALUES
-('Tilllate.com', 'Pascal', 0, 0, 'Photos provenant du site TILLLATE.COM', '2005-04-01'),
-('ToNiO En DéLiRe', 'Pascal', 1, 1, 'Tonio en délire !!!', '2005-04-01'),
-('Le Classico - En Vrac...', 'Pascal', 1, 0, NULL, '2005-04-25'),
-('prises de vue insulaires', 'Fab', 1, 0, NULL, '2005-06-10'),
-('année 80', 'JM', 1, 0, NULL, '2005-07-25'),
-('Teufs', 'Seik', 0, 0, '', '2005-11-08');
+INSERT INTO `Albums` (`ALB_Nom`, `ALB_Pseudo`, `ALB_Shared`, `ALB_EventID`, `ALB_Remark`, `ALB_Date`, `ALB_Status`, `ALB_StatusDate`) VALUES
+('Tilllate.com', 'Pascal', 0, 0, 'Photos provenant du site HTTP://TILLLATE.COM', '2005-04-01', 1, '2016-07-31 21:57:57'),
+('ToNiO En DéLiRe', 'Pascal', 1, 1, 'Tonio en délire !!!', '2005-04-01', 0, '2016-07-30 19:57:16'),
+('Le Classico - En Vrac...', 'Pascal', 1, 0, NULL, '2005-04-25', 0, '2016-07-30 19:57:16'),
+('prises de vue insulaires', 'Fab', 1, 0, NULL, '2005-06-10', 0, '2016-07-30 19:57:16'),
+('année 80', 'JM', 1, 0, NULL, '2005-07-25', 0, '2016-07-30 19:57:16'),
+('Teufs', 'Seik', 0, 0, '', '2005-11-08', 0, '2016-07-30 19:57:16'),
+('Journal', 'Pascal', 0, 0, 'Album de publication', '2016-07-04', 0, '2016-07-30 19:57:16'),
+('Journal', 'Webmaster', 0, 0, 'Album de publication', '2016-07-04', 0, '2016-07-30 19:57:16'),
+('Journal', 'Tonio', 0, 0, 'Album de publication', '2016-07-04', 0, '2016-07-30 19:57:16'),
+('Journal', 'Sam', 0, 0, 'Album de publication', '2016-07-04', 0, '2016-07-30 19:57:16'),
+('Journal', 'JM', 0, 0, 'Album de publication', '2016-07-04', 0, '2016-07-30 19:57:16'),
+('Journal', 'James', 0, 0, 'Album de publication', '2016-07-04', 0, '2016-07-30 19:57:16'),
+('Journal', 'Fred', 0, 0, 'Album de publication', '2016-07-04', 0, '2016-07-30 19:57:16'),
+('Journal', 'Fab', 0, 0, 'Album de publication', '2016-07-04', 0, '2016-07-30 19:57:16'),
+('Journal', 'Ana', 0, 0, 'Album de publication', '2016-07-04', 0, '2016-07-30 19:57:16'),
+('Journal', 'JPA', 0, 0, 'Album de publication', '2016-07-04', 0, '2016-07-30 19:57:16'),
+('Journal', 'Gautier', 0, 0, 'Album de publication', '2016-07-04', 0, '2016-07-30 19:57:16'),
+('Journal', 'Benoit', 0, 0, 'Album de publication', '2016-07-04', 0, '2016-07-30 19:57:16'),
+('Journal', 'Chrispski', 0, 0, 'Album de publication', '2016-07-04', 0, '2016-07-30 19:57:16'),
+('Journal', 'Azerty', 0, 0, 'Album de publication', '2016-07-04', 0, '2016-07-30 19:57:16'),
+('Journal', 'TotenFest', 0, 0, 'Album de publication', '2016-07-04', 0, '2016-07-30 19:57:16'),
+('Journal', 'Sylvain', 0, 0, 'Album de publication', '2016-07-04', 0, '2016-07-30 19:57:16'),
+('Journal', 'Julie', 0, 0, 'Album de publication', '2016-07-04', 0, '2016-07-30 19:57:16'),
+('Journal', 'Karine', 0, 0, 'Album de publication', '2016-07-04', 0, '2016-07-30 19:57:16'),
+('Journal', 'Rico', 0, 0, 'Album de publication', '2016-07-04', 0, '2016-07-30 19:57:16'),
+('Journal', 'Seik', 0, 0, 'Album de publication', '2016-07-04', 0, '2016-07-30 19:57:16'),
+('Journal', 'Laurent', 0, 0, 'Album de publication', '2016-07-04', 0, '2016-07-30 19:57:16'),
+('Journal', 'Kriss', 0, 0, 'Album de publication', '2016-07-11', 0, '2016-07-30 19:57:16');
+
+--
+-- Triggers `Albums`
+--
+DELIMITER $$
+CREATE TRIGGER `ALB_STATUS_UPDATE` BEFORE UPDATE ON `Albums`
+ FOR EACH ROW SET NEW.ALB_Status = 1, NEW.ALB_StatusDate = CURRENT_TIMESTAMP
+$$
+DELIMITER ;
 
 -- --------------------------------------------------------
 
 --
--- Structure de la table `Bugs`
---
-
-CREATE TABLE IF NOT EXISTS `Bugs` (
-  `User` varchar(20) collate latin1_general_ci NOT NULL default '',
-  `Identify` int(11) NOT NULL auto_increment,
-  `Version` varchar(10) collate latin1_general_ci NOT NULL default '',
-  `Condition` tinyint(4) NOT NULL default '0',
-  `Repeat` tinyint(4) NOT NULL default '0',
-  `Description` text collate latin1_general_ci NOT NULL,
-  `Status` tinyint(4) NOT NULL default '0',
-  `BugDate` date NOT NULL default '0000-00-00',
-  `BugTime` time NOT NULL default '00:00:00',
-  UNIQUE KEY `Identify` (`Identify`),
-  KEY `User` (`User`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=8 ;
-
---
--- Contenu de la table `Bugs`
---
-
-INSERT INTO `Bugs` (`User`, `Identify`, `Version`, `Condition`, `Repeat`, `Description`, `Status`, `BugDate`, `BugTime`) VALUES
-('MOI', 7, '1.2', 1, 0, 'blab blalb bla', 0, '2012-04-04', '15:21:25');
-
--- --------------------------------------------------------
-
---
--- Structure de la table `Camarades`
+-- Table structure for table `Camarades`
 --
 
 CREATE TABLE IF NOT EXISTS `Camarades` (
-  `CAM_Pseudo` varchar(30) collate latin1_general_ci NOT NULL default '',
-  `CAM_CodeConf` varchar(20) collate latin1_general_ci NOT NULL default '',
-  `CAM_Nom` varchar(20) collate latin1_general_ci default NULL,
-  `CAM_Prenom` varchar(20) collate latin1_general_ci default NULL,
-  `CAM_Sexe` tinyint(1) default NULL,
-  `CAM_BornDate` date default NULL,
-  `CAM_Adresse` varchar(200) collate latin1_general_ci default NULL,
-  `CAM_Ville` varchar(30) collate latin1_general_ci default NULL,
-  `CAM_Postal` varchar(5) collate latin1_general_ci default NULL,
-  `CAM_Email` varchar(50) collate latin1_general_ci default NULL,
-  `CAM_Hobbies` text collate latin1_general_ci,
-  `CAM_APropos` text collate latin1_general_ci,
-  `CAM_LogDate` date default NULL,
-  `CAM_Admin` tinyint(1) NOT NULL default '1',
-  UNIQUE KEY `CAM_Pseudo` (`CAM_Pseudo`)
+  `CAM_Pseudo` varchar(30) COLLATE latin1_general_ci NOT NULL DEFAULT '',
+  `CAM_CodeConf` varchar(20) COLLATE latin1_general_ci NOT NULL DEFAULT '',
+  `CAM_Nom` varchar(20) COLLATE latin1_general_ci DEFAULT NULL,
+  `CAM_Prenom` varchar(20) COLLATE latin1_general_ci DEFAULT NULL,
+  `CAM_Sexe` tinyint(1) DEFAULT NULL,
+  `CAM_BornDate` date DEFAULT NULL,
+  `CAM_Adresse` varchar(200) COLLATE latin1_general_ci DEFAULT NULL,
+  `CAM_Ville` varchar(30) COLLATE latin1_general_ci DEFAULT NULL,
+  `CAM_Postal` varchar(5) COLLATE latin1_general_ci DEFAULT NULL,
+  `CAM_Email` varchar(50) COLLATE latin1_general_ci DEFAULT NULL,
+  `CAM_Hobbies` text COLLATE latin1_general_ci,
+  `CAM_APropos` text COLLATE latin1_general_ci,
+  `CAM_LogDate` datetime DEFAULT NULL,
+  `CAM_Admin` tinyint(1) NOT NULL DEFAULT '1',
+  `CAM_Profile` varchar(20) COLLATE latin1_general_ci DEFAULT NULL,
+  `CAM_Banner` varchar(20) COLLATE latin1_general_ci DEFAULT NULL,
+  `CAM_Located` tinyint(1) NOT NULL DEFAULT '0',
+  `CAM_Latitude` double DEFAULT NULL,
+  `CAM_Longitude` double DEFAULT NULL,
+  `CAM_Status` int(1) NOT NULL DEFAULT '0',
+  `CAM_StatusDate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 --
--- Contenu de la table `Camarades`
+-- Dumping data for table `Camarades`
 --
 
-INSERT INTO `Camarades` (`CAM_Pseudo`, `CAM_CodeConf`, `CAM_Nom`, `CAM_Prenom`, `CAM_Sexe`, `CAM_BornDate`, `CAM_Adresse`, `CAM_Ville`, `CAM_Postal`, `CAM_Email`, `CAM_Hobbies`, `CAM_APropos`, `CAM_LogDate`, `CAM_Admin`) VALUES
-('Webmaster', 'bipbip', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2005-11-09', 0),
-('Pascal', 'ras34', 'Viguié', 'Pascal', 2, '1975-12-17', '3 rue du Château', 'Clapiers', '34830', 'viguie.pascal@gmail.com', 'Ne rien faire, ou regarder la TV. Ce qui revient au même...', 'Trop bon, trop con...', '2016-06-24', 0),
-('Tonio', 'lc05303', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2005-05-01', 1),
-('Sam', 'lc0523', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1),
-('JM', 'lc04303', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2005-07-25', 1),
-('James', 'zoufeli', NULL, NULL, 2, NULL, NULL, NULL, NULL, NULL, NULL, 'Tél: 06 03 45 00 46', '2005-04-20', 1),
-('Fred', 'lc0323', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2005-09-18', 1),
-('Fab', 'lc303', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2008-04-12', 0),
-('Ana', 'lc0400', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2005-04-05', 1),
-('JPA', 'lc01303', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2005-05-19', 1),
-('Gautier', 'lc0123', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2005-04-14', 1),
-('Benoit', 'finnmark', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1),
-('Chrispski', 'lc23', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2005-04-20', 1),
-('Azerty', 'lc040', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2005-04-14', 1),
-('TotenFest', 'lc103', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2005-04-11', 1),
-('Sylvain', 'lc0301', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'je suis un ancien de l''iut et pote de Carine et de la grande Julie pour ceux qui me remettent pas', '2005-04-22', 1),
-('Julie', 'lc1430', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2005-04-15', 1),
-('Karine', 'lc333', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1),
-('Rico', 'lc451', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1),
-('Seik', 'lc0621', NULL, 'cedric', 2, NULL, NULL, NULL, NULL, 'cgnial34@hotmail.com', 'voyages, sorties (surtout en Hollande!), lectures...', NULL, '2009-03-09', 1),
-('Laurent', 'lc4078', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2006-02-08', 1),
-('Free', 'recrute', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2012-04-09', 1),
-('Recruteur', 'Recrute34', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1);
+INSERT INTO `Camarades` (`CAM_Pseudo`, `CAM_CodeConf`, `CAM_Nom`, `CAM_Prenom`, `CAM_Sexe`, `CAM_BornDate`, `CAM_Adresse`, `CAM_Ville`, `CAM_Postal`, `CAM_Email`, `CAM_Hobbies`, `CAM_APropos`, `CAM_LogDate`, `CAM_Admin`, `CAM_Profile`, `CAM_Banner`, `CAM_Located`, `CAM_Latitude`, `CAM_Longitude`, `CAM_Status`, `CAM_StatusDate`) VALUES
+('Webmaster', 'bipbip', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2005-11-09 00:00:00', 0, NULL, NULL, 0, NULL, NULL, 1, '2016-08-01 10:08:35'),
+('Pascal', 'ras34', 'Viguié', 'Pascal', 2, '1975-12-17', '3 rue du Château', 'Clapiers', '34830', 'scalpas@hotmail.fr', 'Ne rien faire, ou regarder la TV. Ce qui revient au même!', 'Trop bon, trop con...', '2016-08-01 14:53:48', 0, 'LC0205.jpg', 'LC0204.jpg', 0, NULL, NULL, 1, '2016-08-01 12:53:48'),
+('Tonio', 'lc05303', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2005-05-01 00:00:00', 1, NULL, NULL, 0, NULL, NULL, 1, '2016-08-01 10:08:35'),
+('Sam', 'lc0523', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, NULL, NULL, 0, NULL, NULL, 1, '2016-08-01 10:08:35'),
+('JM', 'lc04303', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2005-07-25 00:00:00', 1, NULL, NULL, 0, NULL, NULL, 1, '2016-08-01 10:08:35'),
+('James', 'zoufeli', NULL, NULL, 2, NULL, NULL, NULL, NULL, NULL, NULL, 'Tél: 06 03 45 00 46', '2005-04-20 00:00:00', 1, NULL, NULL, 0, NULL, NULL, 1, '2016-08-01 10:08:35'),
+('Fred', 'lc0323', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2005-09-18 00:00:00', 1, NULL, NULL, 0, NULL, NULL, 1, '2016-08-01 10:08:35'),
+('Fab', 'lc303', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2008-04-12 00:00:00', 0, NULL, NULL, 0, NULL, NULL, 1, '2016-08-01 10:08:35'),
+('Ana', 'lc0400', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2005-04-05 00:00:00', 1, NULL, NULL, 0, NULL, NULL, 1, '2016-08-01 10:08:35'),
+('JPA', 'lc01303', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2005-05-19 00:00:00', 1, NULL, NULL, 0, NULL, NULL, 1, '2016-08-01 10:08:35'),
+('Gautier', 'lc0123', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2005-04-14 00:00:00', 1, NULL, NULL, 0, NULL, NULL, 1, '2016-08-01 10:08:35'),
+('Benoit', 'finnmark', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, NULL, NULL, 0, NULL, NULL, 1, '2016-08-01 10:08:35'),
+('Chrispski', 'lc23', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2005-04-20 00:00:00', 1, NULL, NULL, 0, NULL, NULL, 1, '2016-08-01 10:08:35'),
+('Azerty', 'lc040', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2005-04-14 00:00:00', 1, NULL, NULL, 0, NULL, NULL, 1, '2016-08-01 10:08:35'),
+('TotenFest', 'lc103', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2005-04-11 00:00:00', 1, NULL, NULL, 0, NULL, NULL, 1, '2016-08-01 10:08:35'),
+('Sylvain', 'lc0301', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'je suis un ancien de l''iut et pote de Carine et de la grande Julie pour ceux qui me remettent pas', '2005-04-22 00:00:00', 1, NULL, NULL, 0, NULL, NULL, 1, '2016-08-01 10:08:35'),
+('Julie', 'lc1430', NULL, NULL, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2005-04-15 00:00:00', 1, NULL, NULL, 0, NULL, NULL, 1, '2016-08-01 10:08:35'),
+('Karine', 'lc333', NULL, NULL, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, NULL, NULL, 0, NULL, NULL, 1, '2016-08-01 10:08:35'),
+('Rico', 'lc451', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, NULL, NULL, 0, NULL, NULL, 1, '2016-08-01 10:08:35'),
+('Seik', 'lc0621', NULL, 'cedric', 2, NULL, NULL, NULL, NULL, 'cgnial34@hotmail.com', 'voyages, sorties (surtout en Hollande!), lectures...', NULL, '2016-08-01 17:46:36', 1, NULL, NULL, 0, NULL, NULL, 1, '2016-08-01 15:46:36'),
+('Laurent', 'lc4078', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2006-02-08 00:00:00', 1, NULL, NULL, 0, NULL, NULL, 1, '2016-08-01 10:08:35'),
+('Kriss', 'lc0412', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, NULL, NULL, 0, NULL, NULL, 1, '2016-08-01 10:08:35');
+
+--
+-- Triggers `Camarades`
+--
+DELIMITER $$
+CREATE TRIGGER `CAM_STATUS_UPDATE` BEFORE UPDATE ON `Camarades`
+ FOR EACH ROW SET NEW.CAM_Status = 1, NEW.CAM_StatusDate = CURRENT_TIMESTAMP
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `INSERT_NEW_CAM` AFTER INSERT ON `Camarades`
+ FOR EACH ROW CALL create_camarade(NEW.CAM_Pseudo)
+$$
+DELIMITER ;
 
 -- --------------------------------------------------------
 
 --
--- Structure de la table `Evenements`
+-- Table structure for table `Commentaires`
+--
+
+CREATE TABLE IF NOT EXISTS `Commentaires` (
+  `COM_ObjType` varchar(1) CHARACTER SET latin1 COLLATE latin1_general_ci NOT NULL DEFAULT 'P',
+  `COM_ObjID` int(4) NOT NULL DEFAULT '0',
+  `COM_Pseudo` varchar(30) CHARACTER SET latin1 COLLATE latin1_general_ci NOT NULL,
+  `COM_Date` datetime NOT NULL,
+  `COM_Text` text CHARACTER SET latin1 COLLATE latin1_general_ci NOT NULL,
+  `COM_Status` int(1) NOT NULL DEFAULT '0',
+  `COM_StatusDate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `Commentaires`
+--
+
+INSERT INTO `Commentaires` (`COM_ObjType`, `COM_ObjID`, `COM_Pseudo`, `COM_Date`, `COM_Text`, `COM_Status`, `COM_StatusDate`) VALUES
+('A', 25, 'Ana', '2016-07-09 12:36:00', 'Il''y a une faute! sûr: "mûr".', 0, '2016-07-30 20:00:59'),
+('A', 25, 'JM', '2016-07-09 12:16:00', 'ola!', 0, '2016-07-30 20:00:59'),
+('A', 25, 'Pascal', '2016-07-09 12:29:32', 'test l''ajout "AVEC" !!!', 0, '2016-07-30 20:00:59'),
+('A', 34, 'Pascal', '2016-07-11 13:00:14', 'Ajout comment...', 0, '2016-07-30 20:00:59'),
+('A', 36, 'Ana', '2016-08-01 10:40:16', 'Avec retour charriot!?!... et des boeufs? :p', 0, '2016-08-01 08:41:23'),
+('A', 37, 'Kriss', '2016-07-11 15:25:31', 'Merci! On se voit bientôt. Bye', 0, '2016-07-30 20:00:59'),
+('A', 37, 'Rico', '2016-07-21 05:09:07', 'Je pourrais être de la partie?', 0, '2016-07-30 20:00:59'),
+('A', 47, 'Pascal', '2016-07-11 15:38:58', 'Merci!... Avec un peu de retard ;)', 0, '2016-07-30 20:00:59'),
+('A', 58, 'Ana', '2016-07-21 13:21:51', 'Pareil!... lol', 0, '2016-07-30 20:00:59'),
+('A', 58, 'Karine', '2016-07-21 13:43:16', 'Idem! ;)', 0, '2016-07-30 20:00:59'),
+('A', 58, 'Pascal', '2016-07-21 11:59:35', 'Je suis d''accord!', 0, '2016-07-30 20:00:59'),
+('A', 59, 'JM', '2016-07-21 17:17:31', 'Aucune idée !?!', 0, '2016-07-30 20:00:59'),
+('A', 59, 'Karine', '2016-07-21 17:36:48', 'Je sais! "Delicatessen" de Jeunet et Caro.', 0, '2016-07-30 20:00:59'),
+('A', 59, 'Pascal', '2016-07-23 10:14:14', 'Exact! Bravo Karine! :)', 0, '2016-07-30 20:00:59'),
+('A', 61, 'Seik', '2016-08-01 19:04:59', 'Effectivement!... Très utile ce lien :D', 0, '2016-08-01 17:04:59'),
+('P', 2, 'Pascal', '2005-04-15 20:16:04', 'Et Hop !!! D''un bras...', 0, '2016-07-30 20:00:59'),
+('P', 9, 'Pascal', '2005-06-09 09:57:43', 'Miss Kittin à la Villa...', 0, '2016-07-30 20:00:59'),
+('P', 11, 'Pascal', '2016-06-30 18:16:16', 'Jennifer à droite, et à gauche... je sais plus! :p', 0, '2016-07-30 20:00:59'),
+('P', 13, 'Pascal', '2005-06-09 09:58:58', 'On se calme les filles! :p', 0, '2016-07-30 20:00:59'),
+('P', 24, 'Seik', '2016-08-01 19:08:25', 'Sexy! ;)', 0, '2016-08-01 17:08:25'),
+('P', 29, 'Pascal', '2005-04-03 10:52:10', 'Sam & Co.', 0, '2016-07-30 20:00:59'),
+('P', 32, 'Pascal', '2005-03-05 16:30:01', 'Monsieur "Laurent Garnier"', 0, '2016-07-30 20:00:59'),
+('P', 46, 'Pascal', '2005-04-03 10:55:08', 'Whaou!! :)', 0, '2016-07-30 20:00:59'),
+('P', 66, 'Pascal', '2005-06-10 12:02:04', 'Vous me faites une petite place?', 0, '2016-07-30 20:00:59'),
+('P', 67, 'Seik', '2005-02-07 21:23:36', 'GRRRrrr! ;o)', 0, '2016-07-30 20:00:59'),
+('P', 75, 'Pascal', '2005-01-21 18:32:41', 'Sven väth !!.. Yes', 0, '2016-07-30 20:00:59'),
+('P', 104, 'Pascal', '2016-07-11 12:23:33', 'Tiens! Ils me disent quelque chose ces 2 là... ;)', 0, '2016-07-30 20:00:59'),
+('P', 107, 'Pascal', '2005-01-21 18:34:12', 'Miam Miam!! :p', 0, '2016-07-30 20:00:59'),
+('P', 109, 'Pascal', '2005-04-15 20:15:14', 'Ellen Allien...', 0, '2016-07-30 20:00:59'),
+('P', 112, 'Pascal', '2016-06-30 16:24:12', 'Grosse soirée!', 0, '2016-07-30 20:00:59'),
+('P', 112, 'Seik', '2005-01-21 18:42:51', 'Qlimax party!!!', 0, '2016-07-30 20:00:59'),
+('P', 130, 'Pascal', '2005-04-15 19:03:06', 'D''oh!!! :p', 0, '2016-07-30 20:00:59'),
+('P', 130, 'Pascal', '2005-04-15 19:04:27', '...elle est maké :(', 0, '2016-07-30 20:00:59'),
+('P', 157, 'JM', '2005-04-28 11:25:30', 'Coquine!!!.. lol', 0, '2016-07-30 20:00:59'),
+('P', 179, 'Pascal', '2005-03-05 17:02:48', 'La barre de fer!!!.. lol', 0, '2016-07-30 20:00:59'),
+('P', 180, 'Pascal', '2016-06-30 16:26:18', 'Belle! Belle!', 0, '2016-07-30 20:00:59');
+
+--
+-- Triggers `Commentaires`
+--
+DELIMITER $$
+CREATE TRIGGER `COMMENT_NOTIFICATION` AFTER INSERT ON `Commentaires`
+ FOR EACH ROW BEGIN
+DECLARE pseudo VARCHAR(30);
+SET pseudo = get_object_owner(NEW.COM_ObjType,NEW.COM_ObjID);
+IF CONVERT(pseudo USING latin1) NOT LIKE CONVERT(NEW.COM_Pseudo USING latin1) THEN
+INSERT INTO `Notifications` (NOT_Pseudo,NOT_Date,NOT_ObjType,NOT_ObjID,NOT_ObjDate,NOT_ObjFrom) VALUES (pseudo,CURRENT_TIMESTAMP,NEW.COM_ObjType,NEW.COM_ObjID,NEW.COM_Date,NEW.COM_Pseudo);
+END IF;
+END
+$$
+DELIMITER ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `Evenements`
 --
 
 CREATE TABLE IF NOT EXISTS `Evenements` (
-  `EVE_EventID` int(4) NOT NULL default '0',
-  `EVE_Pseudo` varchar(30) collate latin1_general_ci NOT NULL default '',
-  `EVE_Nom` varchar(50) collate latin1_general_ci NOT NULL default '',
-  `EVE_Lieu` varchar(40) collate latin1_general_ci NOT NULL default '',
-  `EVE_Date` date NOT NULL default '0000-00-00',
-  `EVE_Flyer` varchar(20) collate latin1_general_ci default NULL,
-  `EVE_Remark` text collate latin1_general_ci,
-  UNIQUE KEY `EVE_EventID` (`EVE_EventID`),
-  KEY `EVE_Date` (`EVE_Date`)
+  `EVE_EventID` int(4) NOT NULL DEFAULT '0',
+  `EVE_Pseudo` varchar(30) COLLATE latin1_general_ci NOT NULL DEFAULT '',
+  `EVE_Nom` varchar(50) COLLATE latin1_general_ci NOT NULL DEFAULT '',
+  `EVE_Lieu` varchar(40) COLLATE latin1_general_ci NOT NULL DEFAULT '',
+  `EVE_Date` date NOT NULL DEFAULT '0000-00-00',
+  `EVE_Flyer` varchar(20) COLLATE latin1_general_ci DEFAULT NULL,
+  `EVE_Remark` text COLLATE latin1_general_ci,
+  `EVE_Status` int(1) NOT NULL DEFAULT '0',
+  `EVE_StatusDate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 --
--- Contenu de la table `Evenements`
+-- Dumping data for table `Evenements`
 --
 
-INSERT INTO `Evenements` (`EVE_EventID`, `EVE_Pseudo`, `EVE_Nom`, `EVE_Lieu`, `EVE_Date`, `EVE_Flyer`, `EVE_Remark`) VALUES
-(1, 'Pascal', 'Nashville Festival', 'Le Ranch de Tonio', '2004-12-31', 'FL3.jpg', 'De la Deep Country dans le champagne !!'),
-(2, 'Pascal', 'The Prodigy DJ set Leeroy', 'La Villa-Rouge', '2005-04-08', NULL, 'PAF: 15 euros\r\nMais j''en connais qui vont prendre la bouteille !!'),
-(3, 'Pascal', 'Vitalic Night', 'La Villa-Rouge', '2005-04-15', NULL, 'PAF: 15 &euro;\r\nAge minimum: 18\r\nStyle: Techno/Trance'),
-(4, 'Pascal', 'Lesbian & Gay Pride', 'Montpellier', '2005-06-04', 'FL6.jpg', 'Les RDV du Peyrou, la MARCHE et la "RAINBOW NIGHT VII" \r\n\r\nRendez-vous au Jardin du Peyrou:\r\n\r\n12 H 00 : Pique-nique organisé par le Collectif contre l''Homophobie\r\n\r\n13 H 00 : Forum des associations organisé par Angel\r\n\r\n15 H 00 : Départ de la Marche\r\n\r\n18 H 00 : Apéro au café de la Mer\r\n\r\n23 H 00 : Soirée de clôture "Rainbow Night VII" à la Villa Rouge (Navette gratuite en rotation toute la nuit à partir de minuit jusqu''à 6h30, au départ du Jardin du peyrou).'),
-(5, 'Pascal', 'APERO - DESERTICO', '37, Allée de Corfou - Apt n°103 - Mtp', '2005-06-10', 'FL11.jpg', 'A partir de 19h00, il n''y aura personne, pas de musique, rien à boire ni à manger.\r\nEt oui, c''est le Désertico...'),
-(6, 'Seik', 'Qlimax', 'Hollande', '2005-11-19', NULL, 'Grosse grosse rave\r\nwww.q-dance.nl'),
-(7, 'Seik', 'Jack de Marseille', 'Daytona', '2006-02-17', NULL, 'Il mix a partir de 1.30');
+INSERT INTO `Evenements` (`EVE_EventID`, `EVE_Pseudo`, `EVE_Nom`, `EVE_Lieu`, `EVE_Date`, `EVE_Flyer`, `EVE_Remark`, `EVE_Status`, `EVE_StatusDate`) VALUES
+(1, 'Pascal', 'Nashville Festival', 'Le Ranch de Tonio', '2004-12-31', 'FL3.jpg', 'De la Deep Country dans le champagne !!', 0, '2016-07-30 20:02:46'),
+(2, 'Pascal', 'The Prodigy DJ set Leeroy', 'La Villa-Rouge', '2005-04-08', NULL, 'PAF: 15 euros\r\nMais j''en connais qui vont prendre la bouteille !!', 0, '2016-07-30 20:02:46'),
+(3, 'Pascal', 'Vitalic Night', 'La Villa-Rouge', '2005-04-15', NULL, 'PAF: 15 &euro;\r\nAge minimum: 18\r\nStyle: Techno/Trance', 0, '2016-07-30 20:02:46'),
+(4, 'Pascal', 'Lesbian & Gay Pride', 'Montpellier', '2005-06-04', 'FL6.jpg', 'Les RDV du Peyrou, la MARCHE et la "RAINBOW NIGHT VII" \r\n\r\nRendez-vous au Jardin du Peyrou:\r\n\r\n12 H 00 : Pique-nique organisé par le Collectif contre l''Homophobie\r\n\r\n13 H 00 : Forum des associations organisé par Angel\r\n\r\n15 H 00 : Départ de la Marche\r\n\r\n18 H 00 : Apéro au café de la Mer\r\n\r\n23 H 00 : Soirée de clôture "Rainbow Night VII" à la Villa Rouge (Navette gratuite en rotation toute la nuit à partir de minuit jusqu''à 6h30, au départ du Jardin du peyrou).', 0, '2016-07-30 20:02:46'),
+(5, 'Pascal', 'APERO - DESERTICO', '37, Allée de Corfou - Apt n°103 - Mtp', '2005-06-10', 'FL11.jpg', 'A partir de 19h00, il n''y aura personne, pas de musique, rien à boire ni à manger.\r\nEt oui, c''est le Désertico...', 0, '2016-07-30 20:02:46'),
+(6, 'Seik', 'Qlimax', 'Hollande', '2005-11-19', NULL, 'Grosse grosse rave\r\nwww.q-dance.nl', 0, '2016-07-30 20:02:46'),
+(7, 'Seik', 'Jack de Marseille', 'Daytona', '2006-02-17', NULL, 'Il mix a partir de 1.30', 0, '2016-07-30 20:02:46');
+
+--
+-- Triggers `Evenements`
+--
+DELIMITER $$
+CREATE TRIGGER `EVE_STATUS_UPDATE` BEFORE UPDATE ON `Evenements`
+ FOR EACH ROW SET NEW.EVE_Status = 1, NEW.EVE_StatusDate = CURRENT_TIMESTAMP
+$$
+DELIMITER ;
 
 -- --------------------------------------------------------
 
 --
--- Structure de la table `FlyerNumber`
+-- Table structure for table `FlyerNumber`
 --
 
 CREATE TABLE IF NOT EXISTS `FlyerNumber` (
-  `FNU_FlyerID` int(4) NOT NULL default '0',
-  UNIQUE KEY `FNU_FlyerID` (`FNU_FlyerID`)
+  `FNU_FlyerID` int(4) NOT NULL DEFAULT '0'
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 --
--- Contenu de la table `FlyerNumber`
+-- Dumping data for table `FlyerNumber`
 --
 
 INSERT INTO `FlyerNumber` (`FNU_FlyerID`) VALUES
-(12);
+(13);
 
 -- --------------------------------------------------------
 
 --
--- Structure de la table `Forum`
+-- Table structure for table `Forum`
 --
 
 CREATE TABLE IF NOT EXISTS `Forum` (
-  `FRM_Pseudo` varchar(30) collate latin1_general_ci NOT NULL default '',
-  `FRM_Message` text collate latin1_general_ci NOT NULL,
-  `FRM_Date` date NOT NULL default '0000-00-00',
-  `FRM_Time` time NOT NULL default '00:00:00',
-  KEY `FRM_Date` (`FRM_Date`,`FRM_Time`)
+  `FRM_Pseudo` varchar(30) COLLATE latin1_general_ci NOT NULL DEFAULT '',
+  `FRM_Message` text COLLATE latin1_general_ci NOT NULL,
+  `FRM_Date` date NOT NULL DEFAULT '0000-00-00',
+  `FRM_Time` time NOT NULL DEFAULT '00:00:00'
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 --
--- Contenu de la table `Forum`
+-- Dumping data for table `Forum`
 --
 
 INSERT INTO `Forum` (`FRM_Pseudo`, `FRM_Message`, `FRM_Date`, `FRM_Time`) VALUES
-('Fab', 'c''est vrai je suis trop impatient....c''est l''halu les photo de seik,j''ai jamais des trucs aussi enormes!!!\r\nsur mon petit bout de terre perdu au milieu de l''ocean indien j''ai du mal a réaliser qu''il existe des regroupements aussi garguentuesque!!!\r\nbiz les copains', '2005-11-18', '06:45:53'),
 ('Seik', 'Malheureusemnt c''est grosse teufs n''existent plus en France, il faut faire quelques kilometre pour les trouver! Ces photos sont toutes des soirées où je suis allé, en Hollande. Musique top et tres tres bonne ambiance. C''est sur que ca fait un peu loin de l''ocean indien... Mais si t''as l''occasion de venir en europe et que tu souhaite d''eclter en Hollande, fais moi signe... @+ camarade!', '2005-11-25', '13:02:42'),
 ('Fab', 'salut seik c''est vrai tout ceci n''existe plus en france.....a mon grand desespoir,a une epoque ce genre de regroupement existait a montpellier(boréalis)on pouvait y voir jeff mills qui debutait a 2 platines ,laurent garnier qui faisait hurler la foule avec "ecstasy" .....nostalgique le fab....!\r\nen tout cas ta proposition n''est pas rentée dans l''oreillle d''un sourd!!!je laccepte avec joie!!\r\na+camarade!!', '2005-12-08', '07:16:47'),
 ('Pascal', 'Oui, camarade Fab !! Mais dès que ton jet privé sera réparé, et que ton pilote aura décuvé !! MDR\r\nBye, Camarades...', '2005-12-08', '16:35:04'),
@@ -211,118 +900,30 @@ INSERT INTO `Forum` (`FRM_Pseudo`, `FRM_Message`, `FRM_Date`, `FRM_Time`) VALUES
 ('Pascal', 'Ou plutôt le lundi de la semaine d''aprés...', '2006-02-17', '12:29:39'),
 ('Pascal', 'Voilà ce qui peut arriver quand on administre une base de données sans réelles précautions: Il n''y a plus aucun commentaire sur les photos !!! \r\nDésolé.', '2006-05-04', '15:10:48'),
 ('Webmaster', 'CECI EST UN MESSAGE DU <b>WEBMASTER</b>! STOP!\nAJOUT D''UN NOUVEAU CAMARADE! STOP!\nPSEUDO DU NOUVEAU CAMARADE: <b>Free</b>! STOP!\nFIN DU MESSAGE! STOP!...STOP! STOP!', '2012-04-06', '01:10:21'),
-('Webmaster', 'CECI EST UN MESSAGE DU <b>WEBMASTER</b>! STOP!\nAJOUT D''UN NOUVEAU CAMARADE! STOP!\nPSEUDO DU NOUVEAU CAMARADE: <b>Recruteur</b>! STOP!\nFIN DU MESSAGE! STOP!...STOP! STOP!', '2012-08-28', '19:31:43');
+('Webmaster', 'CECI EST UN MESSAGE DU <b>WEBMASTER</b>! STOP!\nAJOUT D''UN NOUVEAU CAMARADE! STOP!\nPSEUDO DU NOUVEAU CAMARADE: <b>Recruteur</b>! STOP!\nFIN DU MESSAGE! STOP!...STOP! STOP!', '2012-08-28', '19:31:43'),
+('Pascal', 'Testage...', '2016-06-29', '18:07:07'),
+('Webmaster', 'CECI EST UN MESSAGE DU <b>WEBMASTER</b>! STOP!\nAJOUT D''UN NOUVEAU CAMARADE! STOP!\nPSEUDO DU NOUVEAU CAMARADE: <b>Kriss</b>! STOP!\nFIN DU MESSAGE! STOP!...STOP! STOP!', '2016-07-11', '14:42:39');
 
 -- --------------------------------------------------------
 
 --
--- Structure de la table `Inscription`
---
-
-CREATE TABLE IF NOT EXISTS `Inscription` (
-  `User` char(20) collate latin1_general_ci NOT NULL default '',
-  `Password` char(80) collate latin1_general_ci NOT NULL,
-  `Permission` tinyint(4) NOT NULL default '0',
-  `Name` char(100) collate latin1_general_ci NOT NULL default '',
-  `Surname` char(100) collate latin1_general_ci NOT NULL default '',
-  `Email` char(100) collate latin1_general_ci NOT NULL default '',
-  `Phone` char(10) collate latin1_general_ci NOT NULL default '',
-  `Address` char(200) collate latin1_general_ci NOT NULL default '',
-  `Postal` char(10) collate latin1_general_ci NOT NULL default '',
-  `Town` char(100) collate latin1_general_ci NOT NULL default '',
-  `Country` char(20) collate latin1_general_ci NOT NULL default '',
-  `State` char(20) collate latin1_general_ci NOT NULL default '',
-  `InsDate` date NOT NULL default '0000-00-00',
-  `InsTime` time NOT NULL default '00:00:00',
-  KEY `User` (`User`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
-
---
--- Contenu de la table `Inscription`
---
-
-INSERT INTO `Inscription` (`User`, `Password`, `Permission`, `Name`, `Surname`, `Email`, `Phone`, `Address`, `Postal`, `Town`, `Country`, `State`, `InsDate`, `InsTime`) VALUES
-('admin', '*9307C01EE9EAD7E48319C202E254C0FC576053B0', 7, 'Viguié', 'Pascal', 'viguie.pascal@gmail.com', '0671907987', '37 Chemin de Matti', '74100', 'Vétraz-Monthoux', 'France', '', '2009-04-17', '09:57:47'),
-('esoft', '3f06dd8313fcc863', 0, 'eSoft', '', 'junca@laposte.net', '', 'null', '75000', 'null', 'France', '', '0000-00-00', '00:00:00'),
-('megamacro', '5cdd1c4d12ce329b', 0, 'Megamacro', '', 'infocontact@megamacro.com', '', 'null', '75000', 'null', 'France', '', '0000-00-00', '00:00:00'),
-('macroangel', '457067f8156c6a5e', 0, 'MacroAngel', '', 'support@macroangel.com', '', 'null', '75000', 'null', 'France', '', '0000-00-00', '00:00:00'),
-('rouz', '1ebe225353868897', 0, 'megamacro', 'christophe', 'rouz@megamacro.com', '', 'x', '92', 'x', 'France', '', '0000-00-00', '00:00:00'),
-('iolo', '43670a845d855ee4', 0, 'iolo', 'null', 'mm@iolo.com', '', 'null', '75', 'null', 'France', '', '0000-00-00', '00:00:00'),
-('intcom', '3f5acbe06117aa43', 0, 'intcom', '', 'info@intcom.fr', '', 'null', '75000', 'null', 'France', '', '0000-00-00', '00:00:00'),
-('dynawares', '0143499c3911ba3a', 0, 'dynawares', '', 'alan@dynawares.com', '', 'null', '75000', 'null', 'Etats-Unis d''Ameriqu', '', '0000-00-00', '00:00:00'),
-('acemacro', '1926b3a918c1082a', 0, 'hiteksoftware', '', 'automize@hiteksoftware.com', '', 'null', '75000', 'null', 'Etats-Unis d''Ameriqu', '', '0000-00-00', '00:00:00'),
-('wintools', '527c8076798c6cd4', 0, 'wintools', '', 'info@wintools.com', '', 'null', '75000', 'null', 'Etats-Unis d''Ameriqu', '', '0000-00-00', '00:00:00'),
-('ehelp', '1af9160d05a43899', 0, 'ehelp', '', 'sgivens@ehelp.com', '', 'null', '555', 'null', 'Etats-Unis d''Ameriqu', '', '0000-00-00', '00:00:00'),
-('acidshock', '17fac8136e8e30ed', 0, 'dfgdfg', 'dfgdfg', 'acidshoc@hotmail.com', '', '3245 dfdfg', '325434', 'fgd', 'Etats-Unis d''Ameriqu', 'California', '0000-00-00', '00:00:00'),
-('trilok', '2549ed3d22e980a7', 0, 'ICC', '', 'trilok@iccorp.com', '', '48, Okhla Industrial Estate,', '110020', 'Phase III,', 'Inde', '', '0000-00-00', '00:00:00'),
-('bk_Jacques', '379e934a4194e5b4', 0, 'Jacques', '', 'bk_Jacques@Hotmail.com', '', '1 Rue de rivoli', '75000', 'Paris', 'France', '', '0000-00-00', '00:00:00'),
-('achiriac', '446a12100c856ce9', 0, 'CHIRIAC', 'Anneliese', 'anneliese_chiriac@hotmail.com', '', '148 rue Castagnary', '75015', 'PARIS', 'France', '', '0000-00-00', '00:00:00'),
-('GINETTE', '565a177129f4fbae', 0, 'AZUR', '', 'lhmapecechea@aol.com', '', '12 rue du bidon', '83000', 'Toulon', 'France', '', '0000-00-00', '00:00:00'),
-('tt', '0760380549121a7b', 0, 'ty', 'ty', 'eryrt@hj.ht', '', 'fffff', '45210', 'ghgfh', 'Allemagne', 'Western Australia', '0000-00-00', '00:00:00'),
-('kikoo', '552151cf55e12624', 0, 'kikoo', 'kikoolou', 'frederiquesyl@hotmail.com', '', '6 allée de l''églantine', '60560', 'orry la ville', 'France', '', '0000-00-00', '00:00:00'),
-('oukajen@aol.com', '3815087b6d4feef5', 0, 'ouka', 'gerard', 'oukajen@aol.com', '0556990312', '9 bis impasse jean marzat', '33400', 'talence', 'France', '', '0000-00-00', '00:00:00'),
-('alainwlo', '32a81f6169551c5a', 0, 'Wlodarczyk', 'Alain', 'alain.wlodarczyk@free.fr', '', '6 grande rue', '95450', 'Vigny', 'France', 'Australia Capital', '0000-00-00', '00:00:00'),
-('cyril.portet', '6e0a01cd1f7b9330', 0, 'PORTET', 'CYRIL', 'cyril@portet.org', '', '116 Route de lamorlaye', 'gouvieux', '60270', 'France', '', '0000-00-00', '00:00:00'),
-('azema', '6e4748fc6a995b5a', 0, 'azema', 'henri', 'kontalogik@kontalogik.com', '0467576859', 'les mas verts', '34725', 'st andre de sangonis', 'France', '', '0000-00-00', '00:00:00'),
-('tre', '67595d7f3e5441fa', 0, 'tre', '', 'tre@lemel.fr', '', 'tre', '77777', 'tre', 'France', '', '0000-00-00', '00:00:00'),
-('fre', '7c7910812589f878', 0, 'fre', '', 'fre@lemel.fr', '', 'fre', 'fre', 'fre', 'France', '', '0000-00-00', '00:00:00'),
-('harvey', '7aff769e4df61ebc', 0, 'CSOB', 'Claude', 'Claude32@hotmail.com', '8254321', '500 6 rue', 'j9p1s4', 'Valdor', 'Canada', 'Quebec', '0000-00-00', '00:00:00'),
-('karvin', '42cc14aa50c4aa7a', 0, 'perrel', 'vincent', 'vinceperrel@free.fr', '', '24 bis impasse joseph loth', '56000', 'vannes', 'France', '', '0000-00-00', '00:00:00'),
-('semou102', '47e5e7624e8daa80', 0, 'badiane', 'bou', 'b.badiane@caramail.com', '', 'UGB', '225', 'St Louis', 'Sénégal', '', '0000-00-00', '00:00:00'),
-('chiaradia', '56af33115e75ce71', 0, 'chiaradia', 'serge', 'crd@free.fr', '', '35 rue fmbarlet', '07800', 'la voulte', 'France', '', '0000-00-00', '00:00:00'),
-('fabien', '46ee7478090b632e', 0, 'fabien', '', 'fabian@yahoo.com', '', '22 street venus', '75112', 'paris', 'France', '', '0000-00-00', '00:00:00'),
-('Asuryan', '7fe610f30ce758d9', 0, 'LE PUIL', 'David', 'Tar_karandras@hotmail.com', '', 'Privé', 'Privé', 'Privé', 'France', '', '0000-00-00', '00:00:00'),
-('tittojoe', '56ee5d7c1d3b801b', 0, 'microtchad', '', 'tiitojoe@hotmail.com', '', 'rue 31 angle 22', 'bo 3512', 'dakar', 'Sénégal', '', '0000-00-00', '00:00:00'),
-('looping', '3a0e4d8517eb2d11', 0, '***********', '', '****@free.fr', '', '************', '*****', '**********', 'France', '', '0000-00-00', '00:00:00'),
-('gurellou', '0420c23e7c9c9311', 0, 'sopac', 'bilou', 'eleet31337@hotmail.com', '', 'alger', '16000', 'alger', 'Algérie', '', '2004-07-16', '21:22:26'),
-('assaitdavid', '4585548c4b9307c3', 0, 'Attoungbre', 'Assait David', 'assaitdavid@hotmail.com', '0022507003', 'bp 10 abidjan', '00225', 'abidjan', 'Côte d''Ivoire', '', '2004-07-28', '22:20:58'),
-('benicourt', '5ec84caf635597f4', 0, 'Gossellin', 'Grégory', 'dynhelp@benicourt.com', '0563530938', '13, rue St Exupery', '81150', 'Marssac', 'France', '', '2004-10-06', '14:29:40'),
-('fredouil', '0e458fb1787949cf', 0, 'pi', '', 'fredwordnesspi@cegetel.net', '', 'la forge', '66150', 'reynes', 'France', '', '2004-12-13', '19:34:37'),
-('1', '606717496665bcba', 0, '1', '', 'toto@toto.fr', '', '1', '1', '1', 'France', '', '2005-01-06', '00:45:09'),
-('DUDU', '3f21ea2d2d825493', 0, 'DUBOIS', 'Jean claude', 'esteve.dubois@tele2.fr', '0493430632', 'Bd Gazagnaire', '06400', 'Cannes', 'France', '', '2005-01-23', '17:35:32'),
-('babeloueb', '565491d704013245', 0, 'babeloueb', '', 'bab_eloueb@yahoo.fr', '', '12 rue des mangetouts', '54220', 'tegle les bains', 'France', '', '2005-03-05', '00:19:02'),
-('wvr', '26a8350b7085292e', 0, 'grange clc', '', 'wvr@thegrangeclc.com', '', 'latham avenue', 'wa75xd', 'runcorn', 'Royaume-Uni', '', '2005-07-12', '14:44:36'),
-('abel', '26d26fba05e3fbce', 0, 'men', 'boudabel', 'boudabel@yahoo.fr', '+212685520', '215 hay andalous', '15400', 'tiflet', 'Maroc', '', '2005-07-23', '21:28:51'),
-('rvguenot', '2e088e5c42ac2db3', 0, 'GUENOT', 'Hervé', 'herve@guenot.info', '', 'jhg', '21321', 'hg', 'Suisse', 'Quebec', '2005-08-23', '07:39:36'),
-('david.lereverend', '2473259c76bcafc7', 0, 'LEREVEREND', 'david', 'david.lereverend@club-internet.fr', '0232560816', '268,rue du calvaire', '27210', 'beuzeville', 'France', '', '2005-09-06', '18:38:42'),
-('alvharau', '3db84ffe544a3974', 0, 'cyberespacesteve', 'alain roland', 'alvharau@voila.fr', '+225 08363', '09 bp 3777 abidjan 09', '00225', 'abidjan', 'Côte d''Ivoire', '', '2005-09-20', '19:48:37'),
-('megao', '3494a5a6512221f7', 0, 'ROUVIERE', 'JEAN', 'jeanrouviere@free.fr', '', 'QUARTIER VEYREYRES', '26300', 'CHATEAUNEUF SUR ISERE', 'France', '', '2005-09-26', '11:19:18'),
-('R_baouche', '216ae39059d29baf', 0, 'Baouche', 'Rafik', 'R_baouche@yahoo.fr', '024 81 51', 'Bat-11-A-03', '35000', 'Boumerdes', 'Algérie', '', '2005-11-17', '10:10:42'),
-('djoni', '02da45aa400c8489', 0, 'tytryut', 'hjghjkhyuk', 'dfgdfhgf@fgfgdf.fr', '2121212121', '212121212121212121212121', '11111', '212121212121212121212121212121', 'Angola', 'Assam', '2005-12-30', '12:56:50'),
-('kmahfoudi', '7684c5177f0f5f70', 0, 'MAHFOUDI', 'Kamel', 'kmahfoudi@yahoo.fr', '2132155228', 'Paris', '75012', 'Paris', 'France', '', '2006-01-03', '13:49:19'),
-('joy209', '7109e5a64736cc3f', 0, 'Jason', '', 'yejp209@hotmail.com', '', 'No 68. Hongshuanyuan Road', '350002', 'Fuzhou', 'Chine', '', '2006-01-17', '08:29:54'),
-('razin', '12b3ae0e35fe2f97', 0, 'enim', 'nizar', 'nj_razin@yahoo.fr', '99665544', 'tunis', '2000', 'tunis', 'Tunisie', '', '2006-04-29', '10:33:13'),
-('Neil.Bolton.RSPL', '194905176cf71aa7', 0, 'Neil', 'Bolton', 'Neil.Bolton@RecruitmentSystems.com.au', '', '39 Brisbane Avenue', '2600', 'Barton', 'Australie', 'Australia Capital', '2006-09-01', '05:45:36'),
-('imt83var', '4e2fdad230fdddd5', 0, 'IMT', '', 'imtsarl@wanadoo.fr', '', '57 bd de leurope', '13127', 'vitrolles', 'France', '', '2006-10-29', '06:08:37'),
-('bouscot', '19f1bad55d422fb8', 0, 'v', 'v', 'gd144@hotmail.com', '', '1100 pas loin', 'q2w3e4', 'quebec', 'Canada', 'Quebec', '2007-03-14', '16:44:41'),
-('aer ze', '25cbb48872966ccf', 0, 'sdwf', 'sdf', 'zaml@9ahba.com', '022366512', '12jaayat32mp', '30020', 'hah', 'Anguilla', 'Chandigarh', '2007-06-19', '13:34:10'),
-('accouiic', '*2470C0C06DEE42FD161', 0, 'couic', '', 'acouiic@hotmail.com', '', '13 rue alésia', '75014', 'paris', 'France', '', '2007-11-29', '14:50:04'),
-('doderic', '*D447FD2EF30C00413DBDD4AC7E1D143BA51A9AF4', 0, 'CrucialDREAM Software', 'Eric Dodji', 'dodericg@yahoo.fr', '9474874', 'Adidogomé', '6545', 'Lomé', 'Togo', '', '2009-04-17', '12:07:42'),
-('alex12', '*79AD3FDFD36B4DA9C1C7C2CCB229B825E57DEE6E', 0, 'John Baxter', 'John Baxter', 'captain_claw84@yahoo.com', '555-555-98', 'Florilor 45, Fl. 165, 700500', 'sdsd', 'fdgre', 'Roumanie', '', '2011-11-08', '09:24:03'),
-('MOI', '*06C0BF5B64ECE2F648B5F048A71903906BA08E5C', 0, 'SunGard', '', 'viguie.pascal@sungard.com', '', '3 rue du Château', '34830', 'Clapiers', 'France', '', '2012-04-04', '14:48:50'),
-('Recruteur', '*E029DF97A104B2701E214F9127B0CC34DACBCDB5', 0, 'Recruteur', '', 'recrute@mtp.fr', '', 'Sur', '34000', 'Montpellier', 'France', '', '2012-07-02', '15:30:14');
-
--- --------------------------------------------------------
-
---
--- Structure de la table `Messagerie`
+-- Table structure for table `Messagerie`
 --
 
 CREATE TABLE IF NOT EXISTS `Messagerie` (
-  `MSG_Pseudo` varchar(30) collate latin1_general_ci NOT NULL default '',
-  `MSG_From` varchar(30) collate latin1_general_ci NOT NULL default '',
-  `MSG_Message` text collate latin1_general_ci NOT NULL,
-  `MSG_Date` date NOT NULL default '0000-00-00',
-  `MSG_Time` time NOT NULL default '00:00:00',
-  `MSG_LuFlag` tinyint(1) NOT NULL default '0',
-  `MSG_ReadStk` tinyint(1) NOT NULL default '1',
-  `MSG_WriteStk` tinyint(1) NOT NULL default '0',
-  `MSG_Objet` varchar(50) collate latin1_general_ci default NULL,
-  KEY `MSG_Pseudo` (`MSG_Pseudo`,`MSG_ReadStk`,`MSG_WriteStk`)
+  `MSG_Pseudo` varchar(30) COLLATE latin1_general_ci NOT NULL DEFAULT '',
+  `MSG_From` varchar(30) COLLATE latin1_general_ci NOT NULL DEFAULT '',
+  `MSG_Message` text COLLATE latin1_general_ci NOT NULL,
+  `MSG_Date` date NOT NULL DEFAULT '0000-00-00',
+  `MSG_Time` time NOT NULL DEFAULT '00:00:00',
+  `MSG_LuFlag` tinyint(1) NOT NULL DEFAULT '0',
+  `MSG_ReadStk` tinyint(1) NOT NULL DEFAULT '1',
+  `MSG_WriteStk` tinyint(1) NOT NULL DEFAULT '0',
+  `MSG_Objet` varchar(50) COLLATE latin1_general_ci DEFAULT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 --
--- Contenu de la table `Messagerie`
+-- Dumping data for table `Messagerie`
 --
 
 INSERT INTO `Messagerie` (`MSG_Pseudo`, `MSG_From`, `MSG_Message`, `MSG_Date`, `MSG_Time`, `MSG_LuFlag`, `MSG_ReadStk`, `MSG_WriteStk`, `MSG_Objet`) VALUES
@@ -333,80 +934,85 @@ INSERT INTO `Messagerie` (`MSG_Pseudo`, `MSG_From`, `MSG_Message`, `MSG_Date`, `
 ('pascal', 'Seik', 'ok, en fait ce qu''il s''est passé c''est qu''au lieu que les dernieres photos soient poacées sur la derniere page, elles se sont retrouvé sur la premiere... \r\nLa teuf etait mortelle, que d ela vielle techno toute la nuit, on a dansé non stop de 22h a 7h :)', '2005-11-16', '12:15:19', 1, 1, 0, NULL),
 ('pascal', 'Seik', 'Plus moyen de mettre des photos, ca dit "espace limité"... Tiens moi au courant, je les mettrai plus tard,\r\n@+', '2005-11-16', '17:41:30', 1, 1, 0, 'c plein??'),
 ('pascal', 'Seik', 'Salut Camarade Pascal!\r\nJe viens de mettre de nouvelles photos en ligne, Qlimax 2005, j''ay suis allé ce week end. 25.000 personnes!\r\nFais circuler l''info pour les camarades que caz interesse...\r\n@+', '2005-11-22', '13:19:43', 1, 1, 0, 'nouvelles photos :)'),
-('Webmaster', 'Pascal', 'Salut,\r\nEst-ce que <b>LeClassico</b> est compatible avec Netscape?\r\nMerci.\r\nBye', '2012-04-05', '23:33:37', 0, 1, 1, 'Firefox compatible?'),
+('Webmaster', 'Pascal', 'Salut,\r\nEst-ce que <b>LeClassico</b> est compatible avec Netscape?\r\nMerci.\r\nBye', '2012-04-05', '23:33:37', 0, 1, 0, 'Firefox compatible?'),
 ('Webmaster', 'Pascal', 'Alors, ça en est où?', '2012-04-06', '00:02:31', 0, 1, 0, 'Firefox compatible???'),
 ('Ana', 'Pascal', 'test...', '2012-04-06', '00:52:52', 0, 1, 0, NULL),
 ('Gautier', 'Pascal', 'test...', '2012-04-06', '00:53:38', 0, 1, 1, NULL),
-('TotenFest', 'Pascal', '<table border=1 cellspacing=0 cellpadding=0>\r\n<tr>\r\n<td>Test</td>\r\n<td>Html</td>\r\n</tr>\r\n<tr>\r\n<td colspan=2>Compatible</td>\r\n</tr>\r\n</table>\r\n', '2012-04-06', '12:21:47', 0, 1, 1, 'Test... HTML');
+('TotenFest', 'Pascal', '<table border=1 cellspacing=0 cellpadding=0>\r\n<tr>\r\n<td>Test</td>\r\n<td>Html</td>\r\n</tr>\r\n<tr>\r\n<td colspan=2>Compatible</td>\r\n</tr>\r\n</table>\r\n', '2012-04-06', '12:21:47', 0, 1, 1, 'Test... HTML'),
+('Julie', 'Pascal', 'Ola Julie!\r\n...mais laquelle de Julie es-tu?\r\nLOL\r\n', '2016-06-29', '18:37:05', 0, 1, 0, 'Testage...'),
+('JPA', 'Pascal', 'Ok...', '2016-06-29', '18:49:16', 0, 1, 0, 'Euh!'),
+('Azerty', 'Pascal', 'Ok...', '2016-06-29', '18:49:56', 0, 1, 0, NULL),
+('Benoit', 'Pascal', 'Ola!', '2016-06-29', '18:56:24', 0, 1, 0, 'Testage...'),
+('Azerty', 'Pascal', 'test', '2016-07-01', '12:13:00', 0, 1, 0, 'test'),
+('Ana', 'Pascal', 'Salut Ana!\r\nComment tu vas bien?\r\nBine?\r\n:)', '2016-08-01', '14:21:21', 0, 1, 1, 'Test trigger');
+
+--
+-- Triggers `Messagerie`
+--
+DELIMITER $$
+CREATE TRIGGER `MESSAGE_NOTIFICATION` AFTER INSERT ON `Messagerie`
+ FOR EACH ROW INSERT INTO `Notifications` (NOT_Pseudo,NOT_Date,NOT_ObjFrom,NOT_ObjDate) VALUES (NEW.MSG_Pseudo,CURRENT_TIMESTAMP,NEW.MSG_From,CONCAT_WS(' ',New.MSG_Date,New.MSG_Time))
+$$
+DELIMITER ;
 
 -- --------------------------------------------------------
 
 --
--- Structure de la table `Messages`
---
-
-CREATE TABLE IF NOT EXISTS `Messages` (
-  `User` varchar(20) collate latin1_general_ci NOT NULL default '',
-  `Message` text collate latin1_general_ci NOT NULL,
-  `MsgDate` date NOT NULL default '0000-00-00',
-  `MsgTime` time NOT NULL default '00:00:00',
-  KEY `User` (`User`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
-
---
--- Contenu de la table `Messages`
---
-
-
--- --------------------------------------------------------
-
---
--- Structure de la table `Music`
+-- Table structure for table `Music`
 --
 
 CREATE TABLE IF NOT EXISTS `Music` (
-  `MSC_Fichier` varchar(30) collate latin1_general_ci NOT NULL default '',
-  `MSC_Pseudo` varchar(30) collate latin1_general_ci NOT NULL default '',
-  `MSC_Artiste` varchar(30) collate latin1_general_ci NOT NULL default '',
-  `MSC_Album` varchar(40) collate latin1_general_ci NOT NULL default '',
-  `MSC_Morceau` varchar(40) collate latin1_general_ci NOT NULL default '',
-  `MSC_Source` varchar(250) collate latin1_general_ci NOT NULL default '',
-  UNIQUE KEY `MSC_Fichier` (`MSC_Fichier`)
+  `MSC_Fichier` varchar(30) COLLATE latin1_general_ci NOT NULL DEFAULT '',
+  `MSC_Pseudo` varchar(30) COLLATE latin1_general_ci NOT NULL DEFAULT '',
+  `MSC_Artiste` varchar(30) COLLATE latin1_general_ci NOT NULL DEFAULT '',
+  `MSC_Album` varchar(40) COLLATE latin1_general_ci NOT NULL DEFAULT '',
+  `MSC_Morceau` varchar(40) COLLATE latin1_general_ci NOT NULL DEFAULT '',
+  `MSC_Source` varchar(250) COLLATE latin1_general_ci NOT NULL DEFAULT '',
+  `MSC_Status` int(1) NOT NULL DEFAULT '0',
+  `MSC_StatusDate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 --
--- Contenu de la table `Music`
+-- Dumping data for table `Music`
 --
 
-INSERT INTO `Music` (`MSC_Fichier`, `MSC_Pseudo`, `MSC_Artiste`, `MSC_Album`, `MSC_Morceau`, `MSC_Source`) VALUES
-('MSC1.wma', 'Pascal', '???', '???', '???', 'http://vp.magellan.free.fr/Temp/03 Piste 3.wma'),
-('MSC2.mp3', 'Pascal', 'Miss Kittin & Goldenboy', '???', 'Rippin Kittin (Vinylasyl RMX)', 'http://vp.magellan.free.fr/Temp/Miss Kittin & Goldenboy - Rippin Kittin (Vinylasyl RMX).mp3'),
-('MSC15.mp3', 'Pascal', 'Silicone Soul', 'Dancefloor FG', 'Right On, Right On', 'http://vp.magellan.free.fr/Temp/Dancefloor FG - CD2 - Piste 1 - Right On, Right On (Silicone Soul).mp3'),
-('MSC14.mp3', 'Pascal', 'Ellen Allien', '???', 'Sehnsucht', 'http://vp.magellan.free.fr/Temp/Ellen Allien - Sehnsucht.mp3'),
-('MSC13.mp3', 'Pascal', 'Midfield General', '???', 'Coatnoise (Dave Clarke Mix)', 'http://vp.magellan.free.fr/Temp/Midfield General - Coatnoise (Dave Clarke Mix).mp3'),
-('MSC9.wma', 'Pascal', 'TIEFSCHWARZ', 'Mish Mash', 'Dead Eyes Opened (Severed Heads)', 'http://vp.magellan.free.fr/Temp/TIEFSCHWARZ - CD1 - Piste 15 - Dead Eyes Opened (Severed Heads).wma'),
-('MSC12.mp3', 'Pascal', 'Miss Kittin & The Hacker', '???', 'Zombie Nation', 'http://vp.magellan.free.fr/Temp/Miss kittin & The hacker - Zombie Nation.mp3'),
-('MSC19.mp3', 'Pascal', 'FCommunications', 'Aurora Borealis', 'The Milky Way (Scan X Mix)', 'http://vp.magellan.free.fr/Temp/Aurora Borealis - The Milky Way (Scan X Mix).mp3'),
-('MSC17.mp3', 'Pascal', 'Coldplay', '???', 'Don''t and panic', 'http://vp.magellan.free.fr/Temp/Coldplay - Don''t and panic.mp3'),
-('MSC20.mp3', 'Pascal', 'Dee Lite', '???', 'Groove Is In The Heart', 'http://vp.magellan.free.fr/Temp/Dee Lite - Groove Is In The Heart.mp3'),
-('MSC21.mp3', 'Pascal', 'Lisa Miskovsky', '???', 'Still Alive', 'http://vp.magellan.free.fr/Temp/Lisa Miskovsky - Still Alive.mp3'),
-('MSC22.mp3', 'Pascal', 'Sia', '???', 'Breathe Me', 'http://vp.magellan.free.fr/Temp/Sia - Breathe Me.mp3'),
-('MSC23.mp3', 'Pascal', 'Lily Allen', 'It''s not me, it''s you', 'The Fear', 'http://vp.magellan.free.fr/Temp/Lily Allen - The Fear.mp3'),
-('MSC24.mp3', 'Pascal', 'Brian Eno', '???', 'An Ending (Ascent)', 'http://vp.magellan.free.fr/Temp/28 Days Later Soundtrack - 10 - An Ending (Ascent) (By Brian Eno).mp3');
+INSERT INTO `Music` (`MSC_Fichier`, `MSC_Pseudo`, `MSC_Artiste`, `MSC_Album`, `MSC_Morceau`, `MSC_Source`, `MSC_Status`, `MSC_StatusDate`) VALUES
+('MSC1.wma', 'Pascal', '???', '???', '???', 'http://vp.magellan.free.fr/Temp/03 Piste 3.wma', 0, '2016-07-30 20:06:54'),
+('MSC2.mp3', 'Pascal', 'Miss Kittin & Goldenboy', '???', 'Rippin Kittin (Vinylasyl RMX)', 'http://vp.magellan.free.fr/Temp/Miss Kittin & Goldenboy - Rippin Kittin (Vinylasyl RMX).mp3', 0, '2016-07-30 20:06:54'),
+('MSC15.mp3', 'Pascal', 'Silicone Soul', 'Dancefloor FG', 'Right On, Right On', 'http://vp.magellan.free.fr/Temp/Dancefloor FG - CD2 - Piste 1 - Right On, Right On (Silicone Soul).mp3', 0, '2016-07-30 20:06:54'),
+('MSC14.mp3', 'Pascal', 'Ellen Allien', '???', 'Sehnsucht', 'http://vp.magellan.free.fr/Temp/Ellen Allien - Sehnsucht.mp3', 0, '2016-07-30 20:06:54'),
+('MSC13.mp3', 'Pascal', 'Midfield General', '???', 'Coatnoise (Dave Clarke Mix)', 'http://vp.magellan.free.fr/Temp/Midfield General - Coatnoise (Dave Clarke Mix).mp3', 0, '2016-07-30 20:06:54'),
+('MSC9.wma', 'Pascal', 'TIEFSCHWARZ', 'Mish Mash', 'Dead Eyes Opened (Severed Heads)', 'http://vp.magellan.free.fr/Temp/TIEFSCHWARZ - CD1 - Piste 15 - Dead Eyes Opened (Severed Heads).wma', 0, '2016-07-30 20:06:54'),
+('MSC12.mp3', 'Pascal', 'Miss Kittin & The Hacker', '???', 'Zombie Nation', 'http://vp.magellan.free.fr/Temp/Miss kittin & The hacker - Zombie Nation.mp3', 0, '2016-07-30 20:06:54'),
+('MSC19.mp3', 'Pascal', 'FCommunications', 'Aurora Borealis', 'The Milky Way (Scan X Mix)', 'http://vp.magellan.free.fr/Temp/Aurora Borealis - The Milky Way (Scan X Mix).mp3', 0, '2016-07-30 20:06:54'),
+('MSC17.mp3', 'Pascal', 'Coldplay', '???', 'Don''t and panic', 'http://vp.magellan.free.fr/Temp/Coldplay - Don''t and panic.mp3', 0, '2016-07-30 20:06:54'),
+('MSC20.mp3', 'Pascal', 'Dee Lite', '???', 'Groove Is In The Heart', 'http://vp.magellan.free.fr/Temp/Dee Lite - Groove Is In The Heart.mp3', 0, '2016-07-30 20:06:54'),
+('MSC21.mp3', 'Pascal', 'Lisa Miskovsky', '???', 'Still Alive', 'http://vp.magellan.free.fr/Temp/Lisa Miskovsky - Still Alive.mp3', 0, '2016-07-30 20:06:54'),
+('MSC22.mp3', 'Pascal', 'Sia', '???', 'Breathe Me', 'http://vp.magellan.free.fr/Temp/Sia - Breathe Me.mp3', 0, '2016-07-30 20:06:54'),
+('MSC23.mp3', 'Pascal', 'Lily Allen', 'It''s not me, it''s you', 'The Fear', 'http://vp.magellan.free.fr/Temp/Lily Allen - The Fear.mp3', 0, '2016-07-30 20:06:54'),
+('MSC24.mp3', 'Pascal', 'Brian Eno', '???', 'An Ending (Ascent)', 'http://vp.magellan.free.fr/Temp/28 Days Later Soundtrack - 10 - An Ending (Ascent) (By Brian Eno).mp3', 0, '2016-07-30 20:06:54');
+
+--
+-- Triggers `Music`
+--
+DELIMITER $$
+CREATE TRIGGER `MSC_STATUS_UPDATE` BEFORE UPDATE ON `Music`
+ FOR EACH ROW SET NEW.MSC_Status = 1, NEW.MSC_StatusDate = CURRENT_TIMESTAMP
+$$
+DELIMITER ;
 
 -- --------------------------------------------------------
 
 --
--- Structure de la table `MusicNumber`
+-- Table structure for table `MusicNumber`
 --
 
 CREATE TABLE IF NOT EXISTS `MusicNumber` (
-  `MNU_MusicID` int(4) NOT NULL default '0',
-  UNIQUE KEY `MNU_MusicID` (`MNU_MusicID`)
+  `MNU_MusicID` int(4) NOT NULL DEFAULT '0'
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 --
--- Contenu de la table `MusicNumber`
+-- Dumping data for table `MusicNumber`
 --
 
 INSERT INTO `MusicNumber` (`MNU_MusicID`) VALUES
@@ -415,1270 +1021,283 @@ INSERT INTO `MusicNumber` (`MNU_MusicID`) VALUES
 -- --------------------------------------------------------
 
 --
--- Structure de la table `PhotoNumber`
+-- Table structure for table `Notifications`
+--
+
+CREATE TABLE IF NOT EXISTS `Notifications` (
+  `NOT_Pseudo` varchar(30) CHARACTER SET latin1 COLLATE latin1_general_ci NOT NULL,
+  `NOT_Date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `NOT_ObjType` varchar(1) CHARACTER SET latin1 COLLATE latin1_general_ci DEFAULT NULL,
+  `NOT_ObjID` int(4) DEFAULT NULL,
+  `NOT_ObjDate` datetime DEFAULT NULL,
+  `NOT_ObjFrom` varchar(30) CHARACTER SET latin1 COLLATE latin1_general_ci DEFAULT NULL,
+  `NOT_LuFlag` tinyint(1) NOT NULL DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `Notifications`
+--
+
+INSERT INTO `Notifications` (`NOT_Pseudo`, `NOT_Date`, `NOT_ObjType`, `NOT_ObjID`, `NOT_ObjDate`, `NOT_ObjFrom`, `NOT_LuFlag`) VALUES
+('Ana', '2016-08-01 12:21:21', NULL, NULL, '2016-08-01 14:21:21', 'Pascal', 0),
+('Ana', '2016-08-01 13:09:01', 'A', 61, NULL, NULL, 0),
+('Pascal', '2016-08-01 17:04:59', 'A', 61, '2016-08-01 19:04:59', 'Seik', 0),
+('JM', '2016-08-01 17:08:25', 'P', 24, '2016-08-01 19:08:25', 'Seik', 0);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `PhotoNumber`
 --
 
 CREATE TABLE IF NOT EXISTS `PhotoNumber` (
-  `PNU_PhotoID` int(4) NOT NULL default '0',
-  UNIQUE KEY `PNU_PhotoID` (`PNU_PhotoID`)
+  `PNU_PhotoID` int(4) NOT NULL DEFAULT '0'
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 --
--- Contenu de la table `PhotoNumber`
+-- Dumping data for table `PhotoNumber`
 --
 
 INSERT INTO `PhotoNumber` (`PNU_PhotoID`) VALUES
-(191);
+(215);
 
 -- --------------------------------------------------------
 
 --
--- Structure de la table `Photos`
+-- Table structure for table `Photos`
 --
 
 CREATE TABLE IF NOT EXISTS `Photos` (
-  `PHT_Album` varchar(30) collate latin1_general_ci NOT NULL default '',
-  `PHT_Pseudo` varchar(30) collate latin1_general_ci NOT NULL default '',
-  `PHT_Fichier` varchar(20) collate latin1_general_ci NOT NULL default '',
-  `PHT_Comment` text collate latin1_general_ci,
-  KEY `PHT_Album` (`PHT_Album`)
+  `PHT_Album` varchar(30) COLLATE latin1_general_ci NOT NULL DEFAULT '',
+  `PHT_Pseudo` varchar(30) COLLATE latin1_general_ci NOT NULL DEFAULT '',
+  `PHT_Fichier` varchar(20) COLLATE latin1_general_ci NOT NULL DEFAULT '',
+  `PHT_FichierID` int(4) NOT NULL DEFAULT '0',
+  `PHT_Status` int(1) NOT NULL DEFAULT '0',
+  `PHT_StatusDate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 --
--- Contenu de la table `Photos`
+-- Dumping data for table `Photos`
 --
 
-INSERT INTO `Photos` (`PHT_Album`, `PHT_Pseudo`, `PHT_Fichier`, `PHT_Comment`) VALUES
-('Tilllate.com', 'Pascal', 'LC0001.jpg', ''),
-('Tilllate.com', 'Pascal', 'LC0002.jpg', '<b><u>Pascal:</u></b>&nbsp;Et Hop !!! D''un bras...'),
-('ToNiO En DéLiRe', 'Pascal', 'LC0003.jpg', ''),
-('ToNiO En DéLiRe', 'Pascal', 'LC0005.jpg', ''),
-('ToNiO En DéLiRe', 'Pascal', 'LC0006.jpg', ''),
-('ToNiO En DéLiRe', 'Pascal', 'LC0007.gif', ''),
-('ToNiO En DéLiRe', 'Pascal', 'LC0008.gif', ''),
-('Tilllate.com', 'Pascal', 'LC0009.jpg', '<b><u>Pascal:</u></b>&nbsp;Miss Kittin à la Villa...'),
-('Tilllate.com', 'Pascal', 'LC0010.jpg', ''),
-('Tilllate.com', 'Pascal', 'LC0011.jpg', ''),
-('Tilllate.com', 'Pascal', 'LC0012.jpg', ''),
-('Le Classico - En Vrac...', 'Pascal', 'LC0013.jpg', ''),
-('Le Classico - En Vrac...', 'Pascal', 'LC0014.jpg', ''),
-('Le Classico - En Vrac...', 'Pascal', 'LC0015.jpg', ''),
-('Le Classico - En Vrac...', 'Pascal', 'LC0016.jpg', ''),
-('Le Classico - En Vrac...', 'Pascal', 'LC0017.jpg', ''),
-('Le Classico - En Vrac...', 'Pascal', 'LC0018.jpg', ''),
-('Le Classico - En Vrac...', 'Pascal', 'LC0019.jpg', ''),
-('Tilllate.com', 'Pascal', 'LC0020.jpg', ''),
-('année 80', 'JM', 'LC0022.jpg', ''),
-('année 80', 'JM', 'LC0023.jpg', ''),
-('année 80', 'JM', 'LC0024.jpg', ''),
-('année 80', 'JM', 'LC0025.jpg', ''),
-('année 80', 'JM', 'LC0026.jpg', ''),
-('année 80', 'JM', 'LC0027.jpg', ''),
-('année 80', 'JM', 'LC0028.jpg', ''),
-('Tilllate.com', 'Pascal', 'LC0029.jpg', '<b><u>Pascal:</u></b>&nbsp;Sam & Co.'),
-('prises de vue insulaires', 'Fab', 'LC0030.jpg', ''),
-('prises de vue insulaires', 'Fab', 'LC0031.jpg', ''),
-('Tilllate.com', 'Pascal', 'LC0032.jpg', '<b><u>Pascal:</u></b>&nbsp;Monsieur "Laurent Garnier"'),
-('Tilllate.com', 'Pascal', 'LC0033.jpg', ''),
-('prises de vue insulaires', 'Fab', 'LC0034.jpg', ''),
-('prises de vue insulaires', 'Fab', 'LC0035.jpg', ''),
-('prises de vue insulaires', 'Fab', 'LC0036.jpg', ''),
-('prises de vue insulaires', 'Fab', 'LC0037.jpg', ''),
-('prises de vue insulaires', 'Fab', 'LC0038.jpg', ''),
-('prises de vue insulaires', 'Fab', 'LC0039.jpg', ''),
-('prises de vue insulaires', 'Fab', 'LC0040.jpg', ''),
-('prises de vue insulaires', 'Fab', 'LC0041.jpg', ''),
-('prises de vue insulaires', 'Fab', 'LC0042.jpg', ''),
-('prises de vue insulaires', 'Fab', 'LC0043.jpg', ''),
-('prises de vue insulaires', 'Fab', 'LC0044.jpg', ''),
-('Tilllate.com', 'Seik', 'LC0045.jpg', ''),
-('Teufs', 'Seik', 'LC0046.jpg', '<b><u>Pascal:</u></b>&nbsp;Whaou!! :)'),
-('Teufs', 'Seik', 'LC0047.jpg', ''),
-('Teufs', 'Seik', 'LC0048.jpg', ''),
-('Teufs', 'Seik', 'LC0049.jpg', ''),
-('Teufs', 'Seik', 'LC0050.jpg', ''),
-('Teufs', 'Seik', 'LC0051.jpg', ''),
-('Teufs', 'Seik', 'LC0052.jpg', ''),
-('Teufs', 'Seik', 'LC0053.jpg', ''),
-('Teufs', 'Seik', 'LC0054.jpg', ''),
-('Teufs', 'Seik', 'LC0055.jpg', ''),
-('Teufs', 'Seik', 'LC0056.jpg', ''),
-('Teufs', 'Seik', 'LC0057.jpg', ''),
-('Teufs', 'Seik', 'LC0058.jpg', ''),
-('Teufs', 'Seik', 'LC0059.jpg', ''),
-('Teufs', 'Seik', 'LC0060.jpg', ''),
-('Teufs', 'Seik', 'LC0061.jpg', ''),
-('Teufs', 'Seik', 'LC0062.jpg', ''),
-('Teufs', 'Seik', 'LC0063.jpg', ''),
-('Teufs', 'Seik', 'LC0064.jpg', ''),
-('Teufs', 'Seik', 'LC0065.jpg', ''),
-('Teufs', 'Seik', 'LC0066.jpg', ''),
-('Teufs', 'Seik', 'LC0067.jpg', '<b><u>Seik:</u></b>&nbsp;GRRRrrr! ;o)'),
-('Teufs', 'Seik', 'LC0068.jpg', ''),
-('Teufs', 'Seik', 'LC0069.jpg', ''),
-('Teufs', 'Seik', 'LC0070.jpg', ''),
-('Teufs', 'Seik', 'LC0071.jpg', ''),
-('Teufs', 'Seik', 'LC0072.jpg', ''),
-('Teufs', 'Seik', 'LC0073.jpg', ''),
-('Teufs', 'Seik', 'LC0074.jpg', ''),
-('Teufs', 'Seik', 'LC0075.jpg', '<b><u>Pascal:</u></b>&nbsp;Sven väth !!.. Yes'),
-('Teufs', 'Seik', 'LC0076.jpg', ''),
-('Teufs', 'Seik', 'LC0077.jpg', ''),
-('Teufs', 'Seik', 'LC0078.jpg', ''),
-('Teufs', 'Seik', 'LC0079.jpg', ''),
-('Teufs', 'Seik', 'LC0080.jpg', ''),
-('Teufs', 'Seik', 'LC0081.jpg', ''),
-('Teufs', 'Seik', 'LC0082.jpg', ''),
-('Teufs', 'Seik', 'LC0083.jpg', ''),
-('Teufs', 'Seik', 'LC0084.jpg', ''),
-('Teufs', 'Seik', 'LC0085.jpg', ''),
-('Teufs', 'Seik', 'LC0086.jpg', ''),
-('Teufs', 'Seik', 'LC0087.jpg', ''),
-('Teufs', 'Seik', 'LC0088.jpg', ''),
-('Teufs', 'Seik', 'LC0089.jpg', ''),
-('Teufs', 'Seik', 'LC0090.jpg', ''),
-('Teufs', 'Seik', 'LC0091.jpg', ''),
-('Teufs', 'Seik', 'LC0092.jpg', ''),
-('Teufs', 'Seik', 'LC0093.jpg', ''),
-('Teufs', 'Seik', 'LC0094.jpg', ''),
-('Teufs', 'Seik', 'LC0095.jpg', ''),
-('Teufs', 'Seik', 'LC0096.jpg', ''),
-('Teufs', 'Seik', 'LC0097.jpg', ''),
-('Teufs', 'Seik', 'LC0098.jpg', ''),
-('Teufs', 'Seik', 'LC0099.jpg', ''),
-('Teufs', 'Seik', 'LC0100.jpg', ''),
-('Teufs', 'Seik', 'LC0101.jpg', ''),
-('Teufs', 'Seik', 'LC0102.jpg', ''),
-('Teufs', 'Seik', 'LC0103.jpg', ''),
-('Teufs', 'Seik', 'LC0104.jpg', ''),
-('Tilllate.com', 'Pascal', 'LC0106.jpg', ''),
-('Tilllate.com', 'Pascal', 'LC0107.jpg', '<b><u>Pascal:</u></b>&nbsp;Miam Miam!! :p'),
-('Tilllate.com', 'Pascal', 'LC0108.jpg', ''),
-('Tilllate.com', 'Pascal', 'LC0109.jpg', '<b><u>Pascal:</u></b>&nbsp;Ellen Allien...'),
-('Tilllate.com', 'Pascal', 'LC0110.jpg', ''),
-('Teufs', 'Seik', 'LC0111.jpg', ''),
-('Teufs', 'Seik', 'LC0112.jpg', '<b><u>Pascal:</u></b>&nbsp;Qlimax party!!!'),
-('Teufs', 'Seik', 'LC0113.jpg', ''),
-('Teufs', 'Seik', 'LC0114.jpg', ''),
-('Teufs', 'Seik', 'LC0115.jpg', ''),
-('Teufs', 'Seik', 'LC0116.jpg', ''),
-('Teufs', 'Seik', 'LC0117.jpg', ''),
-('Teufs', 'Seik', 'LC0118.jpg', ''),
-('Teufs', 'Seik', 'LC0119.jpg', ''),
-('Teufs', 'Seik', 'LC0120.jpg', ''),
-('Teufs', 'Seik', 'LC0121.jpg', ''),
-('Teufs', 'Seik', 'LC0122.jpg', ''),
-('Teufs', 'Seik', 'LC0123.jpg', ''),
-('Teufs', 'Seik', 'LC0124.jpg', ''),
-('Teufs', 'Seik', 'LC0125.jpg', ''),
-('Teufs', 'Seik', 'LC0126.jpg', ''),
-('Teufs', 'Seik', 'LC0127.jpg', ''),
-('Teufs', 'Seik', 'LC0128.jpg', ''),
-('Tilllate.com', 'Pascal', 'LC0129.jpg', ''),
-('Tilllate.com', 'Pascal', 'LC0130.jpg', '<b><u>Pascal:</u></b>&nbsp;D''oh!!! :p<br><br><b><u>Pascal:</u></b>&nbsp;...elle est maké :('),
-('Tilllate.com', 'Pascal', 'LC0131.jpg', ''),
-('Tilllate.com', 'Pascal', 'LC0132.jpg', ''),
-('Tilllate.com', 'Pascal', 'LC0133.jpg', ''),
-('Tilllate.com', 'Pascal', 'LC0134.jpg', ''),
-('Teufs', 'Seik', 'LC0136.jpg', ''),
-('Teufs', 'Seik', 'LC0137.jpg', ''),
-('Teufs', 'Seik', 'LC0138.jpg', ''),
-('Teufs', 'Seik', 'LC0139.jpg', ''),
-('Teufs', 'Seik', 'LC0140.jpg', ''),
-('Teufs', 'Seik', 'LC0141.jpg', ''),
-('Teufs', 'Seik', 'LC0142.jpg', ''),
-('Teufs', 'Seik', 'LC0143.jpg', ''),
-('Teufs', 'Seik', 'LC0144.jpg', ''),
-('Teufs', 'Seik', 'LC0145.jpg', ''),
-('Teufs', 'Seik', 'LC0146.jpg', ''),
-('Teufs', 'Seik', 'LC0147.jpg', ''),
-('Teufs', 'Seik', 'LC0148.jpg', ''),
-('Teufs', 'Seik', 'LC0149.jpg', ''),
-('Teufs', 'Seik', 'LC0150.jpg', ''),
-('Teufs', 'Seik', 'LC0151.jpg', ''),
-('Teufs', 'Seik', 'LC0152.jpg', ''),
-('Teufs', 'Seik', 'LC0153.jpg', ''),
-('Teufs', 'Seik', 'LC0154.jpg', ''),
-('Teufs', 'Seik', 'LC0155.jpg', ''),
-('Tilllate.com', 'Pascal', 'LC0156.jpg', ''),
-('Tilllate.com', 'Pascal', 'LC0157.jpg', '<b><u>JM:</u></b>&nbsp;Coquine!!!.. lol'),
-('Tilllate.com', 'Pascal', 'LC0158.jpg', ''),
-('Tilllate.com', 'Pascal', 'LC0159.jpg', ''),
-('Tilllate.com', 'Pascal', 'LC0160.jpg', ''),
-('Tilllate.com', 'Pascal', 'LC0161.jpg', ''),
-('Tilllate.com', 'Pascal', 'LC0162.jpg', ''),
-('Tilllate.com', 'Pascal', 'LC0163.jpg', ''),
-('Tilllate.com', 'Pascal', 'LC0176.jpg', ''),
-('Tilllate.com', 'Pascal', 'LC0177.jpg', ''),
-('Tilllate.com', 'Pascal', 'LC0179.jpg', '<b><u>Pascal:</u></b>&nbsp;La barre de fer!!!.. lol'),
-('Tilllate.com', 'Pascal', 'LC0180.jpg', '<b><u>Pascal:</u></b>&nbsp;GrrrRRRR!!!! :O'),
-('Tilllate.com', 'Pascal', 'LC0181.jpg', NULL);
+INSERT INTO `Photos` (`PHT_Album`, `PHT_Pseudo`, `PHT_Fichier`, `PHT_FichierID`, `PHT_Status`, `PHT_StatusDate`) VALUES
+('Tilllate.com', 'Pascal', 'LC0001.jpg', 1, 0, '2016-07-30 20:09:18'),
+('Tilllate.com', 'Pascal', 'LC0002.jpg', 2, 0, '2016-07-30 20:09:18'),
+('ToNiO En DéLiRe', 'Pascal', 'LC0003.jpg', 3, 0, '2016-07-30 20:09:18'),
+('ToNiO En DéLiRe', 'Pascal', 'LC0005.jpg', 5, 0, '2016-07-30 20:09:18'),
+('ToNiO En DéLiRe', 'Pascal', 'LC0006.jpg', 6, 0, '2016-07-30 20:09:18'),
+('ToNiO En DéLiRe', 'Pascal', 'LC0007.gif', 7, 0, '2016-07-30 20:09:18'),
+('ToNiO En DéLiRe', 'Pascal', 'LC0008.gif', 8, 0, '2016-07-30 20:09:18'),
+('Tilllate.com', 'Pascal', 'LC0009.jpg', 9, 0, '2016-07-30 20:09:18'),
+('Tilllate.com', 'Pascal', 'LC0010.jpg', 10, 0, '2016-07-30 20:09:18'),
+('Tilllate.com', 'Pascal', 'LC0011.jpg', 11, 0, '2016-07-30 20:09:18'),
+('Tilllate.com', 'Pascal', 'LC0012.jpg', 12, 0, '2016-07-30 20:09:18'),
+('Le Classico - En Vrac...', 'Pascal', 'LC0013.jpg', 13, 0, '2016-07-30 20:09:18'),
+('Le Classico - En Vrac...', 'Pascal', 'LC0014.jpg', 14, 0, '2016-07-30 20:09:18'),
+('Le Classico - En Vrac...', 'Pascal', 'LC0015.jpg', 15, 0, '2016-07-30 20:09:18'),
+('Le Classico - En Vrac...', 'Pascal', 'LC0016.jpg', 16, 0, '2016-07-30 20:09:18'),
+('Le Classico - En Vrac...', 'Pascal', 'LC0017.jpg', 17, 0, '2016-07-30 20:09:18'),
+('Le Classico - En Vrac...', 'Pascal', 'LC0018.jpg', 18, 0, '2016-07-30 20:09:18'),
+('Le Classico - En Vrac...', 'Pascal', 'LC0019.jpg', 19, 0, '2016-07-30 20:09:18'),
+('Tilllate.com', 'Pascal', 'LC0020.jpg', 20, 0, '2016-07-30 20:09:18'),
+('année 80', 'JM', 'LC0022.jpg', 22, 0, '2016-07-30 20:09:18'),
+('année 80', 'JM', 'LC0023.jpg', 23, 0, '2016-07-30 20:09:18'),
+('année 80', 'JM', 'LC0024.jpg', 24, 0, '2016-07-30 20:09:18'),
+('année 80', 'JM', 'LC0025.jpg', 25, 0, '2016-07-30 20:09:18'),
+('année 80', 'JM', 'LC0026.jpg', 26, 0, '2016-07-30 20:09:18'),
+('année 80', 'JM', 'LC0027.jpg', 27, 0, '2016-07-30 20:09:18'),
+('année 80', 'JM', 'LC0028.jpg', 28, 0, '2016-07-30 20:09:18'),
+('Tilllate.com', 'Pascal', 'LC0029.jpg', 29, 0, '2016-07-30 20:09:18'),
+('prises de vue insulaires', 'Fab', 'LC0030.jpg', 30, 0, '2016-07-30 20:09:18'),
+('prises de vue insulaires', 'Fab', 'LC0031.jpg', 31, 0, '2016-07-30 20:09:18'),
+('Tilllate.com', 'Pascal', 'LC0032.jpg', 32, 0, '2016-07-30 20:09:18'),
+('Tilllate.com', 'Pascal', 'LC0033.jpg', 33, 0, '2016-07-30 20:09:18'),
+('prises de vue insulaires', 'Fab', 'LC0034.jpg', 34, 0, '2016-07-30 20:09:18'),
+('prises de vue insulaires', 'Fab', 'LC0035.jpg', 35, 0, '2016-07-30 20:09:18'),
+('prises de vue insulaires', 'Fab', 'LC0036.jpg', 36, 0, '2016-07-30 20:09:18'),
+('prises de vue insulaires', 'Fab', 'LC0037.jpg', 37, 0, '2016-07-30 20:09:18'),
+('prises de vue insulaires', 'Fab', 'LC0038.jpg', 38, 0, '2016-07-30 20:09:18'),
+('prises de vue insulaires', 'Fab', 'LC0039.jpg', 39, 0, '2016-07-30 20:09:18'),
+('prises de vue insulaires', 'Fab', 'LC0040.jpg', 40, 0, '2016-07-30 20:09:18'),
+('prises de vue insulaires', 'Fab', 'LC0041.jpg', 41, 0, '2016-07-30 20:09:18'),
+('prises de vue insulaires', 'Fab', 'LC0042.jpg', 42, 0, '2016-07-30 20:09:18'),
+('prises de vue insulaires', 'Fab', 'LC0043.jpg', 43, 0, '2016-07-30 20:09:18'),
+('prises de vue insulaires', 'Fab', 'LC0044.jpg', 44, 0, '2016-07-30 20:09:18'),
+('Tilllate.com', 'Seik', 'LC0045.jpg', 45, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0046.jpg', 46, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0047.jpg', 47, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0048.jpg', 48, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0049.jpg', 49, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0050.jpg', 50, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0051.jpg', 51, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0052.jpg', 52, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0053.jpg', 53, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0054.jpg', 54, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0055.jpg', 55, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0056.jpg', 56, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0057.jpg', 57, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0058.jpg', 58, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0059.jpg', 59, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0060.jpg', 60, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0061.jpg', 61, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0062.jpg', 62, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0063.jpg', 63, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0064.jpg', 64, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0065.jpg', 65, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0066.jpg', 66, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0067.jpg', 67, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0068.jpg', 68, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0069.jpg', 69, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0070.jpg', 70, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0071.jpg', 71, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0072.jpg', 72, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0073.jpg', 73, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0074.jpg', 74, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0075.jpg', 75, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0076.jpg', 76, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0077.jpg', 77, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0078.jpg', 78, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0079.jpg', 79, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0080.jpg', 80, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0081.jpg', 81, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0082.jpg', 82, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0083.jpg', 83, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0084.jpg', 84, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0085.jpg', 85, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0086.jpg', 86, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0087.jpg', 87, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0088.jpg', 88, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0089.jpg', 89, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0090.jpg', 90, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0091.jpg', 91, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0092.jpg', 92, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0093.jpg', 93, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0094.jpg', 94, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0095.jpg', 95, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0096.jpg', 96, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0097.jpg', 97, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0098.jpg', 98, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0099.jpg', 99, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0100.jpg', 100, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0101.jpg', 101, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0102.jpg', 102, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0103.jpg', 103, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0104.jpg', 104, 0, '2016-07-30 20:09:18'),
+('Tilllate.com', 'Pascal', 'LC0106.jpg', 106, 0, '2016-07-30 20:09:18'),
+('Tilllate.com', 'Pascal', 'LC0107.jpg', 107, 0, '2016-07-30 20:09:18'),
+('Tilllate.com', 'Pascal', 'LC0108.jpg', 108, 0, '2016-07-30 20:09:18'),
+('Tilllate.com', 'Pascal', 'LC0109.jpg', 109, 0, '2016-07-30 20:09:18'),
+('Tilllate.com', 'Pascal', 'LC0110.jpg', 110, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0111.jpg', 111, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0112.jpg', 112, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0113.jpg', 113, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0114.jpg', 114, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0115.jpg', 115, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0116.jpg', 116, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0117.jpg', 117, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0118.jpg', 118, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0119.jpg', 119, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0120.jpg', 120, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0121.jpg', 121, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0122.jpg', 122, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0123.jpg', 123, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0124.jpg', 124, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0125.jpg', 125, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0126.jpg', 126, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0127.jpg', 127, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0128.jpg', 128, 0, '2016-07-30 20:09:18'),
+('Tilllate.com', 'Pascal', 'LC0129.jpg', 129, 0, '2016-07-30 20:09:18'),
+('Tilllate.com', 'Pascal', 'LC0130.jpg', 130, 0, '2016-07-30 20:09:18'),
+('Tilllate.com', 'Pascal', 'LC0131.jpg', 131, 0, '2016-07-30 20:09:18'),
+('Tilllate.com', 'Pascal', 'LC0132.jpg', 132, 0, '2016-07-30 20:09:18'),
+('Tilllate.com', 'Pascal', 'LC0133.jpg', 133, 0, '2016-07-30 20:09:18'),
+('Tilllate.com', 'Pascal', 'LC0134.jpg', 134, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0136.jpg', 136, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0137.jpg', 137, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0138.jpg', 138, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0139.jpg', 139, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0140.jpg', 140, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0141.jpg', 141, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0142.jpg', 142, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0143.jpg', 143, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0144.jpg', 144, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0145.jpg', 145, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0146.jpg', 146, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0147.jpg', 147, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0148.jpg', 148, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0149.jpg', 149, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0150.jpg', 150, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0151.jpg', 151, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0152.jpg', 152, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0153.jpg', 153, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0154.jpg', 154, 0, '2016-07-30 20:09:18'),
+('Teufs', 'Seik', 'LC0155.jpg', 155, 0, '2016-07-30 20:09:18'),
+('Tilllate.com', 'Pascal', 'LC0156.jpg', 156, 0, '2016-07-30 20:09:18'),
+('Tilllate.com', 'Pascal', 'LC0157.jpg', 157, 0, '2016-07-30 20:09:18'),
+('Tilllate.com', 'Pascal', 'LC0158.jpg', 158, 0, '2016-07-30 20:09:18'),
+('Tilllate.com', 'Pascal', 'LC0159.jpg', 159, 0, '2016-07-30 20:09:18'),
+('Tilllate.com', 'Pascal', 'LC0160.jpg', 160, 0, '2016-07-30 20:09:18'),
+('Tilllate.com', 'Pascal', 'LC0161.jpg', 161, 0, '2016-07-30 20:09:18'),
+('Tilllate.com', 'Pascal', 'LC0162.jpg', 162, 0, '2016-07-30 20:09:18'),
+('Tilllate.com', 'Pascal', 'LC0163.jpg', 163, 0, '2016-07-30 20:09:18'),
+('Tilllate.com', 'Pascal', 'LC0176.jpg', 176, 0, '2016-07-30 20:09:18'),
+('Tilllate.com', 'Pascal', 'LC0177.jpg', 177, 0, '2016-07-30 20:09:18'),
+('Tilllate.com', 'Pascal', 'LC0179.jpg', 179, 0, '2016-07-30 20:09:18'),
+('Tilllate.com', 'Pascal', 'LC0180.jpg', 180, 0, '2016-07-30 20:09:18'),
+('Tilllate.com', 'Pascal', 'LC0181.jpg', 181, 0, '2016-07-30 20:09:18'),
+('Journal', 'Seik', 'LC0207.jpg', 207, 0, '2016-07-30 20:09:18'),
+('Journal', 'Pascal', 'LC0212.jpg', 212, 0, '2016-07-30 20:09:18');
+
+--
+-- Triggers `Photos`
+--
+DELIMITER $$
+CREATE TRIGGER `NEW_PHOTO_NOTIFICATION` AFTER INSERT ON `Photos`
+ FOR EACH ROW CALL notify_new_photo(NEW.PHT_Album,NEW.PHT_FichierID)
+$$
+DELIMITER ;
 
 -- --------------------------------------------------------
 
 --
--- Structure de la table `Presents`
+-- Table structure for table `Presents`
 --
 
 CREATE TABLE IF NOT EXISTS `Presents` (
-  `PRE_EventID` int(4) NOT NULL default '0',
-  `PRE_Pseudo` varchar(30) collate latin1_general_ci NOT NULL default '',
-  KEY `PRE_EventID` (`PRE_EventID`)
+  `PRE_EventID` int(4) NOT NULL DEFAULT '0',
+  `PRE_Pseudo` varchar(30) COLLATE latin1_general_ci NOT NULL DEFAULT '',
+  `PRE_Status` int(1) NOT NULL DEFAULT '0',
+  `PRE_StatusDate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 --
--- Contenu de la table `Presents`
+-- Dumping data for table `Presents`
 --
 
-INSERT INTO `Presents` (`PRE_EventID`, `PRE_Pseudo`) VALUES
-(1, 'Pascal'),
-(1, 'JPA'),
-(2, 'Pascal'),
-(4, 'Pascal'),
-(7, 'Pascal');
+INSERT INTO `Presents` (`PRE_EventID`, `PRE_Pseudo`, `PRE_Status`, `PRE_StatusDate`) VALUES
+(1, 'Pascal', 0, '2016-07-30 20:10:59'),
+(1, 'JPA', 0, '2016-07-30 20:10:59'),
+(2, 'Pascal', 0, '2016-07-30 20:10:59'),
+(4, 'Pascal', 0, '2016-07-30 20:10:59'),
+(7, 'Pascal', 0, '2016-07-30 20:10:59');
 
 -- --------------------------------------------------------
 
 --
--- Structure de la table `TheListActivity`
---
-
-CREATE TABLE IF NOT EXISTS `TheListActivity` (
-  `Url` varchar(256) collate latin1_general_ci NOT NULL,
-  `Title` varchar(256) collate latin1_general_ci NOT NULL,
-  `Subtitle` varchar(256) collate latin1_general_ci NOT NULL,
-  `Date` bigint(20) NOT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
-
---
--- Contenu de la table `TheListActivity`
---
-
-INSERT INTO `TheListActivity` (`Url`, `Title`, `Subtitle`, `Date`) VALUES
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #1', 'Sous-titre de la cellule #1', 1368186175),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #2', 'Sous-titre de la cellule #2', 1368186174),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #3', 'Sous-titre de la cellule #3', 1368186173),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #4', 'Sous-titre de la cellule #4', 1368186172),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #5', 'Sous-titre de la cellule #5', 1368186171),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #6', 'Sous-titre de la cellule #6', 1368186170),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #7', 'Sous-titre de la cellule #7', 1368186169),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #8', 'Sous-titre de la cellule #8', 1368186168),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #9', 'Sous-titre de la cellule #9', 1368186167),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #10', 'Sous-titre de la cellule #10', 1368186166),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #11', 'Sous-titre de la cellule #11', 1368186165),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #12', 'Sous-titre de la cellule #12', 1368186164),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #13', 'Sous-titre de la cellule #13', 1368186163),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #14', 'Sous-titre de la cellule #14', 1368186162),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #15', 'Sous-titre de la cellule #15', 1368186161),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #16', 'Sous-titre de la cellule #16', 1368186160),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #17', 'Sous-titre de la cellule #17', 1368186159),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #18', 'Sous-titre de la cellule #18', 1368186158),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #19', 'Sous-titre de la cellule #19', 1368186157),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #20', 'Sous-titre de la cellule #20', 1368186156),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #21', 'Sous-titre de la cellule #21', 1368186155),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #22', 'Sous-titre de la cellule #22', 1368186154),
-('http://vp.magellan.free.fr/Android/pic0023.png', 'Ceci est le titre #23', 'Sous-titre de la cellule #23', 1368186153),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #24', 'Sous-titre de la cellule #24', 1368186152),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #25', 'Sous-titre de la cellule #25', 1368186151),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #26', 'Sous-titre de la cellule #26', 1368186150),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #27', 'Sous-titre de la cellule #27', 1368186149),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #28', 'Sous-titre de la cellule #28', 1368186148),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #29', 'Sous-titre de la cellule #29', 1368186147),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #30', 'Sous-titre de la cellule #30', 1368186146),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #31', 'Sous-titre de la cellule #31', 1368186145),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #32', 'Sous-titre de la cellule #32', 1368186144),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #33', 'Sous-titre de la cellule #33', 1368186143),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #34', 'Sous-titre de la cellule #34', 1368186142),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #35', 'Sous-titre de la cellule #35', 1368186141),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #36', 'Sous-titre de la cellule #36', 1368186140),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #37', 'Sous-titre de la cellule #37', 1368186139),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #38', 'Sous-titre de la cellule #38', 1368186138),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #39', 'Sous-titre de la cellule #39', 1368186137),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #40', 'Sous-titre de la cellule #40', 1368186136),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #41', 'Sous-titre de la cellule #41', 1368186135),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #42', 'Sous-titre de la cellule #42', 1368186134),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #43', 'Sous-titre de la cellule #43', 1368186133),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #44', 'Sous-titre de la cellule #44', 1368186132),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #45', 'Sous-titre de la cellule #45', 1368186131),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #46', 'Sous-titre de la cellule #46', 1368186130),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #47', 'Sous-titre de la cellule #47', 1368186129),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #48', 'Sous-titre de la cellule #48', 1368186128),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #49', 'Sous-titre de la cellule #49', 1368186127),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #50', 'Sous-titre de la cellule #50', 1368186126),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #51', 'Sous-titre de la cellule #51', 1368186125),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #52', 'Sous-titre de la cellule #52', 1368186124),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #53', 'Sous-titre de la cellule #53', 1368186123),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #54', 'Sous-titre de la cellule #54', 1368186122),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #55', 'Sous-titre de la cellule #55', 1368186121),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #56', 'Sous-titre de la cellule #56', 1368186120),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #57', 'Sous-titre de la cellule #57', 1368186119),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #58', 'Sous-titre de la cellule #58', 1368186118),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #59', 'Sous-titre de la cellule #59', 1368186117),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #60', 'Sous-titre de la cellule #60', 1368186116),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #61', 'Sous-titre de la cellule #61', 1368186115),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #62', 'Sous-titre de la cellule #62', 1368186114),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #63', 'Sous-titre de la cellule #63', 1368186113),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #64', 'Sous-titre de la cellule #64', 1368186112),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #65', 'Sous-titre de la cellule #65', 1368186111),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #66', 'Sous-titre de la cellule #66', 1368186110),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #67', 'Sous-titre de la cellule #67', 1368186109),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #68', 'Sous-titre de la cellule #68', 1368186108),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #69', 'Sous-titre de la cellule #69', 1368186107),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #70', 'Sous-titre de la cellule #70', 1368186106),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #71', 'Sous-titre de la cellule #71', 1368186105),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #72', 'Sous-titre de la cellule #72', 1368186104),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #73', 'Sous-titre de la cellule #73', 1368186103),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #74', 'Sous-titre de la cellule #74', 1368186102),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #75', 'Sous-titre de la cellule #75', 1368186101),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #76', 'Sous-titre de la cellule #76', 1368186100),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #77', 'Sous-titre de la cellule #77', 1368186099),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #78', 'Sous-titre de la cellule #78', 1368186098),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #79', 'Sous-titre de la cellule #79', 1368186097),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #80', 'Sous-titre de la cellule #80', 1368186096),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #81', 'Sous-titre de la cellule #81', 1368186095),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #82', 'Sous-titre de la cellule #82', 1368186094),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #83', 'Sous-titre de la cellule #83', 1368186093),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #84', 'Sous-titre de la cellule #84', 1368186092),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #85', 'Sous-titre de la cellule #85', 1368186091),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #86', 'Sous-titre de la cellule #86', 1368186090),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #87', 'Sous-titre de la cellule #87', 1368186089),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #88', 'Sous-titre de la cellule #88', 1368186088),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #89', 'Sous-titre de la cellule #89', 1368186087),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #90', 'Sous-titre de la cellule #90', 1368186086),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #91', 'Sous-titre de la cellule #91', 1368186085),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #92', 'Sous-titre de la cellule #92', 1368186084),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #93', 'Sous-titre de la cellule #93', 1368186083),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #94', 'Sous-titre de la cellule #94', 1368186082),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #95', 'Sous-titre de la cellule #95', 1368186081),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #96', 'Sous-titre de la cellule #96', 1368186080),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #97', 'Sous-titre de la cellule #97', 1368186079),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #98', 'Sous-titre de la cellule #98', 1368186078),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #99', 'Sous-titre de la cellule #99', 1368186077),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #100', 'Sous-titre de la cellule #100', 1368186076),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #101', 'Sous-titre de la cellule #101', 1368186075),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #102', 'Sous-titre de la cellule #102', 1368186074),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #103', 'Sous-titre de la cellule #103', 1368186073),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #104', 'Sous-titre de la cellule #104', 1368186072),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #105', 'Sous-titre de la cellule #105', 1368186071),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #106', 'Sous-titre de la cellule #106', 1368186070),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #107', 'Sous-titre de la cellule #107', 1368186069),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #108', 'Sous-titre de la cellule #108', 1368186068),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #109', 'Sous-titre de la cellule #109', 1368186067),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #110', 'Sous-titre de la cellule #110', 1368186066),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #111', 'Sous-titre de la cellule #111', 1368186065),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #112', 'Sous-titre de la cellule #112', 1368186064),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #113', 'Sous-titre de la cellule #113', 1368186063),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #114', 'Sous-titre de la cellule #114', 1368186062),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #115', 'Sous-titre de la cellule #115', 1368186061),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #116', 'Sous-titre de la cellule #116', 1368186060),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #117', 'Sous-titre de la cellule #117', 1368186059),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #118', 'Sous-titre de la cellule #118', 1368186058),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #119', 'Sous-titre de la cellule #119', 1368186057),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #120', 'Sous-titre de la cellule #120', 1368186056),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #121', 'Sous-titre de la cellule #121', 1368186055),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #122', 'Sous-titre de la cellule #122', 1368186054),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #123', 'Sous-titre de la cellule #123', 1368186053),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #124', 'Sous-titre de la cellule #124', 1368186052),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #125', 'Sous-titre de la cellule #125', 1368186051),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #126', 'Sous-titre de la cellule #126', 1368186050),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #127', 'Sous-titre de la cellule #127', 1368186049),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #128', 'Sous-titre de la cellule #128', 1368186048),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #129', 'Sous-titre de la cellule #129', 1368186047),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #130', 'Sous-titre de la cellule #130', 1368186046),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #131', 'Sous-titre de la cellule #131', 1368186045),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #132', 'Sous-titre de la cellule #132', 1368186044),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #133', 'Sous-titre de la cellule #133', 1368186043),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #134', 'Sous-titre de la cellule #134', 1368186042),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #135', 'Sous-titre de la cellule #135', 1368186041),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #136', 'Sous-titre de la cellule #136', 1368186040),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #137', 'Sous-titre de la cellule #137', 1368186039),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #138', 'Sous-titre de la cellule #138', 1368186038),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #139', 'Sous-titre de la cellule #139', 1368186037),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #140', 'Sous-titre de la cellule #140', 1368186036),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #141', 'Sous-titre de la cellule #141', 1368186035),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #142', 'Sous-titre de la cellule #142', 1368186034),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #143', 'Sous-titre de la cellule #143', 1368186033),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #144', 'Sous-titre de la cellule #144', 1368186032),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #145', 'Sous-titre de la cellule #145', 1368186031),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #146', 'Sous-titre de la cellule #146', 1368186030),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #147', 'Sous-titre de la cellule #147', 1368186029),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #148', 'Sous-titre de la cellule #148', 1368186028),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #149', 'Sous-titre de la cellule #149', 1368186027),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #150', 'Sous-titre de la cellule #150', 1368186026),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #151', 'Sous-titre de la cellule #151', 1368186025),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #152', 'Sous-titre de la cellule #152', 1368186024),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #153', 'Sous-titre de la cellule #153', 1368186023),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #154', 'Sous-titre de la cellule #154', 1368186022),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #155', 'Sous-titre de la cellule #155', 1368186021),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #156', 'Sous-titre de la cellule #156', 1368186020),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #157', 'Sous-titre de la cellule #157', 1368186019),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #158', 'Sous-titre de la cellule #158', 1368186018),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #159', 'Sous-titre de la cellule #159', 1368186017),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #160', 'Sous-titre de la cellule #160', 1368186016),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #161', 'Sous-titre de la cellule #161', 1368186015),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #162', 'Sous-titre de la cellule #162', 1368186014),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #163', 'Sous-titre de la cellule #163', 1368186013),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #164', 'Sous-titre de la cellule #164', 1368186012),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #165', 'Sous-titre de la cellule #165', 1368186011),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #166', 'Sous-titre de la cellule #166', 1368186010),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #167', 'Sous-titre de la cellule #167', 1368186009),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #168', 'Sous-titre de la cellule #168', 1368186008),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #169', 'Sous-titre de la cellule #169', 1368186007),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #170', 'Sous-titre de la cellule #170', 1368186006),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #171', 'Sous-titre de la cellule #171', 1368186005),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #172', 'Sous-titre de la cellule #172', 1368186004),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #173', 'Sous-titre de la cellule #173', 1368186003),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #174', 'Sous-titre de la cellule #174', 1368186002),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #175', 'Sous-titre de la cellule #175', 1368186001),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #176', 'Sous-titre de la cellule #176', 1368186000),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #177', 'Sous-titre de la cellule #177', 1368185999),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #178', 'Sous-titre de la cellule #178', 1368185998),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #179', 'Sous-titre de la cellule #179', 1368185997),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #180', 'Sous-titre de la cellule #180', 1368185996),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #181', 'Sous-titre de la cellule #181', 1368185995),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #182', 'Sous-titre de la cellule #182', 1368185994),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #183', 'Sous-titre de la cellule #183', 1368185993),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #184', 'Sous-titre de la cellule #184', 1368185992),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #185', 'Sous-titre de la cellule #185', 1368185991),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #186', 'Sous-titre de la cellule #186', 1368185990),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #187', 'Sous-titre de la cellule #187', 1368185989),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #188', 'Sous-titre de la cellule #188', 1368185988),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #189', 'Sous-titre de la cellule #189', 1368185987),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #190', 'Sous-titre de la cellule #190', 1368185986),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #191', 'Sous-titre de la cellule #191', 1368185985),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #192', 'Sous-titre de la cellule #192', 1368185984),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #193', 'Sous-titre de la cellule #193', 1368185983),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #194', 'Sous-titre de la cellule #194', 1368185982),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #195', 'Sous-titre de la cellule #195', 1368185981),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #196', 'Sous-titre de la cellule #196', 1368185980),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #197', 'Sous-titre de la cellule #197', 1368185979),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #198', 'Sous-titre de la cellule #198', 1368185978),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #199', 'Sous-titre de la cellule #199', 1368185977),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #200', 'Sous-titre de la cellule #200', 1368185976),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #201', 'Sous-titre de la cellule #201', 1368185975),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #202', 'Sous-titre de la cellule #202', 1368185974),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #203', 'Sous-titre de la cellule #203', 1368185973),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #204', 'Sous-titre de la cellule #204', 1368185972),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #205', 'Sous-titre de la cellule #205', 1368185971),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #206', 'Sous-titre de la cellule #206', 1368185970),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #207', 'Sous-titre de la cellule #207', 1368185969),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #208', 'Sous-titre de la cellule #208', 1368185968),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #209', 'Sous-titre de la cellule #209', 1368185967),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #210', 'Sous-titre de la cellule #210', 1368185966),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #211', 'Sous-titre de la cellule #211', 1368185965),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #212', 'Sous-titre de la cellule #212', 1368185964),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #213', 'Sous-titre de la cellule #213', 1368185963),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #214', 'Sous-titre de la cellule #214', 1368185962),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #215', 'Sous-titre de la cellule #215', 1368185961),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #216', 'Sous-titre de la cellule #216', 1368185960),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #217', 'Sous-titre de la cellule #217', 1368185959),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #218', 'Sous-titre de la cellule #218', 1368185958),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #219', 'Sous-titre de la cellule #219', 1368185957),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #220', 'Sous-titre de la cellule #220', 1368185956),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #221', 'Sous-titre de la cellule #221', 1368185955),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #222', 'Sous-titre de la cellule #222', 1368185954),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #223', 'Sous-titre de la cellule #223', 1368185953),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #224', 'Sous-titre de la cellule #224', 1368185952),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #225', 'Sous-titre de la cellule #225', 1368185951),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #226', 'Sous-titre de la cellule #226', 1368185950),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #227', 'Sous-titre de la cellule #227', 1368185949),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #228', 'Sous-titre de la cellule #228', 1368185948),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #229', 'Sous-titre de la cellule #229', 1368185947),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #230', 'Sous-titre de la cellule #230', 1368185946),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #231', 'Sous-titre de la cellule #231', 1368185945),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #232', 'Sous-titre de la cellule #232', 1368185944),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #233', 'Sous-titre de la cellule #233', 1368185943),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #234', 'Sous-titre de la cellule #234', 1368185942),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #235', 'Sous-titre de la cellule #235', 1368185941),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #236', 'Sous-titre de la cellule #236', 1368185940),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #237', 'Sous-titre de la cellule #237', 1368185939),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #238', 'Sous-titre de la cellule #238', 1368185938),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #239', 'Sous-titre de la cellule #239', 1368185937),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #240', 'Sous-titre de la cellule #240', 1368185936),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #241', 'Sous-titre de la cellule #241', 1368185935),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #242', 'Sous-titre de la cellule #242', 1368185934),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #243', 'Sous-titre de la cellule #243', 1368185933),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #244', 'Sous-titre de la cellule #244', 1368185932),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #245', 'Sous-titre de la cellule #245', 1368185931),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #246', 'Sous-titre de la cellule #246', 1368185930),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #247', 'Sous-titre de la cellule #247', 1368185929),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #248', 'Sous-titre de la cellule #248', 1368185928),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #249', 'Sous-titre de la cellule #249', 1368185927),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #250', 'Sous-titre de la cellule #250', 1368185926),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #251', 'Sous-titre de la cellule #251', 1368185925),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #252', 'Sous-titre de la cellule #252', 1368185924),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #253', 'Sous-titre de la cellule #253', 1368185923),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #254', 'Sous-titre de la cellule #254', 1368185922),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #255', 'Sous-titre de la cellule #255', 1368185921),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #256', 'Sous-titre de la cellule #256', 1368185920),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #257', 'Sous-titre de la cellule #257', 1368185919),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #258', 'Sous-titre de la cellule #258', 1368185918),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #259', 'Sous-titre de la cellule #259', 1368185917),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #260', 'Sous-titre de la cellule #260', 1368185916),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #261', 'Sous-titre de la cellule #261', 1368185915),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #262', 'Sous-titre de la cellule #262', 1368185914),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #263', 'Sous-titre de la cellule #263', 1368185913),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #264', 'Sous-titre de la cellule #264', 1368185912),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #265', 'Sous-titre de la cellule #265', 1368185911),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #266', 'Sous-titre de la cellule #266', 1368185910),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #267', 'Sous-titre de la cellule #267', 1368185909),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #268', 'Sous-titre de la cellule #268', 1368185908),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #269', 'Sous-titre de la cellule #269', 1368185907),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #270', 'Sous-titre de la cellule #270', 1368185906),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #271', 'Sous-titre de la cellule #271', 1368185905),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #272', 'Sous-titre de la cellule #272', 1368185904),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #273', 'Sous-titre de la cellule #273', 1368185903),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #274', 'Sous-titre de la cellule #274', 1368185902),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #275', 'Sous-titre de la cellule #275', 1368185901),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #276', 'Sous-titre de la cellule #276', 1368185900),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #277', 'Sous-titre de la cellule #277', 1368185899),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #278', 'Sous-titre de la cellule #278', 1368185898),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #279', 'Sous-titre de la cellule #279', 1368185897),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #280', 'Sous-titre de la cellule #280', 1368185896),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #281', 'Sous-titre de la cellule #281', 1368185895),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #282', 'Sous-titre de la cellule #282', 1368185894),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #283', 'Sous-titre de la cellule #283', 1368185893),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #284', 'Sous-titre de la cellule #284', 1368185892),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #285', 'Sous-titre de la cellule #285', 1368185891),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #286', 'Sous-titre de la cellule #286', 1368185890),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #287', 'Sous-titre de la cellule #287', 1368185889),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #288', 'Sous-titre de la cellule #288', 1368185888),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #289', 'Sous-titre de la cellule #289', 1368185887),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #290', 'Sous-titre de la cellule #290', 1368185886),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #291', 'Sous-titre de la cellule #291', 1368185885),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #292', 'Sous-titre de la cellule #292', 1368185884),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #293', 'Sous-titre de la cellule #293', 1368185883),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #294', 'Sous-titre de la cellule #294', 1368185882),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #295', 'Sous-titre de la cellule #295', 1368185881),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #296', 'Sous-titre de la cellule #296', 1368185880),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #297', 'Sous-titre de la cellule #297', 1368185879),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #298', 'Sous-titre de la cellule #298', 1368185878),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #299', 'Sous-titre de la cellule #299', 1368185877),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #300', 'Sous-titre de la cellule #300', 1368185876),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #301', 'Sous-titre de la cellule #301', 1368185875),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #302', 'Sous-titre de la cellule #302', 1368185874),
-('http://vp.magellan.free.fr/Android/pic0303.png', 'Ceci est le titre #303', 'Sous-titre de la cellule #303', 1368185873),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #304', 'Sous-titre de la cellule #304', 1368185872),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #305', 'Sous-titre de la cellule #305', 1368185871),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #306', 'Sous-titre de la cellule #306', 1368185870),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #307', 'Sous-titre de la cellule #307', 1368185869),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #308', 'Sous-titre de la cellule #308', 1368185868),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #309', 'Sous-titre de la cellule #309', 1368185867),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #310', 'Sous-titre de la cellule #310', 1368185866),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #311', 'Sous-titre de la cellule #311', 1368185865),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #312', 'Sous-titre de la cellule #312', 1368185864),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #313', 'Sous-titre de la cellule #313', 1368185863),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #314', 'Sous-titre de la cellule #314', 1368185862),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #315', 'Sous-titre de la cellule #315', 1368185861),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #316', 'Sous-titre de la cellule #316', 1368185860),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #317', 'Sous-titre de la cellule #317', 1368185859),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #318', 'Sous-titre de la cellule #318', 1368185858),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #319', 'Sous-titre de la cellule #319', 1368185857),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #320', 'Sous-titre de la cellule #320', 1368185856),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #321', 'Sous-titre de la cellule #321', 1368185855),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #322', 'Sous-titre de la cellule #322', 1368185854),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #323', 'Sous-titre de la cellule #323', 1368185853),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #324', 'Sous-titre de la cellule #324', 1368185852),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #325', 'Sous-titre de la cellule #325', 1368185851),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #326', 'Sous-titre de la cellule #326', 1368185850),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #327', 'Sous-titre de la cellule #327', 1368185849),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #328', 'Sous-titre de la cellule #328', 1368185848),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #329', 'Sous-titre de la cellule #329', 1368185847),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #330', 'Sous-titre de la cellule #330', 1368185846),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #331', 'Sous-titre de la cellule #331', 1368185845),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #332', 'Sous-titre de la cellule #332', 1368185844),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #333', 'Sous-titre de la cellule #333', 1368185843),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #334', 'Sous-titre de la cellule #334', 1368185842),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #335', 'Sous-titre de la cellule #335', 1368185841),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #336', 'Sous-titre de la cellule #336', 1368185840),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #337', 'Sous-titre de la cellule #337', 1368185839),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #338', 'Sous-titre de la cellule #338', 1368185838),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #339', 'Sous-titre de la cellule #339', 1368185837),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #340', 'Sous-titre de la cellule #340', 1368185836),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #341', 'Sous-titre de la cellule #341', 1368185835),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #342', 'Sous-titre de la cellule #342', 1368185834),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #343', 'Sous-titre de la cellule #343', 1368185833),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #344', 'Sous-titre de la cellule #344', 1368185832),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #345', 'Sous-titre de la cellule #345', 1368185831),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #346', 'Sous-titre de la cellule #346', 1368185830),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #347', 'Sous-titre de la cellule #347', 1368185829),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #348', 'Sous-titre de la cellule #348', 1368185828),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #349', 'Sous-titre de la cellule #349', 1368185827),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #350', 'Sous-titre de la cellule #350', 1368185826),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #351', 'Sous-titre de la cellule #351', 1368185825),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #352', 'Sous-titre de la cellule #352', 1368185824),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #353', 'Sous-titre de la cellule #353', 1368185823),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #354', 'Sous-titre de la cellule #354', 1368185822),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #355', 'Sous-titre de la cellule #355', 1368185821),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #356', 'Sous-titre de la cellule #356', 1368185820),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #357', 'Sous-titre de la cellule #357', 1368185819),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #358', 'Sous-titre de la cellule #358', 1368185818),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #359', 'Sous-titre de la cellule #359', 1368185817),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #360', 'Sous-titre de la cellule #360', 1368185816),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #361', 'Sous-titre de la cellule #361', 1368185815),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #362', 'Sous-titre de la cellule #362', 1368185814),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #363', 'Sous-titre de la cellule #363', 1368185813),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #364', 'Sous-titre de la cellule #364', 1368185812),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #365', 'Sous-titre de la cellule #365', 1368185811),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #366', 'Sous-titre de la cellule #366', 1368185810),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #367', 'Sous-titre de la cellule #367', 1368185809),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #368', 'Sous-titre de la cellule #368', 1368185808),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #369', 'Sous-titre de la cellule #369', 1368185807),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #370', 'Sous-titre de la cellule #370', 1368185806),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #371', 'Sous-titre de la cellule #371', 1368185805),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #372', 'Sous-titre de la cellule #372', 1368185804),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #373', 'Sous-titre de la cellule #373', 1368185803),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #374', 'Sous-titre de la cellule #374', 1368185802),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #375', 'Sous-titre de la cellule #375', 1368185801),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #376', 'Sous-titre de la cellule #376', 1368185800),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #377', 'Sous-titre de la cellule #377', 1368185799),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #378', 'Sous-titre de la cellule #378', 1368185798),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #379', 'Sous-titre de la cellule #379', 1368185797),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #380', 'Sous-titre de la cellule #380', 1368185796),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #381', 'Sous-titre de la cellule #381', 1368185795),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #382', 'Sous-titre de la cellule #382', 1368185794),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #383', 'Sous-titre de la cellule #383', 1368185793),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #384', 'Sous-titre de la cellule #384', 1368185792),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #385', 'Sous-titre de la cellule #385', 1368185791),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #386', 'Sous-titre de la cellule #386', 1368185790),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #387', 'Sous-titre de la cellule #387', 1368185789),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #388', 'Sous-titre de la cellule #388', 1368185788),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #389', 'Sous-titre de la cellule #389', 1368185787),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #390', 'Sous-titre de la cellule #390', 1368185786),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #391', 'Sous-titre de la cellule #391', 1368185785),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #392', 'Sous-titre de la cellule #392', 1368185784),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #393', 'Sous-titre de la cellule #393', 1368185783),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #394', 'Sous-titre de la cellule #394', 1368185782),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #395', 'Sous-titre de la cellule #395', 1368185781),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #396', 'Sous-titre de la cellule #396', 1368185780),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #397', 'Sous-titre de la cellule #397', 1368185779),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #398', 'Sous-titre de la cellule #398', 1368185778),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #399', 'Sous-titre de la cellule #399', 1368185777),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #400', 'Sous-titre de la cellule #400', 1368185776),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #401', 'Sous-titre de la cellule #401', 1368185775),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #402', 'Sous-titre de la cellule #402', 1368185774),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #403', 'Sous-titre de la cellule #403', 1368185773),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #404', 'Sous-titre de la cellule #404', 1368185772),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #405', 'Sous-titre de la cellule #405', 1368185771),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #406', 'Sous-titre de la cellule #406', 1368185770),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #407', 'Sous-titre de la cellule #407', 1368185769),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #408', 'Sous-titre de la cellule #408', 1368185768),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #409', 'Sous-titre de la cellule #409', 1368185767),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #410', 'Sous-titre de la cellule #410', 1368185766),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #411', 'Sous-titre de la cellule #411', 1368185765),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #412', 'Sous-titre de la cellule #412', 1368185764),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #413', 'Sous-titre de la cellule #413', 1368185763),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #414', 'Sous-titre de la cellule #414', 1368185762);
-INSERT INTO `TheListActivity` (`Url`, `Title`, `Subtitle`, `Date`) VALUES
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #415', 'Sous-titre de la cellule #415', 1368185761),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #416', 'Sous-titre de la cellule #416', 1368185760),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #417', 'Sous-titre de la cellule #417', 1368185759),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #418', 'Sous-titre de la cellule #418', 1368185758),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #419', 'Sous-titre de la cellule #419', 1368185757),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #420', 'Sous-titre de la cellule #420', 1368185756),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #421', 'Sous-titre de la cellule #421', 1368185755),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #422', 'Sous-titre de la cellule #422', 1368185754),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #423', 'Sous-titre de la cellule #423', 1368185753),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #424', 'Sous-titre de la cellule #424', 1368185752),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #425', 'Sous-titre de la cellule #425', 1368185751),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #426', 'Sous-titre de la cellule #426', 1368185750),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #427', 'Sous-titre de la cellule #427', 1368185749),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #428', 'Sous-titre de la cellule #428', 1368185748),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #429', 'Sous-titre de la cellule #429', 1368185747),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #430', 'Sous-titre de la cellule #430', 1368185746),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #431', 'Sous-titre de la cellule #431', 1368185745),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #432', 'Sous-titre de la cellule #432', 1368185744),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #433', 'Sous-titre de la cellule #433', 1368185743),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #434', 'Sous-titre de la cellule #434', 1368185742),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #435', 'Sous-titre de la cellule #435', 1368185741),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #436', 'Sous-titre de la cellule #436', 1368185740),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #437', 'Sous-titre de la cellule #437', 1368185739),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #438', 'Sous-titre de la cellule #438', 1368185738),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #439', 'Sous-titre de la cellule #439', 1368185737),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #440', 'Sous-titre de la cellule #440', 1368185736),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #441', 'Sous-titre de la cellule #441', 1368185735),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #442', 'Sous-titre de la cellule #442', 1368185734),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #443', 'Sous-titre de la cellule #443', 1368185733),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #444', 'Sous-titre de la cellule #444', 1368185732),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #445', 'Sous-titre de la cellule #445', 1368185731),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #446', 'Sous-titre de la cellule #446', 1368185730),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #447', 'Sous-titre de la cellule #447', 1368185729),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #448', 'Sous-titre de la cellule #448', 1368185728),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #449', 'Sous-titre de la cellule #449', 1368185727),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #450', 'Sous-titre de la cellule #450', 1368185726),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #451', 'Sous-titre de la cellule #451', 1368185725),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #452', 'Sous-titre de la cellule #452', 1368185724),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #453', 'Sous-titre de la cellule #453', 1368185723),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #454', 'Sous-titre de la cellule #454', 1368185722),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #455', 'Sous-titre de la cellule #455', 1368185721),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #456', 'Sous-titre de la cellule #456', 1368185720),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #457', 'Sous-titre de la cellule #457', 1368185719),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #458', 'Sous-titre de la cellule #458', 1368185718),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #459', 'Sous-titre de la cellule #459', 1368185717),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #460', 'Sous-titre de la cellule #460', 1368185716),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #461', 'Sous-titre de la cellule #461', 1368185715),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #462', 'Sous-titre de la cellule #462', 1368185714),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #463', 'Sous-titre de la cellule #463', 1368185713),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #464', 'Sous-titre de la cellule #464', 1368185712),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #465', 'Sous-titre de la cellule #465', 1368185711),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #466', 'Sous-titre de la cellule #466', 1368185710),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #467', 'Sous-titre de la cellule #467', 1368185709),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #468', 'Sous-titre de la cellule #468', 1368185708),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #469', 'Sous-titre de la cellule #469', 1368185707),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #470', 'Sous-titre de la cellule #470', 1368185706),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #471', 'Sous-titre de la cellule #471', 1368185705),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #472', 'Sous-titre de la cellule #472', 1368185704),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #473', 'Sous-titre de la cellule #473', 1368185703),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #474', 'Sous-titre de la cellule #474', 1368185702),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #475', 'Sous-titre de la cellule #475', 1368185701),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #476', 'Sous-titre de la cellule #476', 1368185700),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #477', 'Sous-titre de la cellule #477', 1368185699),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #478', 'Sous-titre de la cellule #478', 1368185698),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #479', 'Sous-titre de la cellule #479', 1368185697),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #480', 'Sous-titre de la cellule #480', 1368185696),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #481', 'Sous-titre de la cellule #481', 1368185695),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #482', 'Sous-titre de la cellule #482', 1368185694),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #483', 'Sous-titre de la cellule #483', 1368185693),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #484', 'Sous-titre de la cellule #484', 1368185692),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #485', 'Sous-titre de la cellule #485', 1368185691),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #486', 'Sous-titre de la cellule #486', 1368185690),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #487', 'Sous-titre de la cellule #487', 1368185689),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #488', 'Sous-titre de la cellule #488', 1368185688),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #489', 'Sous-titre de la cellule #489', 1368185687),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #490', 'Sous-titre de la cellule #490', 1368185686),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #491', 'Sous-titre de la cellule #491', 1368185685),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #492', 'Sous-titre de la cellule #492', 1368185684),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #493', 'Sous-titre de la cellule #493', 1368185683),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #494', 'Sous-titre de la cellule #494', 1368185682),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #495', 'Sous-titre de la cellule #495', 1368185681),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #496', 'Sous-titre de la cellule #496', 1368185680),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #497', 'Sous-titre de la cellule #497', 1368185679),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #498', 'Sous-titre de la cellule #498', 1368185678),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #499', 'Sous-titre de la cellule #499', 1368185677),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #500', 'Sous-titre de la cellule #500', 1368185676),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #501', 'Sous-titre de la cellule #501', 1368185675),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #502', 'Sous-titre de la cellule #502', 1368185674),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #503', 'Sous-titre de la cellule #503', 1368185673),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #504', 'Sous-titre de la cellule #504', 1368185672),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #505', 'Sous-titre de la cellule #505', 1368185671),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #506', 'Sous-titre de la cellule #506', 1368185670),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #507', 'Sous-titre de la cellule #507', 1368185669),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #508', 'Sous-titre de la cellule #508', 1368185668),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #509', 'Sous-titre de la cellule #509', 1368185667),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #510', 'Sous-titre de la cellule #510', 1368185666),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #511', 'Sous-titre de la cellule #511', 1368185665),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #512', 'Sous-titre de la cellule #512', 1368185664),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #513', 'Sous-titre de la cellule #513', 1368185663),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #514', 'Sous-titre de la cellule #514', 1368185662),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #515', 'Sous-titre de la cellule #515', 1368185661),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #516', 'Sous-titre de la cellule #516', 1368185660),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #517', 'Sous-titre de la cellule #517', 1368185659),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #518', 'Sous-titre de la cellule #518', 1368185658),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #519', 'Sous-titre de la cellule #519', 1368185657),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #520', 'Sous-titre de la cellule #520', 1368185656),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #521', 'Sous-titre de la cellule #521', 1368185655),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #522', 'Sous-titre de la cellule #522', 1368185654),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #523', 'Sous-titre de la cellule #523', 1368185653),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #524', 'Sous-titre de la cellule #524', 1368185652),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #525', 'Sous-titre de la cellule #525', 1368185651),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #526', 'Sous-titre de la cellule #526', 1368185650),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #527', 'Sous-titre de la cellule #527', 1368185649),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #528', 'Sous-titre de la cellule #528', 1368185648),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #529', 'Sous-titre de la cellule #529', 1368185647),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #530', 'Sous-titre de la cellule #530', 1368185646),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #531', 'Sous-titre de la cellule #531', 1368185645),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #532', 'Sous-titre de la cellule #532', 1368185644),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #533', 'Sous-titre de la cellule #533', 1368185643),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #534', 'Sous-titre de la cellule #534', 1368185642),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #535', 'Sous-titre de la cellule #535', 1368185641),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #536', 'Sous-titre de la cellule #536', 1368185640),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #537', 'Sous-titre de la cellule #537', 1368185639),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #538', 'Sous-titre de la cellule #538', 1368185638),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #539', 'Sous-titre de la cellule #539', 1368185637),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #540', 'Sous-titre de la cellule #540', 1368185636),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #541', 'Sous-titre de la cellule #541', 1368185635),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #542', 'Sous-titre de la cellule #542', 1368185634),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #543', 'Sous-titre de la cellule #543', 1368185633),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #544', 'Sous-titre de la cellule #544', 1368185632),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #545', 'Sous-titre de la cellule #545', 1368185631),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #546', 'Sous-titre de la cellule #546', 1368185630),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #547', 'Sous-titre de la cellule #547', 1368185629),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #548', 'Sous-titre de la cellule #548', 1368185628),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #549', 'Sous-titre de la cellule #549', 1368185627),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #550', 'Sous-titre de la cellule #550', 1368185626),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #551', 'Sous-titre de la cellule #551', 1368185625),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #552', 'Sous-titre de la cellule #552', 1368185624),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #553', 'Sous-titre de la cellule #553', 1368185623),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #554', 'Sous-titre de la cellule #554', 1368185622),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #555', 'Sous-titre de la cellule #555', 1368185621),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #556', 'Sous-titre de la cellule #556', 1368185620),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #557', 'Sous-titre de la cellule #557', 1368185619),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #558', 'Sous-titre de la cellule #558', 1368185618),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #559', 'Sous-titre de la cellule #559', 1368185617),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #560', 'Sous-titre de la cellule #560', 1368185616),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #561', 'Sous-titre de la cellule #561', 1368185615),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #562', 'Sous-titre de la cellule #562', 1368185614),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #563', 'Sous-titre de la cellule #563', 1368185613),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #564', 'Sous-titre de la cellule #564', 1368185612),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #565', 'Sous-titre de la cellule #565', 1368185611),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #566', 'Sous-titre de la cellule #566', 1368185610),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #567', 'Sous-titre de la cellule #567', 1368185609),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #568', 'Sous-titre de la cellule #568', 1368185608),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #569', 'Sous-titre de la cellule #569', 1368185607),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #570', 'Sous-titre de la cellule #570', 1368185606),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #571', 'Sous-titre de la cellule #571', 1368185605),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #572', 'Sous-titre de la cellule #572', 1368185604),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #573', 'Sous-titre de la cellule #573', 1368185603),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #574', 'Sous-titre de la cellule #574', 1368185602),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #575', 'Sous-titre de la cellule #575', 1368185601),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #576', 'Sous-titre de la cellule #576', 1368185600),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #577', 'Sous-titre de la cellule #577', 1368185599),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #578', 'Sous-titre de la cellule #578', 1368185598),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #579', 'Sous-titre de la cellule #579', 1368185597),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #580', 'Sous-titre de la cellule #580', 1368185596),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #581', 'Sous-titre de la cellule #581', 1368185595),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #582', 'Sous-titre de la cellule #582', 1368185594),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #583', 'Sous-titre de la cellule #583', 1368185593),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #584', 'Sous-titre de la cellule #584', 1368185592),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #585', 'Sous-titre de la cellule #585', 1368185591),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #586', 'Sous-titre de la cellule #586', 1368185590),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #587', 'Sous-titre de la cellule #587', 1368185589),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #588', 'Sous-titre de la cellule #588', 1368185588),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #589', 'Sous-titre de la cellule #589', 1368185587),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #590', 'Sous-titre de la cellule #590', 1368185586),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #591', 'Sous-titre de la cellule #591', 1368185585),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #592', 'Sous-titre de la cellule #592', 1368185584),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #593', 'Sous-titre de la cellule #593', 1368185583),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #594', 'Sous-titre de la cellule #594', 1368185582),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #595', 'Sous-titre de la cellule #595', 1368185581),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #596', 'Sous-titre de la cellule #596', 1368185580),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #597', 'Sous-titre de la cellule #597', 1368185579),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #598', 'Sous-titre de la cellule #598', 1368185578),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #599', 'Sous-titre de la cellule #599', 1368185577),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #600', 'Sous-titre de la cellule #600', 1368185576),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #601', 'Sous-titre de la cellule #601', 1368185575),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #602', 'Sous-titre de la cellule #602', 1368185574),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #603', 'Sous-titre de la cellule #603', 1368185573),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #604', 'Sous-titre de la cellule #604', 1368185572),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #605', 'Sous-titre de la cellule #605', 1368185571),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #606', 'Sous-titre de la cellule #606', 1368185570),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #607', 'Sous-titre de la cellule #607', 1368185569),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #608', 'Sous-titre de la cellule #608', 1368185568),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #609', 'Sous-titre de la cellule #609', 1368185567),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #610', 'Sous-titre de la cellule #610', 1368185566),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #611', 'Sous-titre de la cellule #611', 1368185565),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #612', 'Sous-titre de la cellule #612', 1368185564),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #613', 'Sous-titre de la cellule #613', 1368185563),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #614', 'Sous-titre de la cellule #614', 1368185562),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #615', 'Sous-titre de la cellule #615', 1368185561),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #616', 'Sous-titre de la cellule #616', 1368185560),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #617', 'Sous-titre de la cellule #617', 1368185559),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #618', 'Sous-titre de la cellule #618', 1368185558),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #619', 'Sous-titre de la cellule #619', 1368185557),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #620', 'Sous-titre de la cellule #620', 1368185556),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #621', 'Sous-titre de la cellule #621', 1368185555),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #622', 'Sous-titre de la cellule #622', 1368185554),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #623', 'Sous-titre de la cellule #623', 1368185553),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #624', 'Sous-titre de la cellule #624', 1368185552),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #625', 'Sous-titre de la cellule #625', 1368185551),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #626', 'Sous-titre de la cellule #626', 1368185550),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #627', 'Sous-titre de la cellule #627', 1368185549),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #628', 'Sous-titre de la cellule #628', 1368185548),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #629', 'Sous-titre de la cellule #629', 1368185547),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #630', 'Sous-titre de la cellule #630', 1368185546),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #631', 'Sous-titre de la cellule #631', 1368185545),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #632', 'Sous-titre de la cellule #632', 1368185544),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #633', 'Sous-titre de la cellule #633', 1368185543),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #634', 'Sous-titre de la cellule #634', 1368185542),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #635', 'Sous-titre de la cellule #635', 1368185541),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #636', 'Sous-titre de la cellule #636', 1368185540),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #637', 'Sous-titre de la cellule #637', 1368185539),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #638', 'Sous-titre de la cellule #638', 1368185538),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #639', 'Sous-titre de la cellule #639', 1368185537),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #640', 'Sous-titre de la cellule #640', 1368185536),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #641', 'Sous-titre de la cellule #641', 1368185535),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #642', 'Sous-titre de la cellule #642', 1368185534),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #643', 'Sous-titre de la cellule #643', 1368185533),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #644', 'Sous-titre de la cellule #644', 1368185532),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #645', 'Sous-titre de la cellule #645', 1368185531),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #646', 'Sous-titre de la cellule #646', 1368185530),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #647', 'Sous-titre de la cellule #647', 1368185529),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #648', 'Sous-titre de la cellule #648', 1368185528),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #649', 'Sous-titre de la cellule #649', 1368185527),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #650', 'Sous-titre de la cellule #650', 1368185526),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #651', 'Sous-titre de la cellule #651', 1368185525),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #652', 'Sous-titre de la cellule #652', 1368185524),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #653', 'Sous-titre de la cellule #653', 1368185523),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #654', 'Sous-titre de la cellule #654', 1368185522),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #655', 'Sous-titre de la cellule #655', 1368185521),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #656', 'Sous-titre de la cellule #656', 1368185520),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #657', 'Sous-titre de la cellule #657', 1368185519),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #658', 'Sous-titre de la cellule #658', 1368185518),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #659', 'Sous-titre de la cellule #659', 1368185517),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #660', 'Sous-titre de la cellule #660', 1368185516),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #661', 'Sous-titre de la cellule #661', 1368185515),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #662', 'Sous-titre de la cellule #662', 1368185514),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #663', 'Sous-titre de la cellule #663', 1368185513),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #664', 'Sous-titre de la cellule #664', 1368185512),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #665', 'Sous-titre de la cellule #665', 1368185511),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #666', 'Sous-titre de la cellule #666', 1368185510),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #667', 'Sous-titre de la cellule #667', 1368185509),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #668', 'Sous-titre de la cellule #668', 1368185508),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #669', 'Sous-titre de la cellule #669', 1368185507),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #670', 'Sous-titre de la cellule #670', 1368185506),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #671', 'Sous-titre de la cellule #671', 1368185505),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #672', 'Sous-titre de la cellule #672', 1368185504),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #673', 'Sous-titre de la cellule #673', 1368185503),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #674', 'Sous-titre de la cellule #674', 1368185502),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #675', 'Sous-titre de la cellule #675', 1368185501),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #676', 'Sous-titre de la cellule #676', 1368185500),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #677', 'Sous-titre de la cellule #677', 1368185499),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #678', 'Sous-titre de la cellule #678', 1368185498),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #679', 'Sous-titre de la cellule #679', 1368185497),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #680', 'Sous-titre de la cellule #680', 1368185496),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #681', 'Sous-titre de la cellule #681', 1368185495),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #682', 'Sous-titre de la cellule #682', 1368185494),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #683', 'Sous-titre de la cellule #683', 1368185493),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #684', 'Sous-titre de la cellule #684', 1368185492),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #685', 'Sous-titre de la cellule #685', 1368185491),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #686', 'Sous-titre de la cellule #686', 1368185490),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #687', 'Sous-titre de la cellule #687', 1368185489),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #688', 'Sous-titre de la cellule #688', 1368185488),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #689', 'Sous-titre de la cellule #689', 1368185487),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #690', 'Sous-titre de la cellule #690', 1368185486),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #691', 'Sous-titre de la cellule #691', 1368185485),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #692', 'Sous-titre de la cellule #692', 1368185484),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #693', 'Sous-titre de la cellule #693', 1368185483),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #694', 'Sous-titre de la cellule #694', 1368185482),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #695', 'Sous-titre de la cellule #695', 1368185481),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #696', 'Sous-titre de la cellule #696', 1368185480),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #697', 'Sous-titre de la cellule #697', 1368185479),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #698', 'Sous-titre de la cellule #698', 1368185478),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #699', 'Sous-titre de la cellule #699', 1368185477),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #700', 'Sous-titre de la cellule #700', 1368185476),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #701', 'Sous-titre de la cellule #701', 1368185475),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #702', 'Sous-titre de la cellule #702', 1368185474),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #703', 'Sous-titre de la cellule #703', 1368185473),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #704', 'Sous-titre de la cellule #704', 1368185472),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #705', 'Sous-titre de la cellule #705', 1368185471),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #706', 'Sous-titre de la cellule #706', 1368185470),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #707', 'Sous-titre de la cellule #707', 1368185469),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #708', 'Sous-titre de la cellule #708', 1368185468),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #709', 'Sous-titre de la cellule #709', 1368185467),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #710', 'Sous-titre de la cellule #710', 1368185466),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #711', 'Sous-titre de la cellule #711', 1368185465),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #712', 'Sous-titre de la cellule #712', 1368185464),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #713', 'Sous-titre de la cellule #713', 1368185463),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #714', 'Sous-titre de la cellule #714', 1368185462),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #715', 'Sous-titre de la cellule #715', 1368185461),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #716', 'Sous-titre de la cellule #716', 1368185460),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #717', 'Sous-titre de la cellule #717', 1368185459),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #718', 'Sous-titre de la cellule #718', 1368185458),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #719', 'Sous-titre de la cellule #719', 1368185457),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #720', 'Sous-titre de la cellule #720', 1368185456),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #721', 'Sous-titre de la cellule #721', 1368185455),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #722', 'Sous-titre de la cellule #722', 1368185454),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #723', 'Sous-titre de la cellule #723', 1368185453),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #724', 'Sous-titre de la cellule #724', 1368185452),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #725', 'Sous-titre de la cellule #725', 1368185451),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #726', 'Sous-titre de la cellule #726', 1368185450),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #727', 'Sous-titre de la cellule #727', 1368185449),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #728', 'Sous-titre de la cellule #728', 1368185448),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #729', 'Sous-titre de la cellule #729', 1368185447),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #730', 'Sous-titre de la cellule #730', 1368185446),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #731', 'Sous-titre de la cellule #731', 1368185445),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #732', 'Sous-titre de la cellule #732', 1368185444),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #733', 'Sous-titre de la cellule #733', 1368185443),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #734', 'Sous-titre de la cellule #734', 1368185442),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #735', 'Sous-titre de la cellule #735', 1368185441),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #736', 'Sous-titre de la cellule #736', 1368185440),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #737', 'Sous-titre de la cellule #737', 1368185439),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #738', 'Sous-titre de la cellule #738', 1368185438),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #739', 'Sous-titre de la cellule #739', 1368185437),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #740', 'Sous-titre de la cellule #740', 1368185436),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #741', 'Sous-titre de la cellule #741', 1368185435),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #742', 'Sous-titre de la cellule #742', 1368185434),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #743', 'Sous-titre de la cellule #743', 1368185433),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #744', 'Sous-titre de la cellule #744', 1368185432),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #745', 'Sous-titre de la cellule #745', 1368185431),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #746', 'Sous-titre de la cellule #746', 1368185430),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #747', 'Sous-titre de la cellule #747', 1368185429),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #748', 'Sous-titre de la cellule #748', 1368185428),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #749', 'Sous-titre de la cellule #749', 1368185427),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #750', 'Sous-titre de la cellule #750', 1368185426),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #751', 'Sous-titre de la cellule #751', 1368185425),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #752', 'Sous-titre de la cellule #752', 1368185424),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #753', 'Sous-titre de la cellule #753', 1368185423),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #754', 'Sous-titre de la cellule #754', 1368185422),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #755', 'Sous-titre de la cellule #755', 1368185421),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #756', 'Sous-titre de la cellule #756', 1368185420),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #757', 'Sous-titre de la cellule #757', 1368185419),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #758', 'Sous-titre de la cellule #758', 1368185418),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #759', 'Sous-titre de la cellule #759', 1368185417),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #760', 'Sous-titre de la cellule #760', 1368185416),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #761', 'Sous-titre de la cellule #761', 1368185415),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #762', 'Sous-titre de la cellule #762', 1368185414),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #763', 'Sous-titre de la cellule #763', 1368185413),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #764', 'Sous-titre de la cellule #764', 1368185412),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #765', 'Sous-titre de la cellule #765', 1368185411),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #766', 'Sous-titre de la cellule #766', 1368185410),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #767', 'Sous-titre de la cellule #767', 1368185409),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #768', 'Sous-titre de la cellule #768', 1368185408),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #769', 'Sous-titre de la cellule #769', 1368185407),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #770', 'Sous-titre de la cellule #770', 1368185406),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #771', 'Sous-titre de la cellule #771', 1368185405),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #772', 'Sous-titre de la cellule #772', 1368185404),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #773', 'Sous-titre de la cellule #773', 1368185403),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #774', 'Sous-titre de la cellule #774', 1368185402),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #775', 'Sous-titre de la cellule #775', 1368185401),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #776', 'Sous-titre de la cellule #776', 1368185400),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #777', 'Sous-titre de la cellule #777', 1368185399),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #778', 'Sous-titre de la cellule #778', 1368185398),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #779', 'Sous-titre de la cellule #779', 1368185397),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #780', 'Sous-titre de la cellule #780', 1368185396),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #781', 'Sous-titre de la cellule #781', 1368185395),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #782', 'Sous-titre de la cellule #782', 1368185394),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #783', 'Sous-titre de la cellule #783', 1368185393),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #784', 'Sous-titre de la cellule #784', 1368185392),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #785', 'Sous-titre de la cellule #785', 1368185391),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #786', 'Sous-titre de la cellule #786', 1368185390),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #787', 'Sous-titre de la cellule #787', 1368185389),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #788', 'Sous-titre de la cellule #788', 1368185388),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #789', 'Sous-titre de la cellule #789', 1368185387),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #790', 'Sous-titre de la cellule #790', 1368185386),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #791', 'Sous-titre de la cellule #791', 1368185385),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #792', 'Sous-titre de la cellule #792', 1368185384),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #793', 'Sous-titre de la cellule #793', 1368185383),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #794', 'Sous-titre de la cellule #794', 1368185382),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #795', 'Sous-titre de la cellule #795', 1368185381),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #796', 'Sous-titre de la cellule #796', 1368185380),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #797', 'Sous-titre de la cellule #797', 1368185379),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #798', 'Sous-titre de la cellule #798', 1368185378),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #799', 'Sous-titre de la cellule #799', 1368185377),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #800', 'Sous-titre de la cellule #800', 1368185376),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #801', 'Sous-titre de la cellule #801', 1368185375),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #802', 'Sous-titre de la cellule #802', 1368185374),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #803', 'Sous-titre de la cellule #803', 1368185373),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #804', 'Sous-titre de la cellule #804', 1368185372),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #805', 'Sous-titre de la cellule #805', 1368185371),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #806', 'Sous-titre de la cellule #806', 1368185370),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #807', 'Sous-titre de la cellule #807', 1368185369),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #808', 'Sous-titre de la cellule #808', 1368185368),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #809', 'Sous-titre de la cellule #809', 1368185367),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #810', 'Sous-titre de la cellule #810', 1368185366),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #811', 'Sous-titre de la cellule #811', 1368185365),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #812', 'Sous-titre de la cellule #812', 1368185364),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #813', 'Sous-titre de la cellule #813', 1368185363),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #814', 'Sous-titre de la cellule #814', 1368185362),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #815', 'Sous-titre de la cellule #815', 1368185361),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #816', 'Sous-titre de la cellule #816', 1368185360),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #817', 'Sous-titre de la cellule #817', 1368185359),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #818', 'Sous-titre de la cellule #818', 1368185358),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #819', 'Sous-titre de la cellule #819', 1368185357),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #820', 'Sous-titre de la cellule #820', 1368185356),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #821', 'Sous-titre de la cellule #821', 1368185355),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #822', 'Sous-titre de la cellule #822', 1368185354),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #823', 'Sous-titre de la cellule #823', 1368185353),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #824', 'Sous-titre de la cellule #824', 1368185352),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #825', 'Sous-titre de la cellule #825', 1368185351),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #826', 'Sous-titre de la cellule #826', 1368185350);
-INSERT INTO `TheListActivity` (`Url`, `Title`, `Subtitle`, `Date`) VALUES
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #827', 'Sous-titre de la cellule #827', 1368185349),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #828', 'Sous-titre de la cellule #828', 1368185348),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #829', 'Sous-titre de la cellule #829', 1368185347),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #830', 'Sous-titre de la cellule #830', 1368185346),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #831', 'Sous-titre de la cellule #831', 1368185345),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #832', 'Sous-titre de la cellule #832', 1368185344),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #833', 'Sous-titre de la cellule #833', 1368185343),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #834', 'Sous-titre de la cellule #834', 1368185342),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #835', 'Sous-titre de la cellule #835', 1368185341),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #836', 'Sous-titre de la cellule #836', 1368185340),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #837', 'Sous-titre de la cellule #837', 1368185339),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #838', 'Sous-titre de la cellule #838', 1368185338),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #839', 'Sous-titre de la cellule #839', 1368185337),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #840', 'Sous-titre de la cellule #840', 1368185336),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #841', 'Sous-titre de la cellule #841', 1368185335),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #842', 'Sous-titre de la cellule #842', 1368185334),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #843', 'Sous-titre de la cellule #843', 1368185333),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #844', 'Sous-titre de la cellule #844', 1368185332),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #845', 'Sous-titre de la cellule #845', 1368185331),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #846', 'Sous-titre de la cellule #846', 1368185330),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #847', 'Sous-titre de la cellule #847', 1368185329),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #848', 'Sous-titre de la cellule #848', 1368185328),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #849', 'Sous-titre de la cellule #849', 1368185327),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #850', 'Sous-titre de la cellule #850', 1368185326),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #851', 'Sous-titre de la cellule #851', 1368185325),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #852', 'Sous-titre de la cellule #852', 1368185324),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #853', 'Sous-titre de la cellule #853', 1368185323),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #854', 'Sous-titre de la cellule #854', 1368185322),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #855', 'Sous-titre de la cellule #855', 1368185321),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #856', 'Sous-titre de la cellule #856', 1368185320),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #857', 'Sous-titre de la cellule #857', 1368185319),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #858', 'Sous-titre de la cellule #858', 1368185318),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #859', 'Sous-titre de la cellule #859', 1368185317),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #860', 'Sous-titre de la cellule #860', 1368185316),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #861', 'Sous-titre de la cellule #861', 1368185315),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #862', 'Sous-titre de la cellule #862', 1368185314),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #863', 'Sous-titre de la cellule #863', 1368185313),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #864', 'Sous-titre de la cellule #864', 1368185312),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #865', 'Sous-titre de la cellule #865', 1368185311),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #866', 'Sous-titre de la cellule #866', 1368185310),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #867', 'Sous-titre de la cellule #867', 1368185309),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #868', 'Sous-titre de la cellule #868', 1368185308),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #869', 'Sous-titre de la cellule #869', 1368185307),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #870', 'Sous-titre de la cellule #870', 1368185306),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #871', 'Sous-titre de la cellule #871', 1368185305),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #872', 'Sous-titre de la cellule #872', 1368185304),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #873', 'Sous-titre de la cellule #873', 1368185303),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #874', 'Sous-titre de la cellule #874', 1368185302),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #875', 'Sous-titre de la cellule #875', 1368185301),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #876', 'Sous-titre de la cellule #876', 1368185300),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #877', 'Sous-titre de la cellule #877', 1368185299),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #878', 'Sous-titre de la cellule #878', 1368185298),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #879', 'Sous-titre de la cellule #879', 1368185297),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #880', 'Sous-titre de la cellule #880', 1368185296),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #881', 'Sous-titre de la cellule #881', 1368185295),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #882', 'Sous-titre de la cellule #882', 1368185294),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #883', 'Sous-titre de la cellule #883', 1368185293),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #884', 'Sous-titre de la cellule #884', 1368185292),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #885', 'Sous-titre de la cellule #885', 1368185291),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #886', 'Sous-titre de la cellule #886', 1368185290),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #887', 'Sous-titre de la cellule #887', 1368185289),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #888', 'Sous-titre de la cellule #888', 1368185288),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #889', 'Sous-titre de la cellule #889', 1368185287),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #890', 'Sous-titre de la cellule #890', 1368185286),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #891', 'Sous-titre de la cellule #891', 1368185285),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #892', 'Sous-titre de la cellule #892', 1368185284),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #893', 'Sous-titre de la cellule #893', 1368185283),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #894', 'Sous-titre de la cellule #894', 1368185282),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #895', 'Sous-titre de la cellule #895', 1368185281),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #896', 'Sous-titre de la cellule #896', 1368185280),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #897', 'Sous-titre de la cellule #897', 1368185279),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #898', 'Sous-titre de la cellule #898', 1368185278),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #899', 'Sous-titre de la cellule #899', 1368185277),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #900', 'Sous-titre de la cellule #900', 1368185276),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #901', 'Sous-titre de la cellule #901', 1368185275),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #902', 'Sous-titre de la cellule #902', 1368185274),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #903', 'Sous-titre de la cellule #903', 1368185273),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #904', 'Sous-titre de la cellule #904', 1368185272),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #905', 'Sous-titre de la cellule #905', 1368185271),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #906', 'Sous-titre de la cellule #906', 1368185270),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #907', 'Sous-titre de la cellule #907', 1368185269),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #908', 'Sous-titre de la cellule #908', 1368185268),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #909', 'Sous-titre de la cellule #909', 1368185267),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #910', 'Sous-titre de la cellule #910', 1368185266),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #911', 'Sous-titre de la cellule #911', 1368185265),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #912', 'Sous-titre de la cellule #912', 1368185264),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #913', 'Sous-titre de la cellule #913', 1368185263),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #914', 'Sous-titre de la cellule #914', 1368185262),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #915', 'Sous-titre de la cellule #915', 1368185261),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #916', 'Sous-titre de la cellule #916', 1368185260),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #917', 'Sous-titre de la cellule #917', 1368185259),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #918', 'Sous-titre de la cellule #918', 1368185258),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #919', 'Sous-titre de la cellule #919', 1368185257),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #920', 'Sous-titre de la cellule #920', 1368185256),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #921', 'Sous-titre de la cellule #921', 1368185255),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #922', 'Sous-titre de la cellule #922', 1368185254),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #923', 'Sous-titre de la cellule #923', 1368185253),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #924', 'Sous-titre de la cellule #924', 1368185252),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #925', 'Sous-titre de la cellule #925', 1368185251),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #926', 'Sous-titre de la cellule #926', 1368185250),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #927', 'Sous-titre de la cellule #927', 1368185249),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #928', 'Sous-titre de la cellule #928', 1368185248),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #929', 'Sous-titre de la cellule #929', 1368185247),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #930', 'Sous-titre de la cellule #930', 1368185246),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #931', 'Sous-titre de la cellule #931', 1368185245),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #932', 'Sous-titre de la cellule #932', 1368185244),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #933', 'Sous-titre de la cellule #933', 1368185243),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #934', 'Sous-titre de la cellule #934', 1368185242),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #935', 'Sous-titre de la cellule #935', 1368185241),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #936', 'Sous-titre de la cellule #936', 1368185240),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #937', 'Sous-titre de la cellule #937', 1368185239),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #938', 'Sous-titre de la cellule #938', 1368185238),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #939', 'Sous-titre de la cellule #939', 1368185237),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #940', 'Sous-titre de la cellule #940', 1368185236),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #941', 'Sous-titre de la cellule #941', 1368185235),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #942', 'Sous-titre de la cellule #942', 1368185234),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #943', 'Sous-titre de la cellule #943', 1368185233),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #944', 'Sous-titre de la cellule #944', 1368185232),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #945', 'Sous-titre de la cellule #945', 1368185231),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #946', 'Sous-titre de la cellule #946', 1368185230),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #947', 'Sous-titre de la cellule #947', 1368185229),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #948', 'Sous-titre de la cellule #948', 1368185228),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #949', 'Sous-titre de la cellule #949', 1368185227),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #950', 'Sous-titre de la cellule #950', 1368185226),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #951', 'Sous-titre de la cellule #951', 1368185225),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #952', 'Sous-titre de la cellule #952', 1368185224),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #953', 'Sous-titre de la cellule #953', 1368185223),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #954', 'Sous-titre de la cellule #954', 1368185222),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #955', 'Sous-titre de la cellule #955', 1368185221),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #956', 'Sous-titre de la cellule #956', 1368185220),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #957', 'Sous-titre de la cellule #957', 1368185219),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #958', 'Sous-titre de la cellule #958', 1368185218),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #959', 'Sous-titre de la cellule #959', 1368185217),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #960', 'Sous-titre de la cellule #960', 1368185216),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #961', 'Sous-titre de la cellule #961', 1368185215),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #962', 'Sous-titre de la cellule #962', 1368185214),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #963', 'Sous-titre de la cellule #963', 1368185213),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #964', 'Sous-titre de la cellule #964', 1368185212),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #965', 'Sous-titre de la cellule #965', 1368185211),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #966', 'Sous-titre de la cellule #966', 1368185210),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #967', 'Sous-titre de la cellule #967', 1368185209),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #968', 'Sous-titre de la cellule #968', 1368185208),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #969', 'Sous-titre de la cellule #969', 1368185207),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #970', 'Sous-titre de la cellule #970', 1368185206),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #971', 'Sous-titre de la cellule #971', 1368185205),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #972', 'Sous-titre de la cellule #972', 1368185204),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #973', 'Sous-titre de la cellule #973', 1368185203),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #974', 'Sous-titre de la cellule #974', 1368185202),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #975', 'Sous-titre de la cellule #975', 1368185201),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #976', 'Sous-titre de la cellule #976', 1368185200),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #977', 'Sous-titre de la cellule #977', 1368185199),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #978', 'Sous-titre de la cellule #978', 1368185198),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #979', 'Sous-titre de la cellule #979', 1368185197),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #980', 'Sous-titre de la cellule #980', 1368185196),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #981', 'Sous-titre de la cellule #981', 1368185195),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #982', 'Sous-titre de la cellule #982', 1368185194),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #983', 'Sous-titre de la cellule #983', 1368185193),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #984', 'Sous-titre de la cellule #984', 1368185192),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #985', 'Sous-titre de la cellule #985', 1368185191),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #986', 'Sous-titre de la cellule #986', 1368185190),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #987', 'Sous-titre de la cellule #987', 1368185189),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #988', 'Sous-titre de la cellule #988', 1368185188),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #989', 'Sous-titre de la cellule #989', 1368185187),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #990', 'Sous-titre de la cellule #990', 1368185186),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #991', 'Sous-titre de la cellule #991', 1368185185),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #992', 'Sous-titre de la cellule #992', 1368185184),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'Ceci est le titre #993', 'Sous-titre de la cellule #993', 1368185183),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #994', 'Sous-titre de la cellule #994', 1368185182),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #995', 'Sous-titre de la cellule #995', 1368185181),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #996', 'Sous-titre de la cellule #996', 1368185180),
-('http://vp.magellan.free.fr/Android/pic0002.png', 'Ceci est le titre #997', 'Sous-titre de la cellule #997', 1368185179),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #998', 'Sous-titre de la cellule #998', 1368185178),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'Ceci est le titre #999', 'Sous-titre de la cellule #999', 1368185177),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Ceci est le titre #1000', 'Sous-titre de la cellule #1000', 1368185176),
-('http://vp.magellan.free.fr/Android/pic0003.png', 'test', 'test', 1368383695),
-('http://vp.magellan.free.fr/Android/pic0001.png', 'gjgdgf', 'fggfhhfgg', 1368383741),
-('http://vp.magellan.free.fr/Android/pic0004.png', 'Title de test...', 'Subtitle de test...', 1368482999);
-
--- --------------------------------------------------------
-
---
--- Structure de la table `Votes`
+-- Table structure for table `Votes`
 --
 
 CREATE TABLE IF NOT EXISTS `Votes` (
-  `VOT_Pseudo` varchar(30) collate latin1_general_ci NOT NULL default '',
-  `VOT_Fichier` varchar(20) collate latin1_general_ci NOT NULL default '',
-  `VOT_Note` tinyint(1) NOT NULL default '0',
-  `VOT_Total` int(4) NOT NULL default '0',
-  `VOT_Date` date NOT NULL default '0000-00-00',
-  `VOT_Type` tinyint(1) NOT NULL default '0',
-  KEY `VOT_Pseudo` (`VOT_Pseudo`,`VOT_Fichier`,`VOT_Date`)
+  `VOT_Pseudo` varchar(30) COLLATE latin1_general_ci NOT NULL DEFAULT '',
+  `VOT_Fichier` varchar(20) COLLATE latin1_general_ci NOT NULL DEFAULT '',
+  `VOT_Note` tinyint(1) NOT NULL DEFAULT '0',
+  `VOT_Total` int(4) NOT NULL DEFAULT '0',
+  `VOT_Date` date NOT NULL DEFAULT '0000-00-00',
+  `VOT_Type` tinyint(1) NOT NULL DEFAULT '0'
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 --
--- Contenu de la table `Votes`
+-- Dumping data for table `Votes`
 --
 
 INSERT INTO `Votes` (`VOT_Pseudo`, `VOT_Fichier`, `VOT_Note`, `VOT_Total`, `VOT_Date`, `VOT_Type`) VALUES
@@ -1701,7 +1320,7 @@ INSERT INTO `Votes` (`VOT_Pseudo`, `VOT_Fichier`, `VOT_Note`, `VOT_Total`, `VOT_
 ('Seik', 'LC0045.jpg', 2, -1, '2005-11-08', 0),
 ('Pascal', 'LC0051.jpg', -2, 2, '2005-11-23', 0),
 ('Pascal', 'LC0056.jpg', -2, 2, '2005-11-23', 0),
-('Pascal', 'LC0067.jpg', 2, 0, '2005-11-09', 0),
+('Pascal', 'LC0067.jpg', 1, 2, '2016-06-29', 0),
 ('Pascal', 'LC0028.jpg', -2, 0, '2005-11-09', 0),
 ('Pascal', 'LC0006.jpg', -2, 0, '2005-11-09', 0),
 ('Pascal', 'LC0007.gif', -2, 0, '2005-11-09', 0),
@@ -1735,9 +1354,125 @@ INSERT INTO `Votes` (`VOT_Pseudo`, `VOT_Fichier`, `VOT_Note`, `VOT_Total`, `VOT_
 ('Pascal', 'MSC12.mp3', 1, 0, '2007-03-14', 1),
 ('Pascal', 'MSC15.mp3', -1, 0, '2007-03-14', 1),
 ('Pascal', 'MSC17.mp3', 2, 0, '2007-03-14', 1),
-('Pascal', 'MSC24.mp3', 2, 0, '2009-11-23', 1),
+('Pascal', 'MSC24.mp3', 2, 2, '2016-06-29', 1),
 ('Pascal', 'LC0046.jpg', -2, 0, '2012-04-05', 0),
 ('Pascal', 'LC0047.jpg', -2, 0, '2012-04-05', 0),
 ('Pascal', 'LC0048.jpg', -2, 0, '2012-04-05', 0),
 ('Pascal', 'LC0179.jpg', 1, 0, '2012-04-05', 0),
-('Pascal', 'LC0180.jpg', 2, 2, '2016-06-07', 0);
+('Pascal', 'LC0180.jpg', 2, 2, '2016-06-07', 0),
+('Seik', 'LC0014.jpg', -2, 0, '2016-08-01', 0);
+
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `Abonnements`
+--
+ALTER TABLE `Abonnements`
+  ADD PRIMARY KEY (`ABO_Pseudo`,`ABO_Camarade`);
+
+--
+-- Indexes for table `Actualites`
+--
+ALTER TABLE `Actualites`
+  ADD UNIQUE KEY `ACT_ActuID` (`ACT_ActuID`);
+
+--
+-- Indexes for table `Albums`
+--
+ALTER TABLE `Albums`
+  ADD KEY `ALB_Nom` (`ALB_Nom`),
+  ADD KEY `ALB_Pseudo` (`ALB_Pseudo`,`ALB_Shared`,`ALB_EventID`);
+
+--
+-- Indexes for table `Camarades`
+--
+ALTER TABLE `Camarades`
+  ADD UNIQUE KEY `CAM_Pseudo` (`CAM_Pseudo`);
+
+--
+-- Indexes for table `Commentaires`
+--
+ALTER TABLE `Commentaires`
+  ADD PRIMARY KEY (`COM_ObjType`,`COM_ObjID`,`COM_Pseudo`,`COM_Date`);
+
+--
+-- Indexes for table `Evenements`
+--
+ALTER TABLE `Evenements`
+  ADD UNIQUE KEY `EVE_EventID` (`EVE_EventID`),
+  ADD KEY `EVE_Date` (`EVE_Date`);
+
+--
+-- Indexes for table `FlyerNumber`
+--
+ALTER TABLE `FlyerNumber`
+  ADD UNIQUE KEY `FNU_FlyerID` (`FNU_FlyerID`);
+
+--
+-- Indexes for table `Forum`
+--
+ALTER TABLE `Forum`
+  ADD KEY `FRM_Date` (`FRM_Date`,`FRM_Time`);
+
+--
+-- Indexes for table `Messagerie`
+--
+ALTER TABLE `Messagerie`
+  ADD KEY `MSG_Pseudo` (`MSG_Pseudo`,`MSG_ReadStk`,`MSG_WriteStk`);
+
+--
+-- Indexes for table `Music`
+--
+ALTER TABLE `Music`
+  ADD UNIQUE KEY `MSC_Fichier` (`MSC_Fichier`);
+
+--
+-- Indexes for table `MusicNumber`
+--
+ALTER TABLE `MusicNumber`
+  ADD UNIQUE KEY `MNU_MusicID` (`MNU_MusicID`);
+
+--
+-- Indexes for table `Notifications`
+--
+ALTER TABLE `Notifications`
+  ADD UNIQUE KEY `NOT_Date` (`NOT_Date`);
+
+--
+-- Indexes for table `PhotoNumber`
+--
+ALTER TABLE `PhotoNumber`
+  ADD UNIQUE KEY `PNU_PhotoID` (`PNU_PhotoID`);
+
+--
+-- Indexes for table `Photos`
+--
+ALTER TABLE `Photos`
+  ADD KEY `PHT_Album` (`PHT_Album`);
+
+--
+-- Indexes for table `Presents`
+--
+ALTER TABLE `Presents`
+  ADD KEY `PRE_EventID` (`PRE_EventID`);
+
+--
+-- Indexes for table `Votes`
+--
+ALTER TABLE `Votes`
+  ADD KEY `VOT_Pseudo` (`VOT_Pseudo`,`VOT_Fichier`,`VOT_Date`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `Actualites`
+--
+ALTER TABLE `Actualites`
+  MODIFY `ACT_ActuID` int(4) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=62;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
