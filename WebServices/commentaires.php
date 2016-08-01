@@ -28,7 +28,7 @@ if(!Empty($Clf))
             }
             else {
                 // Select
-                $Query = "SELECT COM_ObjID,COM_Pseudo,COM_Text,COM_Date FROM Commentaires WHERE COM_Status <> 2 AND COM_ObjType = '$Type' AND COM_ObjID IN (";
+                $Query = "SELECT COM_ObjID,COM_Pseudo,COM_Text,COM_Date,COM_Status,COM_StatusDate FROM Commentaires WHERE COM_ObjType = '$Type' AND COM_ObjID IN (";
                 $ActuIDs = explode('n', $Actu);
                 $PrevID = false;
                 foreach($ActuIDs as &$ActuId) {
@@ -37,7 +37,7 @@ if(!Empty($Clf))
                     $PrevID = true;
                 }
                 $Query .= ")";
-                if((!is_null($Date))&&(strcmp(trim($Date),""))) $Query .= " AND COM_Date > '".str_replace("n"," ",$Date)."'";
+                if((!is_null($Date))&&(strcmp(trim($Date),""))) $Query .= " AND COM_StatusDate > '".str_replace("n"," ",$Date)."'";
                 $Query .= " ORDER BY COM_Date";
                 if(!Empty($Count)) $Query .= " LIMIT $Count";
                 $Result = mysql_query(trim($Query),$Link);
@@ -48,7 +48,9 @@ if(!Empty($Clf))
                     while($aRow = mysql_fetch_array($Result)) {
                         if(strlen($Reply) == 0) $Reply .= '{"commentaires":[';
                         else $Reply .= ',';
-                        $Reply .= '{"id":'.strval($aRow["COM_ObjID"]).',';
+                        $Reply .= '{"status":'.strval($aRow["COM_Status"]).',';
+                        $Reply .= '"statusDate":"'.trim($aRow["COM_StatusDate"]).'",';
+                        $Reply .= '"id":'.strval($aRow["COM_ObjID"]).',';
                         $Reply .= '"pseudo":"'.addslashes($aRow["COM_Pseudo"]).'",';
                         $Reply .= '"from":"'.urlencode(base64_encode($aRow["COM_Pseudo"])).'",';
                         $Reply .= '"text":"'.str_replace('"','\"',trim($aRow["COM_Text"])).'",';

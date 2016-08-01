@@ -41,9 +41,13 @@ else
     }
     if((!Empty($ope))&&($ope == 1))
     {   // Création de la requête ////////////////////////////////////////////////////////////////////////////////////////////////////////
-        $Query = "SELECT * FROM Camarades WHERE CAM_Status <> 2";
+        $Query = "SELECT * FROM Camarades";
         if((!Empty($rpsd))&&(strcmp(trim($rpsd),"")))
-        {   $Query .= " WHERE CAM_Pseudo LIKE '%".trim($rpsd)."%'";
+        {   $Query .= " WHERE CAM_Status <> 2 AND CAM_Pseudo LIKE '%".trim($rpsd)."%'";
+            $bWhere = true;
+        }
+        else {
+            $Query .= " WHERE CAM_Status <> 2";
             $bWhere = true;
         }
         if((!Empty($rprnm))&&(strcmp(trim($rprnm),"")))

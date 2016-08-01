@@ -145,7 +145,7 @@ form {padding: 0px; margin-bottom: 0px; border: 0px}
 <!--
 // OnValidate ////////////////////////////////////////////////
 function OnValidate() {
-    // Check no invalid characters: '"<>& and space char
+    // Check invalid characters: '"<>& and space char
 
 
 

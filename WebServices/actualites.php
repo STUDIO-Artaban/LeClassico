@@ -44,16 +44,15 @@ if(!Empty($Clf))
             }
             else {
                 // Select
-                $Query = "SELECT ACT_ActuID,ACT_Pseudo,CAM_Profile,CAM_Sexe,ACT_Camarade,ACT_Date,ACT_Text,ACT_Link,ACT_Fichier";
-                $Query .= " FROM Actualites LEFT JOIN Camarades ON ACT_Pseudo = CAM_Pseudo";
+                $Query = "SELECT ACT_ActuID,ACT_Pseudo,CAM_Profile,CAM_Sexe,ACT_Camarade,ACT_Date,ACT_Text,ACT_Link,ACT_Fichier,ACT_Status,ACT_StatusDate";
+                $Query .= " FROM Actualites LEFT JOIN Camarades ON ACT_Pseudo = CAM_Pseudo AND CAM_Status <> 2";
                 if((!Empty($Cam))&&(strcmp($Cam,$Camarde))) {
-                    $Query .= " WHERE ACT_Status <> 2 AND (UPPER(ACT_Pseudo) = UPPER('".addslashes($Cam)."') OR UPPER(ACT_Camarade) = UPPER('".addslashes($Cam)."'))";
+                    $Query .= " WHERE (UPPER(ACT_Pseudo) = UPPER('".addslashes($Cam)."') OR UPPER(ACT_Camarade) = UPPER('".addslashes($Cam)."'))";
                     if((!is_null($Date))&&(strcmp(trim($Date),""))) $Query .= " AND ACT_Date > '".str_replace("n"," ",$Date)."'";
                 }
                 else {
-                    $Query .= " INNER JOIN Abonnements ON ACT_Pseudo = ABO_Camarade AND UPPER(ABO_Pseudo) = UPPER('".addslashes($Camarade)."')";
-                    $Query .= " WHERE ACT_Status <> 2";
-                    if((!is_null($Date))&&(strcmp(trim($Date),""))) $Query .= " AND ACT_Date > '".str_replace("n"," ",$Date)."'";
+                    $Query .= " INNER JOIN Abonnements ON ACT_Pseudo = ABO_Camarade AND ABO_Status <> 2 AND UPPER(ABO_Pseudo) = UPPER('".addslashes($Camarade)."')";
+                    if((!is_null($Date))&&(strcmp(trim($Date),""))) $Query .= " AND ACT_StatusDate > '".str_replace("n"," ",$Date)."'";
                 }
                 $Query .= " ORDER BY ACT_Date DESC";
                 if(!Empty($Count)) $Query .= " LIMIT $Count";
@@ -74,7 +73,9 @@ if(!Empty($Clf))
                             $Profile = "Profiles/$Profile";
                         if(strlen($Reply) == 0) $Reply .= '{"publications":[';
                         else $Reply .= ',';
-                        $Reply .= '{"profile":"'.trim($Profile).'",';
+                        $Reply .= '{"status":'.strval($aRow["ACT_Status"]).',';
+                        $Reply .= '"statusDate":"'.trim($aRow["ACT_StatusDate"]).'",';
+                        $Reply .= '"profile":"'.trim($Profile).'",';
                         $Reply .= '"camarade":"'.urlencode(base64_encode($aRow["ACT_Camarade"])).'",';
                         $Reply .= '"to":"'.addslashes($aRow["ACT_Camarade"]).'",';
                         $Reply .= '"pseudo":"'.addslashes($aRow["ACT_Pseudo"]).'",';
