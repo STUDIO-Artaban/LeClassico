@@ -146,15 +146,9 @@ form {padding: 0px; margin-bottom: 0px; border: 0px}
 // OnValidate ////////////////////////////////////////////////
 function OnValidate() {
     // Check invalid characters: '"<>& and space char
-
-
-
-
-
-
-
-
-
+    var pattern = new RegExp(/['"<>& ]/i);
+    if (pattern.test(document.getElementById("pseudo").value))
+        return false;
     return true;
 }
 -->
@@ -245,7 +239,7 @@ function OnValidate() {
 <td><font ID="Entete">Pseudo:</font></td>
 </tr>
 <tr>
-<td><input type="text" style="font-size: 10pt; font-family: Verdana,Lucida,Courier" name="npsd" maxlength=30></td>
+<td><input type="text" style="font-size: 10pt; font-family: Verdana,Lucida,Courier" ID="pseudo" name="npsd" maxlength=30></td>
 </tr>
 <tr>
 <td><font ID="Entete">Code confidentiel:</font></td>
