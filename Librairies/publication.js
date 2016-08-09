@@ -22,21 +22,38 @@ function remove(message,address) {
         try { reply = JSON.parse(xhr.responseText); }
         catch (e) {
             reply = new Object()
-            reply.error = 'JSON.parse exception!';
+            reply.error = WEBSERVICE_ERROR_JSON;
         }
         if ((xhr.responseText) && (typeof reply.error != 'undefined')) {
-            console.log('ERROR: ' + reply.error);
-            alert('Echec durant la suppression: ' + reply.error + '\nSi le probleme persiste, contactes le Webmaster!');
+            console.log('ERROR: #' + reply.error);
+            alert('Echec durant la suppression: ' + WEBSERVICE_ERROR_MESSAGES[reply.error] + '\nSi le probleme persiste, contactes le Webmaster!');
         }
         else setTimeout(function() { location.reload(true); }, 100);
     }
     else console.log('ERROR: Web service not ready!');
 }
 
-//
+//////
 var LC_WEBSERVICE = 'http://www.leclassico.fr/WebServices/';
 var LC_ACTUALITES = 'actualites.php?Clf=';
 var LC_COMMENTAIRES = 'commentaires.php?Clf=';
+
+var WEBSERVICE_ERROR_JSON = 0;
+var WEBSERVICE_ERROR_SERVER_UNAVAILABLE = 1;
+var WEBSERVICE_ERROR_INVALID_TOKEN = 6;
+var WEBSERVICE_ERROR_INVALID_USER = 7;
+var WEBSERVICE_ERROR_INVALID_PUBLICATION_ID = 8;
+var WEBSERVICE_ERROR_REQUEST_PUBLICATION_DELETE = 9;
+var WEBSERVICE_ERROR_REQUEST_COMMENT_DELETE = 11;
+var WEBSERVICE_ERROR_MESSAGES = [
+    'JSON.parse exception!', // JSON.parse exception
+    'Serveur indisponible','','','','', // Server unavailable
+    'Jeton invalide', // Invalid token
+    'Utilisateur invalide', // Invalid user
+    'Publication inconnue', // Invalid publication ID
+    'Requete de suppression de publication invalide','', // Delete publication request failed
+    'Requete de suppression de commentaire invalide' // Delete comment request failed
+];
 
 var clef = '';
 var file = '';
@@ -312,10 +329,10 @@ xhr.onreadystatechange = function() {
             try { reply = JSON.parse(xhr.responseText); }
             catch (e) {
                 reply = new Object()
-                reply.error = 'JSON.parse exception!';
+                reply.error = WEBSERVICE_ERROR_JSON;
             }
             if (typeof reply.error != 'undefined') {
-                console.log('ERROR: ' + reply.error);
+                console.log('ERROR: #' + reply.error);
                 request = REQ_NONE;
                 return;
             }
