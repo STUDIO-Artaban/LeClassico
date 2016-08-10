@@ -3,7 +3,6 @@ require("../Package.php");
 require("constants.php");
 
 $Clf = $_GET['Clf'];
-$odt = $_POST['odt'];
 $psd = $_POST['psd'];
 $ccf = $_POST['ccf'];
 $odt = $_POST['odt']; // OS date & time (YYYY-MM-DD HH:MM:SS)
