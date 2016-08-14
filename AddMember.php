@@ -146,7 +146,7 @@ form {padding: 0px; margin-bottom: 0px; border: 0px}
 // OnValidate ////////////////////////////////////////////////
 function OnValidate() {
     // Check invalid characters: '"<>& and space char
-    var pattern = new RegExp(/['"<>& ]/i);
+    var pattern = new RegExp(/['"<>&: ]/i);
     if (pattern.test(document.getElementById("pseudo").value))
         return false;
     return true;
