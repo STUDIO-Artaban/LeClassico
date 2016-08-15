@@ -42,7 +42,7 @@ else {
                     $Camarade = stripslashes($aRow["CAM_Pseudo"]);
                     $Clf = GetKeyIdentifier($Camarade, 7200); // 600 -> 10 min, 3600 -> 1 hour, 7200 -> 2 hours
                     echo '{"logged":{';
-                    echo '"pseudo":"'.trim($Camrade).'",';
+                    echo '"pseudo":"'.trim($Camarade).'",';
                     echo '"timeLag":'.strval($localTime - $remoteTime).',';
                     echo '"token":"'.trim($Clf).'"}}';
                 }
