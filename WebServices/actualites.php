@@ -61,12 +61,12 @@ if (!Empty($Clf)) {
                 if ((!Empty($Cam)) && (strcmp($Cam,$Camarde))) {
 
                     $Query .= " WHERE (UPPER(ACT_Pseudo) = UPPER('".addslashes($Cam)."') OR UPPER(ACT_Camarade) = UPPER('".addslashes($Cam)."'))";
-                    if((!is_null($Date)) && (strcmp(trim($Date),"")))
+                    if ((!is_null($Date)) && (strcmp(trim($Date),"")))
                         $Query .= " AND ACT_Date > '".str_replace("n"," ",$Date)."'";
                 }
                 else {
                     $Query .= " INNER JOIN Abonnements ON ACT_Pseudo = ABO_Camarade AND ABO_Status <> 2 AND UPPER(ABO_Pseudo) = UPPER('".addslashes($Camarade)."')";
-                    if((!is_null($Date)) && (strcmp(trim($Date),"")))
+                    if ((!is_null($Date)) && (strcmp(trim($Date),"")))
                         $Query .= " AND ACT_StatusDate > '".str_replace("n"," ",$Date)."'";
                 }
                 $Query .= " ORDER BY ACT_Date DESC";
@@ -84,7 +84,7 @@ if (!Empty($Clf)) {
 
                         $Profile = $aRow["CAM_Profile"];
                         if (is_null($Profile)) {
-                            if((!is_null($aRow["CAM_Sexe"])) && ($aRow["CAM_Sexe"] == 1))
+                            if ((!is_null($aRow["CAM_Sexe"])) && ($aRow["CAM_Sexe"] == 1))
                                 $Profile = "Images/woman.png";
                             else
                                 $Profile = "Images/man.png";
