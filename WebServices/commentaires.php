@@ -14,7 +14,7 @@ if (!Empty($Clf)) {
     // Connexion
     $Link = @mysql_connect(GetMySqlLocalhost(),GetMySqlUser(),GetMySqlPassword());
     if (Empty($Link))
-        echo '{"error":'.strval(constant("WEBSERVICE_ERROR_SERVER_UNAVAILABLE")).'}';
+        echo '{"Error":'.strval(constant("WEBSERVICE_ERROR_SERVER_UNAVAILABLE")).'}';
     else {
         
         $Camarade = UserKeyIdentifier($Clf);
@@ -31,7 +31,7 @@ if (!Empty($Clf)) {
                 // Delete
                 $Query = "UPDATE Commentaires SET COM_Status = 2, COM_StatusDate = CURRENT_TIMESTAMP WHERE COM_ObjType = '$Type' AND COM_ObjID = $Actu AND COM_Date = '".str_replace("n"," ",$Date)."'";
                 if (!mysql_query(trim($Query),$Link))
-                    $Reply = '{"error":'.strval(constant("WEBSERVICE_ERROR_REQUEST_COMMENT_DELETE")).'}';
+                    $Reply = '{"Error":'.strval(constant("WEBSERVICE_ERROR_REQUEST_COMMENT_DELETE")).'}';
                 else
                     $Reply = '{}'; // Ok...
             }
@@ -57,23 +57,23 @@ if (!Empty($Clf)) {
 
                 // Reply
                 if (mysql_num_rows($Result) == 0)
-                    $Reply = '{"commentaires":null}';
+                    $Reply = '{"Commentaires":null}';
                 else {
 
                     $Reply = '';
                     while ($aRow = mysql_fetch_array($Result)) {
 
-                        if (strlen($Reply) == 0) $Reply .= '{"commentaires":[';
+                        if (strlen($Reply) == 0) $Reply .= '{"Commentaires":[';
                         else $Reply .= ',';
 
-                        $Reply .= '{"status":'.strval($aRow["COM_Status"]).',';
-                        $Reply .= '"statusDate":"'.trim($aRow["COM_StatusDate"]).'",';
-                        $Reply .= '"id":'.strval($aRow["COM_ObjID"]).',';
-                        $Reply .= '"pseudo":"'.addslashes($aRow["COM_Pseudo"]).'",';
-                        $Reply .= '"from":"'.urlencode(base64_encode($aRow["COM_Pseudo"])).'",';
-                        $Reply .= '"text":"'.str_replace('"','\"',trim($aRow["COM_Text"])).'",';
-                        $Reply .= '"remove":'.((!strcmp($Camarade,$aRow["COM_Pseudo"]))? "true":"false").',';
-                        $Reply .= '"date":"'.trim($aRow["COM_Date"]).'"}';
+                        $Reply .= '{"Status":'.strval($aRow["COM_Status"]).',';
+                        $Reply .= '"StatusDate":"'.trim($aRow["COM_StatusDate"]).'",';
+                        $Reply .= '"ObjID":'.strval($aRow["COM_ObjID"]).',';
+                        $Reply .= '"Pseudo":"'.addslashes($aRow["COM_Pseudo"]).'",';
+                        $Reply .= '"PseudoURL":"'.urlencode(base64_encode($aRow["COM_Pseudo"])).'",';
+                        $Reply .= '"Text":"'.str_replace('"','\"',trim($aRow["COM_Text"])).'",';
+                        $Reply .= '"RemoveFlag":'.((!strcmp($Camarade,$aRow["COM_Pseudo"]))? "true":"false").',';
+                        $Reply .= '"Date":"'.trim($aRow["COM_Date"]).'"}';
                     }
                     $Reply .= ']}';
                 }
@@ -81,10 +81,10 @@ if (!Empty($Clf)) {
             echo $Reply;
         }
         else
-            echo '{"error":'.strval(constant("WEBSERVICE_ERROR_INVALID_USER")).'}';
+            echo '{"Error":'.strval(constant("WEBSERVICE_ERROR_INVALID_USER")).'}';
         mysql_close($Link);
     }
 }
 else
-    echo '{"error":'.strval(constant("WEBSERVICE_ERROR_INVALID_TOKEN")).'}';
+    echo '{"Error":'.strval(constant("WEBSERVICE_ERROR_INVALID_TOKEN")).'}';
 ?>

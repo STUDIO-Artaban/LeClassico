@@ -13,14 +13,14 @@ header('Content-Type: application/json;charset=ISO-8859-1');
 // Connection
 $Link = @mysql_connect(GetMySqlLocalhost(),GetMySqlUser(),GetMySqlPassword());
 if (Empty($Link))
-    echo '{"error":'.strval(constant("WEBSERVICE_ERROR_SERVER_UNAVAILABLE")).'}';
+    echo '{"Error":'.strval(constant("WEBSERVICE_ERROR_SERVER_UNAVAILABLE")).'}';
 else {
 
     mysql_select_db(GetMySqlDB(),$Link);
     $Query = "SELECT NOW() AS SYS_DateTime";
     $Result = mysql_query(trim($Query),$Link);
     if (!mysql_num_rows($Result))
-        echo '{"error":'.strval(constant("WEBSERVICE_ERROR_SYSTEM_DATE")).'}';
+        echo '{"Error":'.strval(constant("WEBSERVICE_ERROR_SYSTEM_DATE")).'}';
     else {
 
         $aRow = mysql_fetch_array($Result);
@@ -29,22 +29,22 @@ else {
         mysql_free_result($Result);
         if (Empty($Clf)) {
             if ((Empty($psd)) || (Empty($ccf)))
-                echo '{"error":'.strval(constant("WEBSERVICE_ERROR_INVALID_LOGIN")).'}';
+                echo '{"Error":'.strval(constant("WEBSERVICE_ERROR_INVALID_LOGIN")).'}';
             else {
 
                 $Query = "SELECT CAM_Pseudo FROM Camarades WHERE CAM_Status <> 2 AND UPPER(CAM_Pseudo) = UPPER('".trim($psd)."') AND UPPER(CAM_CodeConf) = UPPER('".trim($ccf)."')";
                 $Result = mysql_query(trim($Query),$Link);
                 if (!mysql_num_rows($Result))
-                    echo '{"error":'.strval(constant("WEBSERVICE_ERROR_LOGIN_FAILED")).'}';
+                    echo '{"Error":'.strval(constant("WEBSERVICE_ERROR_LOGIN_FAILED")).'}';
                 else {
 
                     $aRow = mysql_fetch_array($Result);
                     $Camarade = stripslashes($aRow["CAM_Pseudo"]);
                     $Clf = GetKeyIdentifier($Camarade, 7200); // 600 -> 10 min, 3600 -> 1 hour, 7200 -> 2 hours
-                    echo '{"logged":{';
-                    echo '"pseudo":"'.trim($Camarade).'",';
-                    echo '"timeLag":'.strval($localTime - $remoteTime).',';
-                    echo '"token":"'.trim($Clf).'"}}';
+                    echo '{"Logged":{';
+                    echo '"Pseudo":"'.trim($Camarade).'",';
+                    echo '"TimeLag":'.strval($localTime - $remoteTime).',';
+                    echo '"Token":"'.trim($Clf).'"}}';
                 }
             }
         }
@@ -53,13 +53,13 @@ else {
 
                 $Camarade = UserKeyIdentifier($Clf);
                 $Clf = GetKeyIdentifier(UserKeyIdentifier($Clf), 7200);
-                echo '{"logged":{';
-                echo '"pseudo":"'.trim($Camrade).'",';
-                echo '"timeLag":'.strval($localTime - $remoteTime).',';
-                echo '"token":"'.trim($Clf).'"}}';
+                echo '{"Logged":{';
+                echo '"Pseudo":"'.trim($Camrade).'",';
+                echo '"TimeLag":'.strval($localTime - $remoteTime).',';
+                echo '"Token":"'.trim($Clf).'"}}';
             }
             else
-                echo '{"error":'.strval(constant("WEBSERVICE_ERROR_TOKEN_EXPIRED")).'}';
+                echo '{"Error":'.strval(constant("WEBSERVICE_ERROR_TOKEN_EXPIRED")).'}';
         }
     }
     mysql_close($Link);

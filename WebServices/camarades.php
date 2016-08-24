@@ -10,7 +10,7 @@ if (!Empty($Clf)) {
     // Connexion
     $Link = @mysql_connect(GetMySqlLocalhost(),GetMySqlUser(),GetMySqlPassword());
     if (Empty($Link))
-        echo '{"error":'.strval(constant("WEBSERVICE_ERROR_SERVER_UNAVAILABLE")).'}';
+        echo '{"Error":'.strval(constant("WEBSERVICE_ERROR_SERVER_UNAVAILABLE")).'}';
     else {
 
         $Camarade = UserKeyIdentifier($Clf);
@@ -27,13 +27,13 @@ if (!Empty($Clf)) {
 
             // Select
             if (mysql_num_rows($Result) == 0)
-                $Reply = '{"camarades":null}';
+                $Reply = '{"Camarades":null}';
             else {
 
                 $Reply = '';
                 while ($aRow = mysql_fetch_array($Result)) {
 
-                    if (strlen($Reply) == 0) $Reply .= '{"camarades":[';
+                    if (strlen($Reply) == 0) $Reply .= '{"Camarades":[';
                     else $Reply .= ',';
 
                     $Reply .= '{"Pseudo":"'.trim($aRow["CAM_Pseudo"]).'",';
@@ -78,10 +78,10 @@ if (!Empty($Clf)) {
             echo $Reply;
         }
         else
-            echo '{"error":'.strval(constant("WEBSERVICE_ERROR_INVALID_USER")).'}';
+            echo '{"Error":'.strval(constant("WEBSERVICE_ERROR_INVALID_USER")).'}';
         mysql_close($Link);
     }
 }
 else
-    echo '{"error":'.strval(constant("WEBSERVICE_ERROR_INVALID_TOKEN")).'}';
+    echo '{"Error":'.strval(constant("WEBSERVICE_ERROR_INVALID_TOKEN")).'}';
 ?>

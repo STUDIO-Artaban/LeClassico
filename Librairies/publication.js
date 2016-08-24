@@ -22,11 +22,11 @@ function remove(message,address) {
         try { reply = JSON.parse(xhr.responseText); }
         catch (e) {
             reply = new Object()
-            reply.error = WEBSERVICE_ERROR_JSON;
+            reply.Error = WEBSERVICE_ERROR_JSON;
         }
-        if ((xhr.responseText) && (typeof reply.error != 'undefined')) {
-            console.log('ERROR: #' + reply.error);
-            alert('Echec durant la suppression: ' + WEBSERVICE_ERROR_MESSAGES[reply.error] + '\nSi le probleme persiste, contactes le Webmaster!');
+        if ((xhr.responseText) && (typeof reply.Error != 'undefined')) {
+            console.log('ERROR: #' + reply.Error);
+            alert('Echec durant la suppression: ' + WEBSERVICE_ERROR_MESSAGES[reply.Error] + '\nSi le probleme persiste, contactes le Webmaster!');
         }
         else setTimeout(function() { location.reload(true); }, 100);
     }
@@ -105,30 +105,30 @@ var actuId = '';
 var commRow = {};
 function AddCommentaires(data) {
     for (var i = 0; i < data.length; i++) {
-        if (document.getElementById(TABLE_COMMENTAIRES + data[i].id)) {
-            if (data[i].status != 0) { // == 2 -> Deleted (not managed yet)
-                if (strcmp(data[i].statusDate, commDate) == 1)
-                    commDate = data[i].statusDate;
+        if (document.getElementById(TABLE_COMMENTAIRES + data[i].ObjID)) {
+            if (data[i].Status != 0) { // == 2 -> Deleted (not managed yet)
+                if (strcmp(data[i].StatusDate, commDate) == 1)
+                    commDate = data[i].StatusDate;
                 continue;
             }
-            var htmlComment = data[i].text.replace('<','&lt;').replace('>','&gt;');
+            var htmlComment = data[i].Text.replace('<','&lt;').replace('>','&gt;');
             var htmlRemove = '';
-            if (data[i].remove)
-                htmlRemove = '&nbsp;<img class="remove" src="Images/remove.png" onclick=\'OnRemoveCommentaire("A",' + data[i].id +
-                                ',"' + data[i].date + '","' + clef + '")\'>';
+            if (data[i].RemoveFlag)
+                htmlRemove = '&nbsp;<img class="remove" src="Images/remove.png" onclick=\'OnRemoveCommentaire("A",' + data[i].ObjID +
+                                ',"' + data[i].Date + '","' + clef + '")\'>';
 
             // Add comment row
-            var row = document.getElementById(TABLE_COMMENTAIRES + data[i].id).insertRow(commRow[data[i].id]);
+            var row = document.getElementById(TABLE_COMMENTAIRES + data[i].ObjID).insertRow(commRow[data[i].ObjID]);
             var cell = row.insertCell(0);
             cell.innerHTML =
-                HTML_COMMENT_PREV_CAMARDE + '&Clf=' + clef + '&Cam=' + data[i].from +
-                HTML_COMMENT_PREV_PSEUDO + data[i].pseudo +
+                HTML_COMMENT_PREV_CAMARDE + '&Clf=' + clef + '&Cam=' + data[i].PseudoURL +
+                HTML_COMMENT_PREV_PSEUDO + data[i].Pseudo +
                 HTML_COMMENT_NO_PREV + htmlComment + htmlRemove +
                 '</font>';
 
-            commRow[data[i].id] += 1;
-            if (strcmp(data[i].statusDate, commDate) == 1)
-                commDate = data[i].statusDate;
+            commRow[data[i].ObjID] += 1;
+            if (strcmp(data[i].StatusDate, commDate) == 1)
+                commDate = data[i].StatusDate;
         }
     }
 }
@@ -265,33 +265,33 @@ var HTML_COMMENT_PREV_NOTHING = '><input type="submit" class="comment" value="Ok
 function AddActualites(data) {
     if (document.getElementById(TABLE_PUBLICATIONS)) {
         for (var i = (data.length - 1); i >= 0; i--) {
-            if (data[i].status != 0) { // == 2 -> Deleted (not managed yet)
-                if (strcmp(data[i].statusDate, actuDate) == 1)
-                    actuDate = data[i].statusDate;
+            if (data[i].Status != 0) { // == 2 -> Deleted (not managed yet)
+                if (strcmp(data[i].StatusDate, actuDate) == 1)
+                    actuDate = data[i].StatusDate;
                 continue;
             }
             var htmlImage = '';
-            if (data[i].image != '')
-                htmlImage = '<img class="pubImage" src="Photos/' + data[i].image + '" width="100%">';
+            if (data[i].Fichier != '')
+                htmlImage = '<img class="pubImage" src="Photos/' + data[i].Fichier + '" width="100%">';
             var htmlRemove = '</font></font>';
-            if (data[i].remove)
-                htmlRemove += '&nbsp;<img class="remove" src="Images/delete.png" onclick="OnRemovePublication(' + data[i].id + ')">';
+            if (data[i].RemoveFlag)
+                htmlRemove += '&nbsp;<img class="remove" src="Images/delete.png" onclick="OnRemovePublication(' + data[i].ActuID + ')">';
             var htmlWall = '';
-            if ((data[i].camarade != '') && (strcmp(data[i].camarade,camarade) != 0))
-                htmlWall = '&nbsp;&gt;&nbsp;<a href="index.php?Chp=2&Clf=' + clef + '&Cam=' + data[i].camarade +
-                            '" target="_top" style="font-size:12pt">' + data[i].to + '</a>';
+            if ((data[i].CamaradeURL != '') && (strcmp(data[i].CamaradeURL,camarade) != 0))
+                htmlWall = '&nbsp;&gt;&nbsp;<a href="index.php?Chp=2&Clf=' + clef + '&Cam=' + data[i].CamaradeURL +
+                            '" target="_top" style="font-size:12pt">' + data[i].Camarade + '</a>';
 
             // Add actu row
             var row = document.getElementById(TABLE_PUBLICATIONS).insertRow(1);
             row.insertCell(0);
             var cell = row.insertCell(1);
             cell.innerHTML =
-                HTML_ACTU_PREV_PROFILE + data[i].profile +
-                HTML_ACTU_PREV_CAMARADE + clef + '&Cam=' + data[i].from +
-                    '" target="_top" style="font-size:12pt">' + data[i].pseudo + '</a>' + htmlWall +
-                HTML_ACTU_PREV_DATE + data[i].date + '</font> &agrave; <font color="#ff0000">' + data[i].time + htmlRemove +
-                HTML_ACTU_PREV_MESSAGE + data[i].text.replace('<','&lt;').replace('>','&gt;').replace('\\n','<br>').replace('\n','<br>') +
-                HTML_ACTU_PREV_LINK + data[i].link + '" target="_blank">' + data[i].link +
+                HTML_ACTU_PREV_PROFILE + data[i].Profile +
+                HTML_ACTU_PREV_CAMARADE + clef + '&Cam=' + data[i].PseudoURL +
+                    '" target="_top" style="font-size:12pt">' + data[i].Pseudo + '</a>' + htmlWall +
+                HTML_ACTU_PREV_DATE + data[i].Date + '</font> &agrave; <font color="#ff0000">' + data[i].Time + htmlRemove +
+                HTML_ACTU_PREV_MESSAGE + data[i].Text.replace('<','&lt;').replace('>','&gt;').replace('\\n','<br>').replace('\n','<br>') +
+                HTML_ACTU_PREV_LINK + data[i].Link + '" target="_blank">' + data[i].Link +
                 HTML_ACTU_PREV_IMAGE + htmlImage +
                 HTML_ACTU_PREV_COMMENTS;
 
@@ -300,11 +300,11 @@ function AddActualites(data) {
             row.insertCell(0);
             cell = row.insertCell(1);
             cell.innerHTML = 
-                HTML_COMMENT_PREV_NAME + TABLE_COMMENTAIRES + data[i].id +
+                HTML_COMMENT_PREV_NAME + TABLE_COMMENTAIRES + data[i].ActuID +
                 HTML_COMMENT_PREV_FILE + file +
                     '?Clf=' + clef +
                     '&Cam=' + camarade +
-                HTML_COMMENT_PREV_ACTUID + data[i].id +
+                HTML_COMMENT_PREV_ACTUID + data[i].ActuID +
                 HTML_COMMENT_PREV_NOTHING;
 
             row = document.getElementById(TABLE_PUBLICATIONS).insertRow(3);
@@ -312,11 +312,11 @@ function AddActualites(data) {
             row.insertCell(0);
             row.insertCell(1);
 
-            commRow[data[i].id] = 0;
-            if (actuId == '') actuId = data[i].id;
-            else actuId += SEPARATOR_ACTU_ID + data[i].id;
-            if (strcmp(data[i].statusDate, actuDate) == 1)
-                actuDate = data[i].statusDate;
+            commRow[data[i].ActuID] = 0;
+            if (actuId == '') actuId = data[i].ActuID;
+            else actuId += SEPARATOR_ACTU_ID + data[i].ActuID;
+            if (strcmp(data[i].StatusDate, actuDate) == 1)
+                actuDate = data[i].StatusDate;
         }
     }
 }
@@ -329,10 +329,10 @@ xhr.onreadystatechange = function() {
             try { reply = JSON.parse(xhr.responseText); }
             catch (e) {
                 reply = new Object()
-                reply.error = WEBSERVICE_ERROR_JSON;
+                reply.Error = WEBSERVICE_ERROR_JSON;
             }
-            if (typeof reply.error != 'undefined') {
-                console.log('ERROR: #' + reply.error);
+            if (typeof reply.Error != 'undefined') {
+                console.log('ERROR: #' + reply.Error);
                 request = REQ_NONE;
                 return;
             }
@@ -340,8 +340,8 @@ xhr.onreadystatechange = function() {
                 case REQ_INIT_ACTU:
                 case REQ_NEW_ACTU: {
 
-                    if(reply.publications)
-                        AddActualites(reply.publications);
+                    if(reply.Actualites)
+                        AddActualites(reply.Actualites);
 
                     if (request == REQ_INIT_ACTU) request = REQ_INIT_COMMENT;
                     else request = REQ_NEW_COMMENT;
@@ -350,8 +350,8 @@ xhr.onreadystatechange = function() {
                 case REQ_INIT_COMMENT:
                 case REQ_NEW_COMMENT: {
 
-                    if(reply.commentaires)
-                        AddCommentaires(reply.commentaires);
+                    if(reply.Commentaires)
+                        AddCommentaires(reply.Commentaires);
 
                     request = REQ_NEW_ACTU;
                     break;

@@ -16,7 +16,7 @@ if (!Empty($Clf)) {
     // Connexion
     $Link = @mysql_connect(GetMySqlLocalhost(),GetMySqlUser(),GetMySqlPassword());
     if (Empty($Link))
-        echo '{"error":'.strval(constant("WEBSERVICE_ERROR_SERVER_UNAVAILABLE")).'}';
+        echo '{"Error":'.strval(constant("WEBSERVICE_ERROR_SERVER_UNAVAILABLE")).'}';
     else {
 
         $Camarade = UserKeyIdentifier($Clf);
@@ -32,7 +32,7 @@ if (!Empty($Clf)) {
 
                 // Delete
                 if (Empty($Actu))
-                    $Reply = '{"error":'.strval(constant("WEBSERVICE_ERROR_INVALID_PUBLICATION_ID")).'}';
+                    $Reply = '{"Error":'.strval(constant("WEBSERVICE_ERROR_INVALID_PUBLICATION_ID")).'}';
                 else {
 
                     $Query = "SELECT ACT_Fichier FROM Actualites WHERE ACT_Status <> 2 AND ACT_ActuID = $Actu";
@@ -42,7 +42,7 @@ if (!Empty($Clf)) {
                     mysql_free_result($Result);
                     $Query = "UPDATE Actualites SET ACT_Status = 2, ACT_StatusDate = CURRENT_TIMESTAMP WHERE ACT_ActuID = $Actu AND (UPPER(ACT_Pseudo) = UPPER('".addslashes($Camarade)."') OR UPPER(ACT_Camarade) = UPPER('".addslashes($Camarade)."'))";
                     if (!mysql_query(trim($Query),$Link))
-                        $Reply = '{"error":'.strval(constant("WEBSERVICE_ERROR_REQUEST_PUBLICATION_DELETE")).'}';
+                        $Reply = '{"Error":'.strval(constant("WEBSERVICE_ERROR_REQUEST_PUBLICATION_DELETE")).'}';
 
                     else { // Remove image file (if any)
                         if (!is_null($File)) {
@@ -76,7 +76,7 @@ if (!Empty($Clf)) {
 
                 // Reply
                 if (mysql_num_rows($Result) == 0)
-                    $Reply = '{"publications":null}';
+                    $Reply = '{"Actualites":null}';
                 else {
 
                     $Reply = '';
@@ -92,23 +92,23 @@ if (!Empty($Clf)) {
                         else
                             $Profile = "Profiles/$Profile";
 
-                        if (strlen($Reply) == 0) $Reply .= '{"publications":[';
+                        if (strlen($Reply) == 0) $Reply .= '{"Actualites":[';
                         else $Reply .= ',';
 
-                        $Reply .= '{"status":'.strval($aRow["ACT_Status"]).',';
-                        $Reply .= '"statusDate":"'.trim($aRow["ACT_StatusDate"]).'",';
-                        $Reply .= '"profile":"'.trim($Profile).'",';
-                        $Reply .= '"camarade":"'.urlencode(base64_encode($aRow["ACT_Camarade"])).'",';
-                        $Reply .= '"to":"'.addslashes($aRow["ACT_Camarade"]).'",';
-                        $Reply .= '"pseudo":"'.addslashes($aRow["ACT_Pseudo"]).'",';
-                        $Reply .= '"from":"'.urlencode(base64_encode($aRow["ACT_Pseudo"])).'",';
-                        $Reply .= '"date":"'.substr($aRow["ACT_Date"],0,10).'",';
-                        $Reply .= '"time":"'.substr($aRow["ACT_Date"],11).'",';
-                        $Reply .= '"text":"'.str_replace('"','\"',str_replace("\n","\\n",str_replace("\r\n","\n",trim($aRow["ACT_Text"])))).'",';
-                        $Reply .= '"link":"'.str_replace('"','\"',trim($aRow["ACT_Link"])).'",';
-                        $Reply .= '"image":"'.trim($aRow["ACT_Fichier"]).'",';
-                        $Reply .= '"remove":'.(((!strcmp($Camarade,$aRow["ACT_Pseudo"]))||(!strcmp($Camarade,$aRow["ACT_Camarade"])))? "true":"false").',';
-                        $Reply .= '"id":'.strval($aRow["ACT_ActuID"]).'}';
+                        $Reply .= '{"Status":'.strval($aRow["ACT_Status"]).',';
+                        $Reply .= '"StatusDate":"'.trim($aRow["ACT_StatusDate"]).'",';
+                        $Reply .= '"Profile":"'.trim($Profile).'",';
+                        $Reply .= '"CamaradeURL":"'.urlencode(base64_encode($aRow["ACT_Camarade"])).'",';
+                        $Reply .= '"Camarade":"'.addslashes($aRow["ACT_Camarade"]).'",';
+                        $Reply .= '"Pseudo":"'.addslashes($aRow["ACT_Pseudo"]).'",';
+                        $Reply .= '"PseudoURL":"'.urlencode(base64_encode($aRow["ACT_Pseudo"])).'",';
+                        $Reply .= '"Date":"'.substr($aRow["ACT_Date"],0,10).'",';
+                        $Reply .= '"Time":"'.substr($aRow["ACT_Date"],11).'",';
+                        $Reply .= '"Text":"'.str_replace('"','\"',str_replace("\n","\\n",str_replace("\r\n","\n",trim($aRow["ACT_Text"])))).'",';
+                        $Reply .= '"Link":"'.str_replace('"','\"',trim($aRow["ACT_Link"])).'",';
+                        $Reply .= '"Fichier":"'.trim($aRow["ACT_Fichier"]).'",';
+                        $Reply .= '"RemoveFlag":'.(((!strcmp($Camarade,$aRow["ACT_Pseudo"]))||(!strcmp($Camarade,$aRow["ACT_Camarade"])))? "true":"false").',';
+                        $Reply .= '"ActuID":'.strval($aRow["ACT_ActuID"]).'}';
                     }
                     $Reply .= ']}';
                 }
@@ -116,10 +116,10 @@ if (!Empty($Clf)) {
             echo $Reply;
         }
         else
-            echo '{"error":'.strval(constant("WEBSERVICE_ERROR_INVALID_USER")).'}';
+            echo '{"Error":'.strval(constant("WEBSERVICE_ERROR_INVALID_USER")).'}';
         mysql_close($Link);
     }
 }
 else
-    echo '{"error":'.strval(constant("WEBSERVICE_ERROR_INVALID_TOKEN")).'}';
+    echo '{"Error":'.strval(constant("WEBSERVICE_ERROR_INVALID_TOKEN")).'}';
 ?>
