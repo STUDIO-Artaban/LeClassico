@@ -266,7 +266,7 @@ function ChgAlbumList()
             {   <?php
                 $CntAlb = 0;
                 $Query = "SELECT ALB_Nom,ALB_Pseudo,ALB_Shared,ALB_EventID,ALB_Remark,ALB_Date,COUNT(PHT_Fichier) AS PHT_Count FROM Albums LEFT JOIN Photos ON ALB_Nom = PHT_Album";
-                $Query .= " WHERE ALB_Status <> 2 AND PHT_Status <> 2 AND UPPER(ALB_Pseudo) = UPPER('".addslashes($Camarade)."')";
+                $Query .= " WHERE ALB_Status <> 2 AND (PHT_Status IS NULL OR PHT_Status <> 2) AND UPPER(ALB_Pseudo) = UPPER('".addslashes($Camarade)."')";
                 $Query .= " GROUP BY ALB_Nom,ALB_Pseudo,ALB_Shared,ALB_EventID,ALB_Remark,ALB_Date";
                 $Query .= " ORDER BY ALB_Nom";
                 $Result = mysql_query(trim($Query),$Link);
