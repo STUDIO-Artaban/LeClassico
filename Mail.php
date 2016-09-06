@@ -116,11 +116,11 @@ if(!Empty($Clf))
                 {   $Query = "SELECT MSG_Message FROM Messagerie";
                     if($msgtpe == 1)
                     {   // Message reçu
-                        $Query .= " WHERE UPPER(MSG_Pseudo) = UPPER('".addslashes($Camarade)."') AND MSG_ReadStk = 1";
+                        $Query .= " WHERE MSG_Status <> 2 AND UPPER(MSG_Pseudo) = UPPER('".addslashes($Camarade)."') AND MSG_ReadStk = 1";
                     }
                     else
                     {   // Message envoyé
-                        $Query .= " WHERE UPPER(MSG_From) = UPPER('".addslashes($Camarade)."') AND MSG_WriteStk = 1";
+                        $Query .= " WHERE MSG_Status <> 2 AND UPPER(MSG_From) = UPPER('".addslashes($Camarade)."') AND MSG_WriteStk = 1";
                     }
                     $Query .= " AND MSG_Date = '".trim($msgdt)."' AND MSG_Time = '".trim($msgtm)."'";
                     if($Result = mysql_query(trim($Query),$Link))

@@ -40,7 +40,7 @@ if(!Empty($Clf))
                         }
                         else
                         {   // Supprime le message
-                            $Query = "DELETE FROM Messagerie";
+                            $Query = "UPDATE Messagerie SET MSG_Status = 2, MSG_StatusDate = CURRENT_TIMESTAMP";
                         }
                         $Query .= " WHERE UPPER(MSG_Pseudo) = UPPER('".addslashes($Camarade)."')";
                         $Query .= " AND MSG_Date = '".trim($msgdt)."' AND MSG_Time = '".trim($msgtm)."'";
@@ -64,7 +64,7 @@ if(!Empty($Clf))
                         }
                         else
                         {   // Supprime le message
-                            $Query = "DELETE FROM Messagerie";
+                            $Query = "UPDATE Messagerie SET MSG_Status = 2, MSG_StatusDate = CURRENT_TIMESTAMP";
                         }
                         $Query .= " WHERE UPPER(MSG_From) = UPPER('".addslashes($Camarade)."')";
                         $Query .= " AND MSG_Date = '".trim($msgdt)."' AND MSG_Time = '".trim($msgtm)."'";
