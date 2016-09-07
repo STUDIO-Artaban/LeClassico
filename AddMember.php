@@ -71,7 +71,13 @@ if(!Empty($Clf))
                                           }
                                           else
                                           {   // Ajout d'1 Camarade
-                                              $Query = "INSERT INTO Camarades (CAM_Pseudo,CAM_CodeConf) VALUES ('".trim($npsd)."','".trim($nccf)."')";
+                                              $Query = "INSERT INTO Camarades (CAM_Pseudo,CAM_CodeConf,CAM_CodeConfUPD,CAM_NomUPD,CAM_PrenomUPD,CAM_SexeUPD,";
+                                              $Query .= "CAM_BornDateUPD,CAM_AdresseUPD,CAM_VilleUPD,CAM_PostalUPD,CAM_EmailUPD,CAM_HobbiesUPD,CAM_AProposUPD,";
+                                              $Query .= "CAM_LogDateUPD,CAM_AdminUPD,CAM_ProfileUPD,CAM_BannerUPD,CAM_LocatedUPD,CAM_LatitudeUPD,CAM_LongitudeUPD)";
+                                              $Query .= " VALUES ('".trim($npsd)."','".trim($nccf)."',CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,";
+                                              $Query .= "CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,";
+                                              $Query .= "CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,";
+                                              $Query .= "CURRENT_TIMESTAMP,CURRENT_TIMESTAMP)";
                                               if($Result = mysql_query(trim($Query),$Link))
                                               {   // Suppression du compte admin
                                                   $Query = "UPDATE Camarades SET CAM_Admin = 0 WHERE UPPER(CAM_Pseudo) = UPPER('".addslashes($Camarade)."')";
