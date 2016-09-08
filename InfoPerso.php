@@ -173,7 +173,9 @@ if(!Empty($Clf))
                 {   // Abonnement
                     if((!Empty($abo))&&(strcmp(trim($abo),"")))
                     {   $Query = "UPDATE Abonnements SET ABO_Status = 0, ABO_StatusDate = CURRENT_TIMESTAMP WHERE UPPER(ABO_Pseudo) = UPPER('".addslashes($Camarade)."') AND ABO_Camarade LIKE '".addslashes($abo)."'";
-                        if(!mysql_query(trim($Query),$Link)) {
+                        $Result = mysql_query(trim($Query),$Link);
+                        if(!mysql_num_rows($Result)) {
+                            mysql_free_result($Result);
                             $Query = "INSERT INTO Abonnements (ABO_Pseudo,ABO_Camarade) VALUES ('".addslashes($Camarade)."','".addslashes($abo)."')";
                             if(!mysql_query(trim($Query),$Link))
                             {   mysql_close($Link);
@@ -182,6 +184,7 @@ if(!Empty($Clf))
                                 die();
                             }
                         }
+                        mysql_free_result($Result);
                     }
                     break;
                 }
@@ -283,7 +286,7 @@ if(!Empty($Clf))
         if(Empty($Cam))
             $Query = "SELECT * FROM Camarades WHERE CAM_Status <> 2 AND UPPER(CAM_Pseudo) = UPPER('".addslashes($Camarade)."')";
         else {
-            $Query = "SELECT 'X' FROM Abonnements WHERE CAM_Status <> 2 AND UPPER(ABO_Pseudo) = UPPER('".addslashes($Camarade)."') AND ABO_Camarade = '".addslashes($Cam)."'";
+            $Query = "SELECT 'X' FROM Abonnements WHERE ABO_Status <> 2 AND UPPER(ABO_Pseudo) = UPPER('".addslashes($Camarade)."') AND ABO_Camarade = '".addslashes($Cam)."'";
             $Result = mysql_query(trim($Query),$Link);
             $Abonne = mysql_num_rows($Result) > 0;
             mysql_free_result($Result);
