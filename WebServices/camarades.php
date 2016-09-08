@@ -20,7 +20,7 @@ if (!Empty($Clf)) {
         if (mysql_num_rows($Result) != 0) {
 
             mysql_free_result($Result);
-            $Query = "SELECT * FROM Camarades";
+            $Query = "SELECT Camarades.* FROM Camarades INNER JOIN Abonnements ON CAM_Pseudo = ABO_Camarade AND UPPER(ABO_Pseudo) = UPPER('".addslashes($Camarade)."')";
             if ((!is_null($Date)) && (strcmp(trim($Date),"")))
                 $Query .= " WHERE CAM_StatusDate > '".str_replace("n"," ",$Date)."'";
             $Result = mysql_query(trim($Query),$Link);

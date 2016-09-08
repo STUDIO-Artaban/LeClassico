@@ -173,9 +173,13 @@ if(!Empty($Clf))
                 {   // Abonnement
                     if((!Empty($abo))&&(strcmp(trim($abo),"")))
                     {   $Query = "UPDATE Abonnements SET ABO_Status = 0, ABO_StatusDate = CURRENT_TIMESTAMP WHERE UPPER(ABO_Pseudo) = UPPER('".addslashes($Camarade)."') AND ABO_Camarade LIKE '".addslashes($abo)."'";
-                        $Result = mysql_query(trim($Query),$Link);
-                        if(!mysql_num_rows($Result)) {
-                            mysql_free_result($Result);
+                        if(!mysql_query(trim($Query),$Link))
+                        {   mysql_close($Link);
+                            $Msg = "Echec durant la mise &agrave; jour de tes abonnements! Contact le <font color=\"#808080\">Webmaster</font>!";
+                            include("Message.php");
+                            die();
+                        }
+                        if(mysql_affected_rows() == 0) {
                             $Query = "INSERT INTO Abonnements (ABO_Pseudo,ABO_Camarade) VALUES ('".addslashes($Camarade)."','".addslashes($abo)."')";
                             if(!mysql_query(trim($Query),$Link))
                             {   mysql_close($Link);
@@ -184,7 +188,6 @@ if(!Empty($Clf))
                                 die();
                             }
                         }
-                        mysql_free_result($Result);
                     }
                     break;
                 }
