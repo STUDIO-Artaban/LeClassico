@@ -40,7 +40,8 @@ if(!Empty($Clf))
                 if((!Empty($locfile))&&(!strcmp(strtoupper(substr(trim($locfile),-4)),".WMA"))) $File .= ".wma";
                 else $File .= ".mp3";
                 // Ajout dans la table Music
-                $Query = "INSERT INTO Music (MSC_Fichier,MSC_Pseudo,MSC_Artiste,MSC_Album,MSC_Morceau,MSC_Source) VALUES (";
+                $Query = "INSERT INTO Music (MSC_Fichier,MSC_Pseudo,MSC_Artiste,MSC_Album,MSC_Morceau,MSC_Source,";
+                $Query .= "MSC_ArtisteUPD,MSC_AlbumUPD,MSC_MorceauUPD) VALUES (";
                 // Fichier
                 $Query .= "'$File',";
                 // Pseudo
@@ -55,9 +56,10 @@ if(!Empty($Clf))
                 if((!Empty($mor))&&(strcmp(trim($mor),""))) $Query .= "'".trim($mor)."',";
                 else $Query .= "'???',";
                 // Source
-                if((!Empty($locfile))&&(strcmp(trim($locfile),""))) $Query .= "'".trim($locfile)."')";
-                else $Query .= "'???')";
+                if((!Empty($locfile))&&(strcmp(trim($locfile),""))) $Query .= "'".trim($locfile)."',";
+                else $Query .= "'???',";
                 //
+                $Query .= "CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP)";
                 $SelFile = $File;
                 $iResult=12; // Ok
             }

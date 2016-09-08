@@ -178,7 +178,7 @@ else
 </table><hr>
 <table border=0 width="100%" cellspacing=0 cellpadding=0>
 <tr>
-<td width=45>
+<td width=45 valign="top">
     <table border=0 width=45 cellspacing=0 cellpadding=0>
     <tr>
     <td><font ID="Entete">Statut :</font></td>
@@ -239,8 +239,8 @@ switch($res)
     {   echo "<font color=\"#ff0000\">Echec</font> durant <font color=\"#ff0000\">la mise &agrave; jour</font> des nouveaux noms de flyer!";
         break;
     }
-    case 14: // Echec de l'ajout dans l'album
-    {   echo "<font color=\"#ff0000\">Echec de l'ajout</font> de l'&eacute;v&eacute;nement! Contact le <font color=\"#8080ff\">Webmaster</font>";
+    case 14: // Echec durant l'ajout ou modification de l'événement
+    {   echo "<font color=\"#ff0000\">Echec de l'ajout ou modification</font> de l'&eacute;v&eacute;nement! Contact le <font color=\"#8080ff\">Webmaster</font>";
         break;
     }
     case 15: // Ajout réussi

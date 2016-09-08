@@ -32,17 +32,18 @@ if(!Empty($Clf))
                 if((!Empty($albnm))&&(strcmp(trim($albnm),"")))
                 {   switch($ope)
                     {   case 1: // Ajoute un album /////////////////////////////////////////////////////////////////////////////
-                        {   $Query = "SELECT 'X' FROM Albums WHERE ALB_Status <> 2 AND UPPER(ALB_Nom) = UPPER('".trim($albnm)."')";
+                        {   $Query = "SELECT 'X' FROM Albums WHERE UPPER(ALB_Nom) = UPPER('".trim($albnm)."')";
                             $Result = mysql_query(trim($Query),$Link);
                             if(mysql_num_rows($Result) != 0)
                             {   mysql_free_result($Result);
                                 mysql_close($Link);
-                                $Msg = "Cet album existe d&eacute;j&agrave;! Choisis un autre nom d'album!";
+                                $Msg = "Cet album existe ou a d&eacute;j&agrave; exist&eacute;! Choisis un autre nom d'album!";
                                 include("Message.php");
                                 die();
                             }
                             else
-                            {   $Query = "INSERT INTO Albums (ALB_Nom,ALB_Pseudo,ALB_Shared,ALB_EventID,ALB_Remark,ALB_Date) VALUES (";
+                            {   $Query = "INSERT INTO Albums (ALB_Nom,ALB_Pseudo,ALB_Shared,ALB_EventID,ALB_Remark,ALB_Date,";
+                                $Query .= "ALB_SharedUPD,ALB_EventIdUPD,ALB_RemarkUPD) VALUES (";
                                 // Nom
                                 $Query .= "'".trim($albnm)."',";
                                 // Pseudo
@@ -56,7 +57,8 @@ if(!Empty($Clf))
                                 if((!Empty($albrmk))&&(strcmp(trim($albrmk),""))) $Query .= "'".trim($albrmk)."',";
                                 else $Query .= "NULL,";
                                 // Date
-                                $Query .= "'".trim($aDate["year"])."-".trim($aDate["mon"])."-".trim($aDate["mday"])."')";
+                                $Query .= "'".trim($aDate["year"])."-".trim($aDate["mon"])."-".trim($aDate["mday"])."',";
+                                $Query .= "CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP)";
                                 if(!mysql_query(trim($Query),$Link))
                                 {   mysql_close($Link);
                                     $Msg = "Echec durant la cr&eacute;ation de l'album <font color=\"#808080\">".trim(stripslashes($albnm))."</font>! Faut voir &ccedil;a avec le <font color=\"#808080\">Webmaster</font>!";

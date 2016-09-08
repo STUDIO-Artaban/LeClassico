@@ -24,7 +24,7 @@ $iStatus = 0;
    11 - Espace disque du serveur insuffisant
    12 - Echec de l'upload
    13 - Echec durant la mise à jour des nouveaux nom de fichier
-   14 - Echec de l'ajout de l'événement
+   14 - Echec durant l'ajout ou modification de l'événement
    15 - Ok...
    16 - Suppression en cours
    17 - Echec de la suppression de l'événement: ???
@@ -70,13 +70,13 @@ if(!Empty($Clf))
                     {   // Modifie l'événement
                         $Query = "UPDATE Evenements SET ";
                         // Nom
-                        $Query .= "EVE_Nom = '".trim($evenm)."',";
+                        $Query .= "EVE_Nom = '".addslashes($evenm)."',";
                         // Lieu
-                        $Query .= "EVE_Lieu = '".trim($evelieu)."',";
+                        $Query .= "EVE_Lieu = '".addslashes($evelieu)."',";
                         // Date
                         $Query .= "EVE_Date = '".trim($evedate)."'";
                         // Remark
-                        if((!Empty($evermk))&&(strcmp(trim($evermk),""))) $Query .= ",EVE_Remark = '".trim($evermk)."'";
+                        if((!Empty($evermk))&&(strcmp(trim($evermk),""))) $Query .= ",EVE_Remark = '".addslashes($evermk)."'";
                         // Flyer
                         if(!Empty($File)) $Query .= ",EVE_Flyer = '".trim($File)."'";
                         $Query .= " WHERE EVE_EventID = $eveid";
@@ -116,23 +116,25 @@ if(!Empty($Clf))
                             $iNewEveID = $aRow["EVEMAXID"];
                             $iNewEveID++;
                             mysql_free_result($Result);
-                            $Query = "INSERT INTO Evenements (EVE_EventID,EVE_Pseudo,EVE_Nom,EVE_Date,EVE_Lieu,EVE_Remark,EVE_Flyer) VALUES (";
+                            $Query = "INSERT INTO Evenements (EVE_EventID,EVE_Pseudo,EVE_Nom,EVE_Date,EVE_Lieu,EVE_Remark,EVE_Flyer,";
+                            $Query .= "EVE_NomUPD,EVE_DateUPD,EVE_LieuUPD,EVE_RemarkUPD,EVE_FlyerUPD) VALUES (";
                             // EventID
                             $Query .= "$iNewEveID,'";
                             // Pseudo
                             $Query .= addslashes($Camarade)."','";
                             // Nom
-                            $Query .= trim($evenm)."','";
+                            $Query .= addslashes($evenm)."','";
                             // Date
                             $Query .= trim($evedate)."','";
                             // Lieu
-                            $Query .= trim($evelieu)."',";
+                            $Query .= addslashes($evelieu)."',";
                             // Remark
-                            if((!Empty($evermk))&&(strcmp(trim($evermk),""))) $Query .= "'".trim($evermk)."',";
+                            if((!Empty($evermk))&&(strcmp(trim($evermk),""))) $Query .= "'".addslashes($evermk)."',";
                             else $Query .= "NULL,";
                             // Flyer
-                            if(!Empty($File)) $Query .= "'".trim($File)."')";
-                            else $Query .= "NULL)";
+                            if(!Empty($File)) $Query .= "'".trim($File)."',";
+                            else $Query .= "NULL,";
+                            $Query .= "CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP)";
                             if(!mysql_query(trim($Query),$Link)) $iStatus = 14; //****** Evenement
                             else $iStatus = 15; // Ok...!
                         }
