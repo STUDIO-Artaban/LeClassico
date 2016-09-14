@@ -38,14 +38,12 @@ if (!Empty($Clf)) {
 
                     $Reply .= '{"Pseudo":"'.trim($aRow["NOT_Pseudo"]).'",';
                     $Reply .= '"Date":"'.trim($aRow["NOT_Date"]).'",';
-                    if (!is_null($aRow["NOT_ObjType"])) $Reply .= '"ObjType":"'.trim($aRow["NOT_ObjType"]).'",';
-                    else $Reply .= '"ObjType":null,';
+                    $Reply .= '"ObjType":"'.trim($aRow["NOT_ObjType"]).'",';
                     if (!is_null($aRow["NOT_ObjID"])) $Reply .= '"ObjID":'.strval($aRow["NOT_ObjID"]).',';
                     else $Reply .= '"ObjID":null,';
                     if (!is_null($aRow["NOT_ObjDate"])) $Reply .= '"ObjDate":"'.trim($aRow["NOT_ObjDate"]).'",';
                     else $Reply .= '"ObjDate":null,';
-                    if (!is_null($aRow["NOT_ObjFrom"])) $Reply .= '"ObjFrom":"'.trim($aRow["NOT_ObjFrom"]).'",';
-                    else $Reply .= '"ObjFrom":null,';
+                    $Reply .= '"ObjFrom":"'.trim($aRow["NOT_ObjFrom"]).'",';
                     $Reply .= '"LuFlag":'.strval($aRow["NOT_LuFlag"]).',';
                     $Reply .= '"Status":'.strval($aRow["NOT_Status"]).',';
                     $Reply .= '"StatusDate":"'.trim($aRow["NOT_StatusDate"]).'"}';

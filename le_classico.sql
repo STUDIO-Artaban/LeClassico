@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Sep 08, 2016 at 12:19 PM
+-- Generation Time: Sep 14, 2016 at 01:40 PM
 -- Server version: 5.5.47-0+deb7u1-log
 -- PHP Version: 5.4.45-0+deb7u2
 
@@ -33,7 +33,7 @@ INSERT INTO Albums (ALB_Nom,ALB_Pseudo,ALB_Shared,ALB_EventID,ALB_Remark,ALB_Dat
 INSERT INTO Actualites (ACT_ActuID,ACT_Pseudo,ACT_Date,ACT_Camarade,ACT_Text,ACT_Link,ACT_Fichier) VALUES (NULL,'Webmaster',CURRENT_TIMESTAMP,NULL,CONCAT('CECI EST UN MESSAGE DU WEBMASTER! STOP!\nAJOUT D''UN NOUVEAU CAMARADE! STOP!\nPSEUDO DU NOUVEAU CAMARADE: ',`pseudo`,'! STOP!\nFIN DU MESSAGE! STOP!...STOP! STOP!'),NULL,NULL);
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `notify_new_photo`(IN `album` VARCHAR(30), IN `photo` INT(4))
+CREATE DEFINER=`root`@`localhost` PROCEDURE `notify_new_photo`(IN `album` VARCHAR(30), IN `photo` INT(4), IN `usr` VARCHAR(30))
     MODIFIES SQL DATA
 BEGIN
 DECLARE shared INT(1);
@@ -41,8 +41,8 @@ DECLARE pseudo VARCHAR(30);
 DECLARE walk CURSOR FOR SELECT ALB_Shared,ALB_Pseudo FROM Albums WHERE CONVERT(ALB_Nom USING latin1) = CONVERT(album USING latin1);
 OPEN walk;
 FETCH walk INTO shared,pseudo;
-IF shared <> 0 THEN
-INSERT INTO `Notifications` (NOT_Pseudo,NOT_Date,NOT_ObjType,NOT_ObjID) VALUES (pseudo,CURRENT_TIMESTAMP,'P',photo);
+IF shared = 1 AND CONVERT(usr USING latin1) NOT LIKE BINARY CONVERT(pseudo USING latin1) THEN
+INSERT INTO `Notifications` (NOT_Pseudo,NOT_Date,NOT_ObjType,NOT_ObjID,NOT_ObjFrom) VALUES (pseudo,CURRENT_TIMESTAMP,'S',photo,usr);
 END IF;
 CLOSE walk;
 END$$
@@ -113,7 +113,7 @@ CREATE TABLE IF NOT EXISTS `Actualites` (
 DELIMITER $$
 CREATE TRIGGER `ACTU_NOTIFICATION` AFTER INSERT ON `Actualites`
  FOR EACH ROW IF NEW.ACT_Camarade IS NOT NULL THEN
-INSERT INTO `Notifications` (NOT_Pseudo,NOT_Date,NOT_ObjType,NOT_ObjID) VALUES (NEW.ACT_Camarade,CURRENT_TIMESTAMP,'A',NEW.ACT_ActuID);
+INSERT INTO `Notifications` (NOT_Pseudo,NOT_Date,NOT_ObjType,NOT_ObjID,NOT_ObjFrom) VALUES (NEW.ACT_Camarade,CURRENT_TIMESTAMP,'W',NEW.ACT_ActuID,NEW.ACT_Pseudo);
 END IF
 $$
 DELIMITER ;
@@ -420,7 +420,7 @@ CREATE TABLE IF NOT EXISTS `Messagerie` (
 --
 DELIMITER $$
 CREATE TRIGGER `MESSAGE_NOTIFICATION` AFTER INSERT ON `Messagerie`
- FOR EACH ROW INSERT INTO `Notifications` (NOT_Pseudo,NOT_Date,NOT_ObjFrom,NOT_ObjDate) VALUES (NEW.MSG_Pseudo,CURRENT_TIMESTAMP,NEW.MSG_From,CONCAT_WS(' ',New.MSG_Date,New.MSG_Time))
+ FOR EACH ROW INSERT INTO `Notifications` (NOT_Pseudo,NOT_Date,NOT_ObjFrom,NOT_ObjDate,NOT_ObjType) VALUES (NEW.MSG_Pseudo,CURRENT_TIMESTAMP,NEW.MSG_From,CONCAT_WS(' ',New.MSG_Date,New.MSG_Time),'M')
 $$
 DELIMITER ;
 DELIMITER $$
@@ -441,8 +441,11 @@ CREATE TABLE IF NOT EXISTS `Music` (
   `MSC_Fichier` varchar(30) COLLATE latin1_general_ci NOT NULL DEFAULT '',
   `MSC_Pseudo` varchar(30) COLLATE latin1_general_ci NOT NULL DEFAULT '',
   `MSC_Artiste` varchar(30) COLLATE latin1_general_ci NOT NULL DEFAULT '',
+  `MSC_ArtisteUPD` datetime NOT NULL,
   `MSC_Album` varchar(40) COLLATE latin1_general_ci NOT NULL DEFAULT '',
+  `MSC_AlbumUPD` datetime NOT NULL,
   `MSC_Morceau` varchar(40) COLLATE latin1_general_ci NOT NULL DEFAULT '',
+  `MSC_MorceauUPD` datetime NOT NULL,
   `MSC_Source` varchar(250) COLLATE latin1_general_ci NOT NULL DEFAULT '',
   `MSC_Status` int(1) NOT NULL DEFAULT '0',
   `MSC_StatusDate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -453,9 +456,20 @@ CREATE TABLE IF NOT EXISTS `Music` (
 --
 DELIMITER $$
 CREATE TRIGGER `MSC_STATUS_UPDATE` BEFORE UPDATE ON `Music`
- FOR EACH ROW IF NEW.MSC_Status <> 2 THEN
+ FOR EACH ROW BEGIN
+IF NEW.MSC_Status <> 2 THEN
 SET NEW.MSC_Status = 1, NEW.MSC_StatusDate = CURRENT_TIMESTAMP;
-END IF
+END IF;
+IF OLD.MSC_Artiste NOT LIKE BINARY NEW.MSC_Artiste THEN
+SET NEW.MSC_ArtisteUPD = CURRENT_TIMESTAMP;
+END IF;
+IF OLD.MSC_Album NOT LIKE BINARY NEW.MSC_Album THEN
+SET NEW.MSC_AlbumUPD = CURRENT_TIMESTAMP;
+END IF;
+IF OLD.MSC_Morceau NOT LIKE BINARY NEW.MSC_Morceau THEN
+SET NEW.MSC_MorceauUPD = CURRENT_TIMESTAMP;
+END IF;
+END
 $$
 DELIMITER ;
 
@@ -478,10 +492,10 @@ CREATE TABLE IF NOT EXISTS `MusicNumber` (
 CREATE TABLE IF NOT EXISTS `Notifications` (
   `NOT_Pseudo` varchar(30) CHARACTER SET latin1 COLLATE latin1_general_ci NOT NULL,
   `NOT_Date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `NOT_ObjType` varchar(1) CHARACTER SET latin1 COLLATE latin1_general_ci DEFAULT NULL,
+  `NOT_ObjType` varchar(1) CHARACTER SET latin1 COLLATE latin1_general_ci NOT NULL,
   `NOT_ObjID` int(4) DEFAULT NULL,
   `NOT_ObjDate` datetime DEFAULT NULL,
-  `NOT_ObjFrom` varchar(30) CHARACTER SET latin1 COLLATE latin1_general_ci DEFAULT NULL,
+  `NOT_ObjFrom` varchar(30) CHARACTER SET latin1 COLLATE latin1_general_ci NOT NULL,
   `NOT_LuFlag` tinyint(1) NOT NULL DEFAULT '0',
   `NOT_Status` int(1) NOT NULL DEFAULT '0',
   `NOT_StatusDate` datetime NOT NULL
@@ -533,7 +547,7 @@ CREATE TABLE IF NOT EXISTS `Photos` (
 --
 DELIMITER $$
 CREATE TRIGGER `NEW_PHOTO_NOTIFICATION` AFTER INSERT ON `Photos`
- FOR EACH ROW CALL notify_new_photo(NEW.PHT_Album,NEW.PHT_FichierID)
+ FOR EACH ROW CALL notify_new_photo(NEW.PHT_Album,NEW.PHT_FichierID,NEW.PHT_Pseudo)
 $$
 DELIMITER ;
 
