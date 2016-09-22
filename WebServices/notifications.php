@@ -4,6 +4,7 @@ require("constants.php");
 
 $Clf = $_GET['Clf'];
 $Date = $_GET['Date'];
+$Count = $_GET['Count'];
 header('Content-Type: application/json;charset=ISO-8859-1');
 
 if (!Empty($Clf)) {
@@ -24,6 +25,8 @@ if (!Empty($Clf)) {
             if ((!is_null($Date)) && (strcmp(trim($Date),"")))
                 $Query .= " AND NOT_StatusDate > '".str_replace("n"," ",$Date)."'";
             $Result = mysql_query(trim($Query),$Link);
+            if (!Empty($Count))
+                $Query .= " LIMIT $Count";
 
             // Select
             if (mysql_num_rows($Result) == 0)
