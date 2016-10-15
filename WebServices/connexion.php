@@ -40,7 +40,7 @@ else {
 
                     $aRow = mysql_fetch_array($Result);
                     $Camarade = stripslashes($aRow["CAM_Pseudo"]);
-                    $Clf = GetKeyIdentifier($Camarade, 7200); // 600 -> 10 min, 3600 -> 1 hour, 7200 -> 2 hours
+                    $Clf = GetKeyIdentifier($Camarade, 10800); // 600 -> 10 min, 3600 -> 1 hour, 10800 -> 3 hours
                     echo '{"Logged":{';
                     echo '"Pseudo":"'.trim($Camarade).'",';
                     echo '"TimeLag":'.strval($localTime - $remoteTime).',';
@@ -52,7 +52,7 @@ else {
             if (CompareKeyIdentifier($Clf)) {
 
                 $Camarade = UserKeyIdentifier($Clf);
-                $Clf = GetKeyIdentifier(UserKeyIdentifier($Clf), 7200);
+                $Clf = GetKeyIdentifier(UserKeyIdentifier($Clf), 10800);
                 echo '{"Logged":{';
                 echo '"Pseudo":"'.trim($Camrade).'",';
                 echo '"TimeLag":'.strval($localTime - $remoteTime).',';
