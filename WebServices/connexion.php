@@ -52,7 +52,7 @@ else {
                 $Camarade = UserKeyIdentifier($Clf);
                 $Clf = GetKeyIdentifier(UserKeyIdentifier($Clf), 10800);
                 echo '{"Logged":{';
-                echo '"Pseudo":"'.trim($Camrade).'",';
+                echo '"Pseudo":"'.trim($Camarade).'",';
                 echo '"TimeLag":'.strval($localTime - $remoteTime).',';
                 echo '"Token":"'.trim($Clf).'"}}';
             }
