@@ -3,6 +3,7 @@ require("../Package.php");
 require("constants.php");
 
 $Clf = $_GET['Clf'];
+$Ope = $_GET['Ope'];
 $Date = $_GET['Date'];
 header('Content-Type: application/json;charset=ISO-8859-1');
 
@@ -20,37 +21,58 @@ if (!Empty($Clf)) {
         if (mysql_num_rows($Result) != 0) {
 
             mysql_free_result($Result);
-            $Query = "SELECT * FROM Messagerie WHERE UPPER(MSG_Pseudo) = UPPER('".addslashes($Camarade)."')";
-            if ((!is_null($Date)) && (strcmp(trim($Date),"")))
-                $Query .= " AND MSG_StatusDate > '".str_replace("n"," ",$Date)."'";
-            $Result = mysql_query(trim($Query),$Link);
+            switch ($Ope) {
+                case 1: { // Select
 
-            // Select
-            if (mysql_num_rows($Result) == 0)
-                $Reply = '{"Messagerie":null}';
-            else {
+                    $Query = "SELECT * FROM Messagerie WHERE UPPER(MSG_Pseudo) = UPPER('".addslashes($Camarade)."')";
+                    if ((!is_null($Date)) && (strcmp(trim($Date),"")))
+                        $Query .= " AND MSG_StatusDate > '".str_replace("n"," ",$Date)."'";
+                    $Result = mysql_query(trim($Query),$Link);
 
-                $Reply = '';
-                while ($aRow = mysql_fetch_array($Result)) {
+                    if (mysql_num_rows($Result) == 0)
+                        $Reply = '{"Messagerie":null}';
+                    else {
 
-                    if (strlen($Reply) == 0) $Reply .= '{"Messagerie":[';
-                    else $Reply .= ',';
+                        $Reply = '';
+                        while ($aRow = mysql_fetch_array($Result)) {
 
-                    $Reply .= '{"Pseudo":"'.trim($aRow["MSG_Pseudo"]).'",';
-                    $Reply .= '"From":"'.trim($aRow["MSG_From"]).'",';
-                    $Reply .= '"Message":"'.str_replace('"','\"',str_replace("\n","\\n",str_replace("\r\n","\n",trim($aRow["MSG_Message"])))).'",';
-                    $Reply .= '"Date":"'.trim($aRow["MSG_Date"]).'",';
-                    $Reply .= '"Time":"'.trim($aRow["MSG_Time"]).'",';
-                    $Reply .= '"LuFlag":'.strval($aRow["MSG_LuFlag"]).',';
-                    $Reply .= '"ReadStk":'.strval($aRow["MSG_ReadStk"]).',';
-                    $Reply .= '"WriteStk":'.strval($aRow["MSG_WriteStk"]).',';
-                    $Reply .= '"Objet":"'.str_replace('"','\"',trim($aRow["MSG_Objet"])).'",';
-                    $Reply .= '"Status":'.strval($aRow["MSG_Status"]).',';
-                    $Reply .= '"StatusDate":"'.trim($aRow["MSG_StatusDate"]).'"}';
+                            if (strlen($Reply) == 0) $Reply .= '{"Messagerie":[';
+                            else $Reply .= ',';
+
+                            $Reply .= '{"Pseudo":"'.trim($aRow["MSG_Pseudo"]).'",';
+                            $Reply .= '"From":"'.trim($aRow["MSG_From"]).'",';
+                            $Reply .= '"Message":"'.str_replace('"','\"',str_replace("\n","\\n",str_replace("\r\n","\n",trim($aRow["MSG_Message"])))).'",';
+                            $Reply .= '"Date":"'.trim($aRow["MSG_Date"]).'",';
+                            $Reply .= '"Time":"'.trim($aRow["MSG_Time"]).'",';
+                            $Reply .= '"LuFlag":'.strval($aRow["MSG_LuFlag"]).',';
+                            $Reply .= '"ReadStk":'.strval($aRow["MSG_ReadStk"]).',';
+                            $Reply .= '"WriteStk":'.strval($aRow["MSG_WriteStk"]).',';
+                            $Reply .= '"Objet":"'.str_replace('"','\"',trim($aRow["MSG_Objet"])).'",';
+                            $Reply .= '"Status":'.strval($aRow["MSG_Status"]).',';
+                            $Reply .= '"StatusDate":"'.trim($aRow["MSG_StatusDate"]).'"}';
+                        }
+                        $Reply .= ']}';
+                    }
+                    echo $Reply;
+                    break;
                 }
-                $Reply .= ']}';
+                case 2: { // Update
+
+                    break;
+                }
+                case 3: { // Insert
+
+                    break;
+                }
+                case 4: { // Delete
+
+                    break;
+                }
+                default: {
+                    echo '{"Error":'.strval(constant("WEBSERVICE_ERROR_INVALID_OPERATION")).'}';
+                    break;
+                }
             }
-            echo $Reply;
         }
         else
             echo '{"Error":'.strval(constant("WEBSERVICE_ERROR_INVALID_USER")).'}';

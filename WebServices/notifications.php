@@ -3,6 +3,7 @@ require("../Package.php");
 require("constants.php");
 
 $Clf = $_GET['Clf'];
+$Ope = $_GET['Ope'];
 $Date = $_GET['Date'];
 $Count = $_GET['Count'];
 header('Content-Type: application/json;charset=ISO-8859-1');
@@ -21,39 +22,60 @@ if (!Empty($Clf)) {
         if (mysql_num_rows($Result) != 0) {
 
             mysql_free_result($Result);
-            $Query = "SELECT * FROM Notifications WHERE UPPER(NOT_Pseudo) = UPPER('".addslashes($Camarade)."')";
-            if ((!is_null($Date)) && (strcmp(trim($Date),"")))
-                $Query .= " AND NOT_StatusDate > '".str_replace("n"," ",$Date)."'";
-            $Result = mysql_query(trim($Query),$Link);
-            if (!Empty($Count))
-                $Query .= " LIMIT $Count";
+            switch ($Ope) {
+                case 1: { // Select
 
-            // Select
-            if (mysql_num_rows($Result) == 0)
-                $Reply = '{"Notifications":null}';
-            else {
+                    $Query = "SELECT * FROM Notifications WHERE UPPER(NOT_Pseudo) = UPPER('".addslashes($Camarade)."')";
+                    if ((!is_null($Date)) && (strcmp(trim($Date),"")))
+                        $Query .= " AND NOT_StatusDate > '".str_replace("n"," ",$Date)."'";
+                    $Result = mysql_query(trim($Query),$Link);
+                    if (!Empty($Count))
+                        $Query .= " LIMIT $Count";
 
-                $Reply = '';
-                while ($aRow = mysql_fetch_array($Result)) {
+                    if (mysql_num_rows($Result) == 0)
+                        $Reply = '{"Notifications":null}';
+                    else {
 
-                    if (strlen($Reply) == 0) $Reply .= '{"Notifications":[';
-                    else $Reply .= ',';
+                        $Reply = '';
+                        while ($aRow = mysql_fetch_array($Result)) {
 
-                    $Reply .= '{"Pseudo":"'.trim($aRow["NOT_Pseudo"]).'",';
-                    $Reply .= '"Date":"'.trim($aRow["NOT_Date"]).'",';
-                    $Reply .= '"ObjType":"'.trim($aRow["NOT_ObjType"]).'",';
-                    if (!is_null($aRow["NOT_ObjID"])) $Reply .= '"ObjID":'.strval($aRow["NOT_ObjID"]).',';
-                    else $Reply .= '"ObjID":null,';
-                    if (!is_null($aRow["NOT_ObjDate"])) $Reply .= '"ObjDate":"'.trim($aRow["NOT_ObjDate"]).'",';
-                    else $Reply .= '"ObjDate":null,';
-                    $Reply .= '"ObjFrom":"'.trim($aRow["NOT_ObjFrom"]).'",';
-                    $Reply .= '"LuFlag":'.strval($aRow["NOT_LuFlag"]).',';
-                    $Reply .= '"Status":'.strval($aRow["NOT_Status"]).',';
-                    $Reply .= '"StatusDate":"'.trim($aRow["NOT_StatusDate"]).'"}';
+                            if (strlen($Reply) == 0) $Reply .= '{"Notifications":[';
+                            else $Reply .= ',';
+
+                            $Reply .= '{"Pseudo":"'.trim($aRow["NOT_Pseudo"]).'",';
+                            $Reply .= '"Date":"'.trim($aRow["NOT_Date"]).'",';
+                            $Reply .= '"ObjType":"'.trim($aRow["NOT_ObjType"]).'",';
+                            if (!is_null($aRow["NOT_ObjID"])) $Reply .= '"ObjID":'.strval($aRow["NOT_ObjID"]).',';
+                            else $Reply .= '"ObjID":null,';
+                            if (!is_null($aRow["NOT_ObjDate"])) $Reply .= '"ObjDate":"'.trim($aRow["NOT_ObjDate"]).'",';
+                            else $Reply .= '"ObjDate":null,';
+                            $Reply .= '"ObjFrom":"'.trim($aRow["NOT_ObjFrom"]).'",';
+                            $Reply .= '"LuFlag":'.strval($aRow["NOT_LuFlag"]).',';
+                            $Reply .= '"Status":'.strval($aRow["NOT_Status"]).',';
+                            $Reply .= '"StatusDate":"'.trim($aRow["NOT_StatusDate"]).'"}';
+                        }
+                        $Reply .= ']}';
+                    }
+                    echo $Reply;
+                    break;
                 }
-                $Reply .= ']}';
+                case 2: { // Update
+
+                    break;
+                }
+                case 3: { // Insert
+
+                    break;
+                }
+                case 4: { // Delete
+
+                    break;
+                }
+                default: {
+                    echo '{"Error":'.strval(constant("WEBSERVICE_ERROR_INVALID_OPERATION")).'}';
+                    break;
+                }
             }
-            echo $Reply;
         }
         else
             echo '{"Error":'.strval(constant("WEBSERVICE_ERROR_INVALID_USER")).'}';

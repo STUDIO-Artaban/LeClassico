@@ -3,6 +3,7 @@ require("../Package.php");
 require("constants.php");
 
 $Clf = $_GET['Clf'];
+$Ope = $_GET['Ope'];
 $Date = $_GET['Date'];
 header('Content-Type: application/json;charset=ISO-8859-1');
 
@@ -20,30 +21,51 @@ if (!Empty($Clf)) {
         if (mysql_num_rows($Result) != 0) {
 
             mysql_free_result($Result);
-            $Query = "SELECT * FROM Abonnements WHERE UPPER(ABO_Pseudo) = UPPER('".addslashes($Camarade)."')";
-            if ((!is_null($Date)) && (strcmp(trim($Date),"")))
-                $Query .= " AND ABO_StatusDate > '".str_replace("n"," ",$Date)."'";
-            $Result = mysql_query(trim($Query),$Link);
+            switch ($Ope) {
+                case 1: { // Select
 
-            // Select
-            if (mysql_num_rows($Result) == 0)
-                $Reply = '{"Abonnements":null}';
-            else {
+                    $Query = "SELECT * FROM Abonnements WHERE UPPER(ABO_Pseudo) = UPPER('".addslashes($Camarade)."')";
+                    if ((!is_null($Date)) && (strcmp(trim($Date),"")))
+                        $Query .= " AND ABO_StatusDate > '".str_replace("n"," ",$Date)."'";
+                    $Result = mysql_query(trim($Query),$Link);
 
-                $Reply = '';
-                while ($aRow = mysql_fetch_array($Result)) {
+                    if (mysql_num_rows($Result) == 0)
+                        $Reply = '{"Abonnements":null}';
+                    else {
 
-                    if (strlen($Reply) == 0) $Reply .= '{"Abonnements":[';
-                    else $Reply .= ',';
+                        $Reply = '';
+                        while ($aRow = mysql_fetch_array($Result)) {
 
-                    $Reply .= '{"Pseudo":"'.trim($aRow["ABO_Pseudo"]).'",';
-                    $Reply .= '"Camarade":"'.trim($aRow["ABO_Camarade"]).'",';
-                    $Reply .= '"Status":'.strval($aRow["ABO_Status"]).',';
-                    $Reply .= '"StatusDate":"'.trim($aRow["ABO_StatusDate"]).'"}';
+                            if (strlen($Reply) == 0) $Reply .= '{"Abonnements":[';
+                            else $Reply .= ',';
+
+                            $Reply .= '{"Pseudo":"'.trim($aRow["ABO_Pseudo"]).'",';
+                            $Reply .= '"Camarade":"'.trim($aRow["ABO_Camarade"]).'",';
+                            $Reply .= '"Status":'.strval($aRow["ABO_Status"]).',';
+                            $Reply .= '"StatusDate":"'.trim($aRow["ABO_StatusDate"]).'"}';
+                        }
+                        $Reply .= ']}';
+                    }
+                    echo $Reply;
+                    break;
                 }
-                $Reply .= ']}';
+                case 2: { // Update
+
+                    break;
+                }
+                case 3: { // Insert
+
+                    break;
+                }
+                case 4: { // Delete
+
+                    break;
+                }
+                default: {
+                    echo '{"Error":'.strval(constant("WEBSERVICE_ERROR_INVALID_OPERATION")).'}';
+                    break;
+                }
             }
-            echo $Reply;
         }
         else
             echo '{"Error":'.strval(constant("WEBSERVICE_ERROR_INVALID_USER")).'}';
