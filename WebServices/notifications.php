@@ -30,14 +30,6 @@ if (!Empty($Clf)) {
             switch ($Ope) {
                 case 2: { ////// Update
 
-
-
-
-
-
-
-
-
                     if (Empty($Keys)) {
                         echo '{"Error":'.strval(constant("WEBSERVICE_ERROR_MISSING_KEYS")).'}';
                         break;
@@ -66,43 +58,41 @@ if (!Empty($Clf)) {
                         break;
                     }
 
-                    $Error = false;
-                    $UpdateCount = $count($Keys);
-                    for ($i = 0; $i < $UpdateCount; ++$i) { // Records loop
+                    $i = 0;
+                    $Lenght = $count($Keys);
+                    for ( ; $i < $Lenght; ++$i) { // Update loop
 
+                        $key = $Keys[$i];
+                        $state = $Status[$i];
+                        $update = $Updates[$i];
+
+                        //////
                         $Query = "UPDATE Notifications SET ";
+                        $Query .= " NOT_LuFlag=".strval($update['LuFlag']);
 
+                        $Query .= " WHERE";
+                        $Query .= " NOT_Pseudo='".trim($key['Pseudo'])."' AND";
+                        $Query .= " NOT_Date='".trim($key['Date'])."' AND";
+                        $Query .= " NOT_ObjType='".trim($key['ObjType'])."' AND";
+                        if (is_null($key['ObjID'])) $Query .= " NOT_ObjID IS NULL AND";
+                        else $Query .= " NOT_ObjID=".strval($key['ObjID'])." AND";
+                        if (is_null($key['ObjDate'])) $Query .= " NOT_ObjDate IS NULL AND";
+                        else $Query .= " NOT_ObjDate='".trim($key['ObjDate'])."' AND";
+                        $Query .= " NOT_ObjFrom='".trim($key['ObjFrom'])."' AND";
 
-
-
-                        $Query .= " WHERE ";
-
-
-
-
-                        $Query .= " NOT_StatusDate < '".trim($Status['Status'][$i]['StatusDate'])."'";
+                        $Query .= " NOT_StatusDate < '".trim($state['StatusDate'])."'";
                         if (!mysql_query(trim($Query),$Link)) {
 
                             echo '{"Error":'.strval(constant("WEBSERVICE_ERROR_QUERY_UPDATE")).'}';
-                            $Error = true;
                             break;
                         }
-                        if ((is_null($Date)) || (strcmp($Date, $Status['Status'][$i]['StatusDate']) < 0))
-                            $Date = $Status['Status'][$i]['StatusDate'];
+                        if ((is_null($Date)) || (strcmp($Date, $state['StatusDate']) < 0))
+                            $Date = $state['StatusDate'];
                     }
-                    if ($Error)
-                        break;
+                    if ($i != $Lenght)
+                        break; // Error
 
-
-
-
-
-
-
-
-
-
-
+                    $Date = str_replace(" ","n",$Date);
                     // Let's reply with updated records
                     //break;
                 }
