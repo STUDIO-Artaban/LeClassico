@@ -6,6 +6,11 @@ $Clf = $_GET['Clf'];
 $Ope = $_GET['Ope'];
 $Date = $_GET['Date'];
 $Count = $_GET['Count'];
+
+$Keys = $_POST['Keys'];
+$Status = $_POST['Status'];
+$Updates = $_POST['Updates'];
+
 header('Content-Type: application/json;charset=ISO-8859-1');
 
 if (!Empty($Clf)) {
@@ -23,14 +28,92 @@ if (!Empty($Clf)) {
 
             mysql_free_result($Result);
             switch ($Ope) {
-                case 1: { // Select
+                case 2: { ////// Update
+
+
+
+
+
+
+
+
+
+                    if (Empty($Keys)) {
+                        echo '{"Error":'.strval(constant("WEBSERVICE_ERROR_MISSING_KEYS")).'}';
+                        break;
+                    }
+                    if (Empty($Status)) {
+                        echo '{"Error":'.strval(constant("WEBSERVICE_ERROR_MISSING_STATUS")).'}';
+                        break;
+                    }
+                    if (Empty($Updates)) {
+                        echo '{"Error":'.strval(constant("WEBSERVICE_ERROR_MISSING_UPDATES")).'}';
+                        break;
+                    }
+                    $Keys = json_decode($Keys, true);
+                    if (json_last_error() != JSON_ERROR_NONE) {
+                        echo '{"Error":'.strval(constant("WEBSERVICE_ERROR_INVALID_KEYS")).'}';
+                        break;
+                    }
+                    $Status = json_decode($Status, true);
+                    if (json_last_error() != JSON_ERROR_NONE) {
+                        echo '{"Error":'.strval(constant("WEBSERVICE_ERROR_INVALID_STATUS")).'}';
+                        break;
+                    }
+                    $Updates = json_decode($Updates, true);
+                    if (json_last_error() != JSON_ERROR_NONE) {
+                        echo '{"Error":'.strval(constant("WEBSERVICE_ERROR_INVALID_UPDATES")).'}';
+                        break;
+                    }
+
+                    $Error = false;
+                    $UpdateCount = $count($Keys);
+                    for ($i = 0; $i < $UpdateCount; ++$i) { // Records loop
+
+                        $Query = "UPDATE Notifications SET ";
+
+
+
+
+                        $Query .= " WHERE ";
+
+
+
+
+                        $Query .= " NOT_StatusDate < '".trim($Status['Status'][$i]['StatusDate'])."'";
+                        if (!mysql_query(trim($Query),$Link)) {
+
+                            echo '{"Error":'.strval(constant("WEBSERVICE_ERROR_QUERY_UPDATE")).'}';
+                            $Error = true;
+                            break;
+                        }
+                        if ((is_null($Date)) || (strcmp($Date, $Status['Status'][$i]['StatusDate']) < 0))
+                            $Date = $Status['Status'][$i]['StatusDate'];
+                    }
+                    if ($Error)
+                        break;
+
+
+
+
+
+
+
+
+
+
+
+                    // Let's reply with updated records
+                    //break;
+                }
+                case 1: { ////// Select
 
                     $Query = "SELECT * FROM Notifications WHERE UPPER(NOT_Pseudo) = UPPER('".addslashes($Camarade)."')";
                     if ((!is_null($Date)) && (strcmp(trim($Date),"")))
                         $Query .= " AND NOT_StatusDate > '".str_replace("n"," ",$Date)."'";
-                    $Result = mysql_query(trim($Query),$Link);
                     if (!Empty($Count))
                         $Query .= " LIMIT $Count";
+                    $Result = mysql_query(trim($Query),$Link);
 
                     if (mysql_num_rows($Result) == 0)
                         $Reply = '{"Notifications":null}';
@@ -57,18 +140,6 @@ if (!Empty($Clf)) {
                         $Reply .= ']}';
                     }
                     echo $Reply;
-                    break;
-                }
-                case 2: { // Update
-
-                    break;
-                }
-                case 3: { // Insert
-
-                    break;
-                }
-                case 4: { // Delete
-
                     break;
                 }
                 default: {
