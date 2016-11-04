@@ -58,36 +58,32 @@ if (!Empty($Clf)) {
                         break;
                     }
 
+                    //////
                     $i = 0;
-                    $Lenght = $count($Keys);
+                    $Lenght = count($Keys);
                     for ( ; $i < $Lenght; ++$i) { // Update loop
 
-                        $key = $Keys[$i];
-                        $state = $Status[$i];
-                        $update = $Updates[$i];
-
-                        //////
-                        $Query = "UPDATE Notifications SET ";
-                        $Query .= " NOT_LuFlag=".strval($update['LuFlag']);
+                        $Query = "UPDATE Notifications SET";
+                        $Query .= " NOT_LuFlag=".strval($Updates[$i]['LuFlag']);
 
                         $Query .= " WHERE";
-                        $Query .= " NOT_Pseudo='".trim($key['Pseudo'])."' AND";
-                        $Query .= " NOT_Date='".trim($key['Date'])."' AND";
-                        $Query .= " NOT_ObjType='".trim($key['ObjType'])."' AND";
-                        if (is_null($key['ObjID'])) $Query .= " NOT_ObjID IS NULL AND";
-                        else $Query .= " NOT_ObjID=".strval($key['ObjID'])." AND";
-                        if (is_null($key['ObjDate'])) $Query .= " NOT_ObjDate IS NULL AND";
-                        else $Query .= " NOT_ObjDate='".trim($key['ObjDate'])."' AND";
-                        $Query .= " NOT_ObjFrom='".trim($key['ObjFrom'])."' AND";
+                        $Query .= " NOT_Pseudo='".trim($Keys[$i]['Pseudo'])."' AND";
+                        $Query .= " NOT_Date='".trim($Keys[$i]['Date'])."' AND";
+                        $Query .= " NOT_ObjType='".trim($Keys[$i]['ObjType'])."' AND";
+                        if (is_null($Keys[$i]['ObjID'])) $Query .= " NOT_ObjID IS NULL AND";
+                        else $Query .= " NOT_ObjID=".strval($Keys[$i]['ObjID'])." AND";
+                        if (is_null($Keys[$i]['ObjDate'])) $Query .= " NOT_ObjDate IS NULL AND";
+                        else $Query .= " NOT_ObjDate='".trim($Keys[$i]['ObjDate'])."' AND";
+                        $Query .= " NOT_ObjFrom='".trim($Keys[$i]['ObjFrom'])."' AND";
 
-                        $Query .= " NOT_StatusDate < '".trim($state['StatusDate'])."'";
+                        $Query .= " NOT_StatusDate < '".trim($Status[$i]['StatusDate'])."'";
                         if (!mysql_query(trim($Query),$Link)) {
 
                             echo '{"Error":'.strval(constant("WEBSERVICE_ERROR_QUERY_UPDATE")).'}';
                             break;
                         }
-                        if ((is_null($Date)) || (strcmp($Date, $state['StatusDate']) < 0))
-                            $Date = $state['StatusDate'];
+                        if ((is_null($Date)) || (strcmp($Date, $Status[$i]['StatusDate']) < 0))
+                            $Date = $Status[$i]['StatusDate'];
                     }
                     if ($i != $Lenght)
                         break; // Error
