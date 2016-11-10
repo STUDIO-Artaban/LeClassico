@@ -4,7 +4,8 @@ require("constants.php");
 
 $Clf = $_GET['Clf'];
 $Ope = $_GET['Ope'];
-$Date = $_GET['Date'];
+$StatusDate = $_GET['StatusDate'];
+
 header('Content-Type: application/json;charset=ISO-8859-1');
 
 if (!Empty($Clf)) {
@@ -22,11 +23,12 @@ if (!Empty($Clf)) {
 
             mysql_free_result($Result);
             switch ($Ope) {
-                case 1: { // Select
+                case 1:
+                case 2: { ////// Select
 
                     $Query = "SELECT Camarades.* FROM Camarades INNER JOIN Abonnements ON CAM_Pseudo = ABO_Camarade AND UPPER(ABO_Pseudo) = UPPER('".addslashes($Camarade)."')";
-                    if ((!is_null($Date)) && (strcmp(trim($Date),"")))
-                        $Query .= " WHERE CAM_StatusDate > '".str_replace("n"," ",$Date)."'";
+                    if ((!is_null($StatusDate)) && (strcmp(trim($StatusDate),"")))
+                        $Query .= " WHERE CAM_StatusDate > '".str_replace("n"," ",$StatusDate)."'";
                     $Result = mysql_query(trim($Query),$Link);
 
                     if (mysql_num_rows($Result) == 0)
@@ -99,15 +101,15 @@ if (!Empty($Clf)) {
                     echo $Reply;
                     break;
                 }
-                case 2: { // Update
+                case 3: { ////// Update
 
                     break;
                 }
-                case 3: { // Insert
+                case 4: { ////// Insert
 
                     break;
                 }
-                case 4: { // Delete
+                case 5: { ////// Delete
 
                     break;
                 }

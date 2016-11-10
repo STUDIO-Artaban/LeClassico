@@ -4,8 +4,9 @@ require("constants.php");
 
 $Clf = $_GET['Clf'];
 $Ope = $_GET['Ope'];
-$Date = $_GET['Date'];
+$StatusDate = $_GET['StatusDate'];
 $Count = $_GET['Count'];
+$Date = $_GET['Date'];
 
 $Keys = $_POST['Keys'];
 $Status = $_POST['Status'];
@@ -28,7 +29,7 @@ if (!Empty($Clf)) {
 
             mysql_free_result($Result);
             switch ($Ope) {
-                case 2: { ////// Update
+                case 3: { ////// Update
 
                     if (Empty($Keys)) {
                         echo '{"Error":'.strval(constant("WEBSERVICE_ERROR_MISSING_KEYS")).'}';
@@ -82,25 +83,33 @@ if (!Empty($Clf)) {
                             echo '{"Error":'.strval(constant("WEBSERVICE_ERROR_QUERY_UPDATE")).'}';
                             break;
                         }
-                        if ((is_null($Date)) || (strcmp($Date, $Status[$i]['StatusDate']) < 0))
-                            $Date = $Status[$i]['StatusDate'];
+                        if ((is_null($StatusDate)) || (strcmp($StatusDate, $Status[$i]['StatusDate']) < 0))
+                            $StatusDate = $Status[$i]['StatusDate'];
                     }
                     if ($i != $Lenght)
                         break; // Error
 
-                    $Date = str_replace(" ","n",$Date);
+                    $StatusDate = str_replace(" ","n",$StatusDate);
                     // Let's reply with updated records
                     //break;
                 }
-                case 1: { ////// Select
+                case 1:
+                case 2: { ////// Select
 
                     $Query = "SELECT * FROM Notifications WHERE UPPER(NOT_Pseudo) = UPPER('".addslashes($Camarade)."')";
-                    if ((!is_null($Date)) && (strcmp(trim($Date),"")))
-                        $Query .= " AND NOT_StatusDate > '".str_replace("n"," ",$Date)."'";
+                    if ($Ope == 1) { // New
+                        if ((!is_null($StatusDate)) && (strcmp(trim($StatusDate),""))) {
+                            $Query .= " AND NOT_StatusDate > '".str_replace("n"," ",$StatusDate)."'";
+                            $Query .= " AND NOT_Date >= '".str_replace("n"," ",$Date)."'";
+                        }
+                    }
+                    else // Old
+                        $Query .= " AND NOT_Date < '".str_replace("n"," ",$Date)."'";
+                    $Query .= " ORDER BY NOT_Date DESC";
                     if (!Empty($Count))
                         $Query .= " LIMIT $Count";
-                    $Result = mysql_query(trim($Query),$Link);
 
+                    $Result = mysql_query(trim($Query),$Link);
                     if (mysql_num_rows($Result) == 0)
                         $Reply = '{"Notifications":null}';
                     else {
