@@ -85,11 +85,14 @@ if (!Empty($Clf)) {
                         }
                         if ((is_null($StatusDate)) || (strcmp($StatusDate, $Status[$i]['StatusDate']) < 0))
                             $StatusDate = $Status[$i]['StatusDate'];
+                        if ((is_null($Date)) || (strcmp($Date, $Keys[$i]['Date']) < 0))
+                            $Date = $Keys[$i]['Date'];
                     }
                     if ($i != $Lenght)
                         break; // Error
 
                     $StatusDate = str_replace(" ","n",$StatusDate);
+                    $Date = str_replace(" ","n",$Date);
                     // Let's reply with updated records
                     //break;
                 }
@@ -97,14 +100,14 @@ if (!Empty($Clf)) {
                 case 2: { ////// Select
 
                     $Query = "SELECT * FROM Notifications WHERE UPPER(NOT_Pseudo) = UPPER('".addslashes($Camarade)."')";
-                    if ($Ope == 1) { // New
+                    if ($Ope == 2) // Old
+                        $Query .= " AND NOT_Date < '".str_replace("n"," ",$Date)."'";
+                    else { // New & Update
                         if ((!is_null($StatusDate)) && (strcmp(trim($StatusDate),""))) {
                             $Query .= " AND NOT_StatusDate > '".str_replace("n"," ",$StatusDate)."'";
                             $Query .= " AND NOT_Date >= '".str_replace("n"," ",$Date)."'";
                         }
                     }
-                    else // Old
-                        $Query .= " AND NOT_Date < '".str_replace("n"," ",$Date)."'";
                     $Query .= " ORDER BY NOT_Date DESC";
                     if (!Empty($Count))
                         $Query .= " LIMIT $Count";
