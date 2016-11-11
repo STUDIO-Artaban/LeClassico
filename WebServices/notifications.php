@@ -98,6 +98,7 @@ if (!Empty($Clf)) {
                 }
                 case 1:
                 case 2: { ////// Select
+                    $noLimit = false;
 
                     $Query = "SELECT * FROM Notifications WHERE UPPER(NOT_Pseudo) = UPPER('".addslashes($Camarade)."')";
                     if ($Ope == 2) // Old
@@ -106,10 +107,11 @@ if (!Empty($Clf)) {
                         if ((!is_null($StatusDate)) && (strcmp(trim($StatusDate),""))) {
                             $Query .= " AND NOT_StatusDate > '".str_replace("n"," ",$StatusDate)."'";
                             $Query .= " AND NOT_Date >= '".str_replace("n"," ",$Date)."'";
+                            $noLimit = true;
                         }
                     }
                     $Query .= " ORDER BY NOT_Date DESC";
-                    if (!Empty($Count))
+                    if ((!Empty($Count)) && (!$noLimit))
                         $Query .= " LIMIT $Count";
 
                     $Result = mysql_query(trim($Query),$Link);
