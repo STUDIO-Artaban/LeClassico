@@ -151,7 +151,7 @@ form {padding: 0px; margin-bottom: 0px; border: 0px}
 <!--
 // OnValidate ////////////////////////////////////////////////
 function OnValidate() {
-    // Check invalid characters: '"<>& and space char
+    // Check invalid characters: '"<>& and space char (NB: Pseudo is not case sensitive - i.e Pascal == pascal)
     var pattern = new RegExp(/['"<>&: ]/i);
     if (pattern.test(document.getElementById("pseudo").value))
         return false;

@@ -107,7 +107,10 @@ if (!Empty($Clf)) {
                             $Query .= " AND NOT_Date >= '".str_replace("n"," ",$Date)."'";
                             if ($Ope == 3) // Update
                                 $Query .= " AND NOT_Status = 1";
+
                             $noLimit = true;
+                            // NB: Do not add limitation when new & update entries is requested in order to avoid
+                            //     to skip new entries inserted between the last synchronization date & now
                         }
                     }
                     $Query .= " ORDER BY NOT_Date DESC";
