@@ -6,6 +6,7 @@ $Clf = $_GET['Clf'];
 $psd = $_POST['psd'];
 $ccf = $_POST['ccf'];
 $odt = $_POST['odt']; // OS date & time (YYYY-MM-DD HH:MM:SS)
+
 header('Content-Type: application/json;charset=ISO-8859-1');
 
 // Connection

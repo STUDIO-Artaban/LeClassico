@@ -79,7 +79,6 @@ if (!Empty($Clf)) {
 
                         $Query .= " NOT_StatusDate < '".trim($Status[$i]['StatusDate'])."'";
                         if (!mysql_query(trim($Query),$Link)) {
-
                             echo '{"Error":'.strval(constant("WEBSERVICE_ERROR_QUERY_UPDATE")).'}';
                             break;
                         }

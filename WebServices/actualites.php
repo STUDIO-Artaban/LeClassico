@@ -137,6 +137,11 @@ if (!Empty($Clf)) {
                     case 2: { ////// Select
 
                         $Query = "SELECT * FROM Actualites";
+                        $Query .= " INNER JOIN Abonnements ON ACT_Pseudo = ABO_Camarade AND ABO_Status <> 2 AND UPPER(ABO_Pseudo) = UPPER('".addslashes($Camarade)."')";
+                        // TODO: If a followed member has published on a wall and if the owner of this wall removes him from its
+                        //       followed list, that will cause to hide the publication from this result! Should includes the
+                        //       query result used to display only user publications (with the WHERE clause above).
+
                         if ($Ope == 2) // Old
                             $Query .= " AND ACT_Date < '".str_replace("n"," ",$Date)."'";
                         else { // New & Update

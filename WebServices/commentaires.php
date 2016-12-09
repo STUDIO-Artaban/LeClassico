@@ -3,11 +3,17 @@ require("../Package.php");
 require("constants.php");
 
 $Clf = $_GET['Clf'];
+$Ope = $_GET['Ope'];
 $Type = $_GET['Type'];
 $Actu = $_GET['Actu'];
 $Count = $_GET['Count'];
 $Cmd = $_GET['Cmd'];
 $Date = $_GET['Date'];
+
+$Ids = $_POST['Ids'];
+if (Empty($Type))
+    $Type = $_POST['Type'];
+
 header('Content-Type: application/json;charset=ISO-8859-1');
 
 if (!Empty($Clf)) {
@@ -97,71 +103,42 @@ if (!Empty($Clf)) {
                     case 1:
                     case 2: { ////// Select
 
-
-
-
-
-
-
-
-
-
-
-
-
-                        $Query = "SELECT * FROM Actualites";
+                        $Query = "SELECT * FROM Commentaires WHERE COM_ObjType = '$Type' AND COM_ObjID IN ('".str_replace("n",",",$Ids)."')";
                         if ($Ope == 2) // Old
-                            $Query .= " AND ACT_Date < '".str_replace("n"," ",$Date)."'";
+                            $Query .= " AND COM_Date < '".str_replace("n"," ",$Date)."'";
                         else { // New & Update
                             if ((!is_null($StatusDate)) && (strcmp(trim($StatusDate),""))) {
-                                $Query .= " AND ACT_StatusDate > '".str_replace("n"," ",$StatusDate)."'";
-                                $Query .= " AND ACT_Date >= '".str_replace("n"," ",$Date)."'";
+                                $Query .= " AND COM_StatusDate > '".str_replace("n"," ",$StatusDate)."'";
+                                $Query .= " AND COM_Date >= '".str_replace("n"," ",$Date)."'";
                                 if ($Ope == 3) // Update
-                                    $Query .= " AND ACT_Status = 1";
+                                    $Query .= " AND COM_Status = 1";
                             }
                         }
-                        $Query .= " ORDER BY ACT_Date DESC";
+                        $Query .= " ORDER BY COM_Date DESC";
                         if (!Empty($Count))
                             $Query .= " LIMIT $Count";
 
                         $Result = mysql_query(trim($Query),$Link);
                         if (mysql_num_rows($Result) == 0)
-                            $Reply = '{"Actualites":null}';
+                            $Reply = '{"Commentaires":null}';
                         else {
 
                             $Reply = '';
                             while ($aRow = mysql_fetch_array($Result)) {
 
-                                if (strlen($Reply) == 0) $Reply .= '{"Actualites":[';
+                                if (strlen($Reply) == 0) $Reply .= '{"Commentaires":[';
                                 else $Reply .= ',';
 
-                                $Reply .= '{"ActuID":'.strval($aRow["ACT_ActuID"]).',';
-                                $Reply .= '"Pseudo":"'.trim($aRow["ACT_Pseudo"]).'",';
-                                $Reply .= '"Date":"'.trim($aRow["ACT_Date"]).'",';
-                                if (!is_null($aRow["ACT_Camarade"])) $Reply .= '"Camarade":"'.trim($aRow["ACT_Camarade"]).'",';
-                                else $Reply .= '"Camarade":null,';
-                                if (!is_null($aRow["ACT_Text"])) $Reply .= '"Text":"'.trim($aRow["ACT_Text"]).'",';
-                                else $Reply .= '"Text":null,';
-                                if (!is_null($aRow["ACT_Link"])) $Reply .= '"Link":"'.trim($aRow["ACT_Link"]).'",';
-                                else $Reply .= '"Link":null,';
-                                if (!is_null($aRow["ACT_Fichier"])) $Reply .= '"Fichier":"'.trim($aRow["ACT_Fichier"]).'",';
-                                else $Reply .= '"Fichier":null,';
-                                $Reply .= '"Status":'.strval($aRow["ACT_Status"]).',';
-                                $Reply .= '"StatusDate":"'.trim($aRow["ACT_StatusDate"]).'"}';
+                                $Reply .= '{"ObjType":"'.trim($aRow["COM_ObjType"]).'",';
+                                $Reply .= '"ObjID":'.strval($aRow["COM_ObjID"]).',';
+                                $Reply .= '"Pseudo":"'.trim($aRow["COM_Pseudo"]).'",';
+                                $Reply .= '"Date":"'.trim($aRow["COM_Date"]).'",';
+                                $Reply .= '"Text":"'.trim($aRow["COM_Text"]).'",';
+                                $Reply .= '"Status":'.strval($aRow["COM_Status"]).',';
+                                $Reply .= '"StatusDate":"'.trim($aRow["COM_StatusDate"]).'"}';
                             }
                             $Reply .= ']}';
                         }
-
-
-
-
-
-
-
-
-
-
-
                         break;
                     }
                     case 5: { ////// Delete

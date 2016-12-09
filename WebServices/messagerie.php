@@ -5,6 +5,7 @@ require("constants.php");
 $Clf = $_GET['Clf'];
 $Ope = $_GET['Ope'];
 $StatusDate = $_GET['StatusDate'];
+$Count = $_GET['Count'];
 
 header('Content-Type: application/json;charset=ISO-8859-1');
 
@@ -29,6 +30,9 @@ if (!Empty($Clf)) {
                     $Query = "SELECT * FROM Messagerie WHERE UPPER(MSG_Pseudo) = UPPER('".addslashes($Camarade)."')";
                     if ((!is_null($StatusDate)) && (strcmp(trim($StatusDate),"")))
                         $Query .= " AND MSG_StatusDate > '".str_replace("n"," ",$StatusDate)."'";
+                    $Query .= " ORDER BY MSG_Date DESC, MSG_Time DESC";
+                    if (!Empty($Count))
+                        $Query .= " LIMIT $Count";
 
                     $Result = mysql_query(trim($Query),$Link);
                     if (mysql_num_rows($Result) == 0)
