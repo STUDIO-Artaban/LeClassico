@@ -143,10 +143,10 @@ if (!Empty($Clf)) {
                         //       query result used to display only user publications (with the WHERE clause above).
 
                         if ($Ope == 2) // Old
-                            $Query .= " AND ACT_Date < '".str_replace("n"," ",$Date)."'";
+                            $Query .= " WHERE ACT_Date < '".str_replace("n"," ",$Date)."'";
                         else { // New & Update
                             if ((!is_null($StatusDate)) && (strcmp(trim($StatusDate),""))) {
-                                $Query .= " AND ACT_StatusDate > '".str_replace("n"," ",$StatusDate)."'";
+                                $Query .= " WHERE ACT_StatusDate > '".str_replace("n"," ",$StatusDate)."'";
                                 $Query .= " AND ACT_Date >= '".str_replace("n"," ",$Date)."'";
                                 if ($Ope == 3) // Update
                                     $Query .= " AND ACT_Status = 1";
@@ -178,6 +178,7 @@ if (!Empty($Clf)) {
                                 else $Reply .= '"Link":null,';
                                 if (!is_null($aRow["ACT_Fichier"])) $Reply .= '"Fichier":"'.trim($aRow["ACT_Fichier"]).'",';
                                 else $Reply .= '"Fichier":null,';
+                                $Reply .= '"Comments":'.strval($aRow["ACT_Comments"]).',';
                                 $Reply .= '"Status":'.strval($aRow["ACT_Status"]).',';
                                 $Reply .= '"StatusDate":"'.trim($aRow["ACT_StatusDate"]).'"}';
                             }
