@@ -75,7 +75,7 @@ if (!Empty($Clf)) {
                     else {
                         $Query .= " INNER JOIN Abonnements ON ACT_Pseudo = ABO_Camarade AND ABO_Status <> 2 AND UPPER(ABO_Pseudo) = UPPER('".addslashes($Camarade)."')";
                         if ((!is_null($Date)) && (strcmp(trim($Date),"")))
-                            $Query .= " AND ACT_StatusDate > '".str_replace("n"," ",$Date)."'";
+                            $Query .= " WHERE ACT_StatusDate > '".str_replace("n"," ",$Date)."'";
                     }
                     $Query .= " ORDER BY ACT_Date DESC";
                     if (!Empty($Count))
@@ -172,7 +172,7 @@ if (!Empty($Clf)) {
                                 $Reply .= '"Date":"'.trim($aRow["ACT_Date"]).'",';
                                 if (!is_null($aRow["ACT_Camarade"])) $Reply .= '"Camarade":"'.trim($aRow["ACT_Camarade"]).'",';
                                 else $Reply .= '"Camarade":null,';
-                                if (!is_null($aRow["ACT_Text"])) $Reply .= '"Text":"'.trim($aRow["ACT_Text"]).'",';
+                                if (!is_null($aRow["ACT_Text"])) $Reply .= '"Text":"'.str_replace('"','\"',str_replace("\n","\\n",str_replace("\r\n","\n",trim($aRow["ACT_Text"])))).'",';
                                 else $Reply .= '"Text":null,';
                                 if (!is_null($aRow["ACT_Link"])) $Reply .= '"Link":"'.trim($aRow["ACT_Link"]).'",';
                                 else $Reply .= '"Link":null,';

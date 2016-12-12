@@ -265,7 +265,7 @@ var HTML_COMMENT_PREV_NOTHING = '><input type="submit" class="comment" value="Ok
 function AddActualites(data) {
     if (document.getElementById(TABLE_PUBLICATIONS)) {
         for (var i = (data.length - 1); i >= 0; i--) {
-            if (data[i].Status != 0) { // == 2 -> Deleted (not managed yet)
+            if (data[i].Status == 2) { // Deleted (not managed yet)
                 if (strcmp(data[i].StatusDate, actuDate) == 1)
                     actuDate = data[i].StatusDate;
                 continue;
