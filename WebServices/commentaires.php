@@ -11,7 +11,7 @@ $Cmd = $_GET['Cmd'];
 $Date = $_GET['Date'];
 
 $Ids = $_POST['Ids'];
-if (Empty($Type))
+if (isset($_POST['Type']))
     $Type = $_POST['Type'];
 
 header('Content-Type: application/json;charset=ISO-8859-1');
@@ -103,7 +103,7 @@ if (!Empty($Clf)) {
                     case 1:
                     case 2: { ////// Select
 
-                        $Query = "SELECT * FROM Commentaires WHERE COM_ObjType = '$Type' AND COM_ObjID IN ('".str_replace("n",",",$Ids)."')";
+                        $Query = "SELECT * FROM Commentaires WHERE COM_ObjType = '$Type' AND COM_ObjID IN (".str_replace("n",",",$Ids).")";
                         if ($Ope == 2) // Old
                             $Query .= " AND COM_Date < '".str_replace("n"," ",$Date)."'";
                         else { // New & Update
@@ -133,7 +133,7 @@ if (!Empty($Clf)) {
                                 $Reply .= '"ObjID":'.strval($aRow["COM_ObjID"]).',';
                                 $Reply .= '"Pseudo":"'.trim($aRow["COM_Pseudo"]).'",';
                                 $Reply .= '"Date":"'.trim($aRow["COM_Date"]).'",';
-                                $Reply .= '"Text":"'.trim($aRow["COM_Text"]).'",';
+                                $Reply .= '"Text":"'.str_replace('"','\"',str_replace("\n","\\n",str_replace("\r\n","\n",trim($aRow["COM_Text"])))).'",';
                                 $Reply .= '"Status":'.strval($aRow["COM_Status"]).',';
                                 $Reply .= '"StatusDate":"'.trim($aRow["COM_StatusDate"]).'"}';
                             }
