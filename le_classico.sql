@@ -1,9 +1,9 @@
 -- phpMyAdmin SQL Dump
--- version 4.4.15.6
--- http://www.phpmyadmin.net
+-- version 4.4.15.8
+-- https://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Sep 14, 2016 at 01:40 PM
+-- Generation Time: Dec 16, 2016 at 05:59 PM
 -- Server version: 5.5.47-0+deb7u1-log
 -- PHP Version: 5.4.45-0+deb7u2
 
@@ -103,9 +103,10 @@ CREATE TABLE IF NOT EXISTS `Actualites` (
   `ACT_Text` text CHARACTER SET latin1 COLLATE latin1_general_ci,
   `ACT_Link` varchar(256) CHARACTER SET ascii DEFAULT NULL,
   `ACT_Fichier` varchar(20) CHARACTER SET latin1 COLLATE latin1_general_ci DEFAULT NULL,
+  `ACT_Comments` int(4) NOT NULL DEFAULT '0',
   `ACT_Status` int(1) NOT NULL DEFAULT '0',
   `ACT_StatusDate` datetime NOT NULL
-) ENGINE=InnoDB AUTO_INCREMENT=64 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=84 DEFAULT CHARSET=latin1;
 
 --
 -- Triggers `Actualites`
@@ -316,6 +317,9 @@ DECLARE pseudo VARCHAR(30);
 SET pseudo = get_object_owner(NEW.COM_ObjType,NEW.COM_ObjID);
 IF CONVERT(pseudo USING latin1) NOT LIKE CONVERT(NEW.COM_Pseudo USING latin1) THEN
 INSERT INTO `Notifications` (NOT_Pseudo,NOT_Date,NOT_ObjType,NOT_ObjID,NOT_ObjDate,NOT_ObjFrom) VALUES (pseudo,CURRENT_TIMESTAMP,NEW.COM_ObjType,NEW.COM_ObjID,NEW.COM_Date,NEW.COM_Pseudo);
+END IF;
+IF NEW.COM_ObjType='A' THEN
+UPDATE Actualites SET ACT_Comments=ACT_Comments+1,ACT_Status=1,ACT_StatusDate=CURRENT_TIMESTAMP WHERE ACT_ActuID=NEW.COM_ObjID;
 END IF;
 END
 $$
@@ -576,8 +580,21 @@ CREATE TABLE IF NOT EXISTS `Votes` (
   `VOT_Note` tinyint(1) NOT NULL DEFAULT '0',
   `VOT_Total` int(4) NOT NULL DEFAULT '0',
   `VOT_Date` date NOT NULL DEFAULT '0000-00-00',
-  `VOT_Type` tinyint(1) NOT NULL DEFAULT '0'
+  `VOT_Type` tinyint(1) NOT NULL DEFAULT '0',
+  `VOT_Status` int(1) NOT NULL DEFAULT '0',
+  `VOT_StatusDate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
+
+--
+-- Triggers `Votes`
+--
+DELIMITER $$
+CREATE TRIGGER `VOT_STATUS_UPDATE` BEFORE UPDATE ON `Votes`
+ FOR EACH ROW IF NEW.VOT_Status <> 2 THEN
+SET NEW.VOT_Status = 1, NEW.VOT_StatusDate = CURRENT_TIMESTAMP;
+END IF
+$$
+DELIMITER ;
 
 --
 -- Indexes for dumped tables
@@ -689,7 +706,7 @@ ALTER TABLE `Votes`
 -- AUTO_INCREMENT for table `Actualites`
 --
 ALTER TABLE `Actualites`
-  MODIFY `ACT_ActuID` int(4) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=64;
+  MODIFY `ACT_ActuID` int(4) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=84;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
