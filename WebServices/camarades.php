@@ -42,8 +42,11 @@ if (!Empty($Clf)) {
                             else $Reply .= ',';
 
                             $Reply .= '{"Pseudo":"'.trim($aRow["CAM_Pseudo"]).'",';
-                            $Reply .= '"CodeConf":"'.trim($aRow["CAM_CodeConf"]).'",';
-                            $Reply .= '"CodeConfUPD":"'.trim($aRow["CAM_CodeConfUPD"]).'",';
+                            if (!strcmp(strtoupper($Camarade),strtoupper($aRow["CAM_Pseudo"]))) {
+                                $Reply .= '"CodeConf":"'.trim($aRow["CAM_CodeConf"]).'",';
+                                $Reply .= '"CodeConfUPD":"'.trim($aRow["CAM_CodeConfUPD"]).'",';
+                            } else // Do not return PWD if not the connected user (security reasons)
+                                $Reply .= '"CodeConf":null,';
                             if (!is_null($aRow["CAM_Nom"])) $Reply .= '"Nom":"'.trim($aRow["CAM_Nom"]).'",';
                             else $Reply .= '"Nom":null,';
                             $Reply .= '"NomUPD":"'.trim($aRow["CAM_NomUPD"]).'",';

@@ -49,70 +49,46 @@ if (!Empty($Clf)) {
                         $Result = mysql_query(trim($Query),$Link);
                         if (mysql_num_rows($Result) == 0) {
                             $Reply = '{"Photos":null}';
-                            break;
-
-                        } else {
-
-                            $PhtFirst = true;
-                            while ($aRow = mysql_fetch_array($Result)) {
-                                if (!$PhtFirst)
-                                {   if (($PhtVot != $aRow["VOT_Pos"]) && ($PhtIndex >= 3)) break;
-                                    else $PhtFile .= ",'".trim($aRow["VOT_Fichier"])."'";
-                                }
-                                else
-                                {   $PhtFile = "'".trim($aRow["VOT_Fichier"])."'";
-                                    $PhtFirst = false;
-                                }
-                                $PhtVot = $aRow["VOT_Pos"];
-                            }
-                            mysql_free_result($Result);
-
-
-
-
-
-
-
-
-                            if (isset($Files)) {
-
-
-
-                            } else
-                                $Query = "SELECT * FROM Photos WHERE PHT_Fichier IN ($PhtFile)";
-
-                            
-
-
-
-
-
-
+                            break; // No vote
                         }
+                        $PhtIndex = 0;
+                        $PhtFirst = true;
+                        while ($aRow = mysql_fetch_array($Result)) {
+                            if (!$PhtFirst)
+                            {   if (($PhtVot != $aRow["VOT_Pos"]) && ($PhtIndex >= 3))
+                                    break;
+                                $aPht[] = $aRow["VOT_Fichier"];
+                                $PhtIndex++;
+                            }
+                            else
+                            {   $aPht[] = $aRow["VOT_Fichier"];
+                                $PhtIndex++;
+                                $PhtFirst = false;
+                            }
+                            $PhtVot = $aRow["VOT_Pos"];
+                        }
+                        mysql_free_result($Result);
+                        if ((isset($Files)) && (explode('n', $Files) == $aPht)) {
+                            $Reply = '{"Photos":null}';
+                            break; // Same best photos (update)
+                        }
+                        $PhtFirst = true;
+                        foreach ($aPht as &$Pht) {
 
+                            if ($PhtFirst) $PhtFiles = "'".trim($aRow["VOT_Fichier"])."'";
+                            else $PhtFiles .= ",'".trim($aRow["VOT_Fichier"])."'";
+                            $PhtFirst = false;
+                        }
+                        $Query = "SELECT * FROM Photos WHERE PHT_Fichier IN ($PhtFiles)";
                     }
                     if (!$Best) { // Select
 
-
-
-
-
-
-
-
-                        $Query = "SELECT * FROM Photos WHERE ";
+                        $Query = "SELECT * FROM Photos LEFT JOIN Albums ON PHT_Album = ALB_Nom WHERE UPPER(ALB_Pseudo) = UPPER('".addslashes($Camarade)."')";
                         if ((!is_null($StatusDate)) && (strcmp(trim($StatusDate),"")))
                             $Query .= " AND PHT_StatusDate > '".str_replace("n"," ",$StatusDate)."'";
-                        $Query .= " ORDER BY PHT_Fichier ASC";
-
-
-
-
-
-
-
-
                     }
+                    $Query .= " ORDER BY PHT_Fichier ASC";
+
                     $Result = mysql_query(trim($Query),$Link);
                     if (mysql_num_rows($Result) == 0)
                         $Reply = '{"Photos":null}';
@@ -121,32 +97,20 @@ if (!Empty($Clf)) {
                         $Reply = '';
                         while ($aRow = mysql_fetch_array($Result)) {
 
-                            if (strlen($Reply) == 0) $Reply .= '{"Commentaires":[';
+                            if (strlen($Reply) == 0) $Reply .= '{"Photos":[';
                             else $Reply .= ',';
 
-                            $Reply .= '{"ObjType":"'.trim($aRow["COM_ObjType"]).'",';
-                            $Reply .= '"ObjID":'.strval($aRow["COM_ObjID"]).',';
-                            $Reply .= '"Pseudo":"'.trim($aRow["COM_Pseudo"]).'",';
-                            $Reply .= '"Date":"'.trim($aRow["COM_Date"]).'",';
-                            $Reply .= '"Text":"'.str_replace('"','\"',str_replace("\n","\\n",str_replace("\r\n","\n",trim($aRow["COM_Text"])))).'",';
-                            $Reply .= '"Status":'.strval($aRow["COM_Status"]).',';
-                            $Reply .= '"StatusDate":"'.trim($aRow["COM_StatusDate"]).'"}';
+                            $Reply .= '{"Album":"'.trim($aRow["PHT_Album"]).'",';
+                            $Reply .= '"Pseudo":"'.trim($aRow["PHT_Pseudo"]).'",';
+                            $Reply .= '"Fichier":"'.trim($aRow["PHT_Fichier"]).'",';
+                            $Reply .= '"FichierID":'.strval($aRow["PHT_FichierID"]).',';
+                            if ($Best) $Reply .= '"Best":1,';
+                            else $Reply .= '"Best":null,';
+                            $Reply .= '"Status":'.strval($aRow["PHT_Status"]).',';
+                            $Reply .= '"StatusDate":"'.trim($aRow["PHT_StatusDate"]).'"}';
                         }
                         $Reply .= ']}';
                     }
-
-
-
-
-
-
-
-
-
-
-
-
-
                     break;
                 }
                 case 5: { ////// Delete
