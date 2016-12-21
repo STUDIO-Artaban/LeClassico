@@ -9,8 +9,8 @@ $StatusDate = $_GET['StatusDate'];
 $Best = false;
 if (isset($_POST['Best']))
     $Best = true;
-if (isset($_POST['Files']))
-    $Files = $_POST['Files'];
+if (isset($_POST['Ids']))
+    $Ids = $_POST['Ids'];
 
 header('Content-Type: application/json;charset=ISO-8859-1');
 
@@ -57,37 +57,38 @@ if (!Empty($Clf)) {
                             if (!$PhtFirst)
                             {   if (($PhtVot != $aRow["VOT_Pos"]) && ($PhtIndex >= 3))
                                     break;
-                                $aPht[] = $aRow["VOT_Fichier"];
+                                $aPht[] = GetPhotoID($aRow["VOT_Fichier"]);
                                 $PhtIndex++;
                             }
                             else
-                            {   $aPht[] = $aRow["VOT_Fichier"];
+                            {   $aPht[] = GetPhotoID($aRow["VOT_Fichier"]);
                                 $PhtIndex++;
                                 $PhtFirst = false;
                             }
                             $PhtVot = $aRow["VOT_Pos"];
                         }
                         mysql_free_result($Result);
-                        if ((isset($Files)) && (explode('n', $Files) == $aPht)) {
+                        if ((isset($Ids)) && (explode('n', $Ids) == $aPht)) {
                             $Reply = '{"Photos":null}';
                             break; // Same best photos (update)
                         }
                         $PhtFirst = true;
                         foreach ($aPht as &$Pht) {
 
-                            if ($PhtFirst) $PhtFiles = "'".trim($aRow["VOT_Fichier"])."'";
-                            else $PhtFiles .= ",'".trim($aRow["VOT_Fichier"])."'";
+                            if ($PhtFirst) $PhtFiles = strval($Pht);
+                            else $PhtFiles .= ",$Pht";
                             $PhtFirst = false;
                         }
-                        $Query = "SELECT * FROM Photos WHERE PHT_Fichier IN ($PhtFiles)";
+                        $Query = "SELECT * FROM Photos WHERE PHT_FichierID IN ($PhtFiles)";
                     }
                     if (!$Best) { // Select
 
-                        $Query = "SELECT * FROM Photos LEFT JOIN Albums ON PHT_Album = ALB_Nom WHERE UPPER(ALB_Pseudo) = UPPER('".addslashes($Camarade)."')";
+                        $Query = "SELECT * FROM Photos LEFT JOIN Albums ON PHT_Album = ALB_Nom";
+                        $Query .= " WHERE UPPER(ALB_Pseudo) = UPPER('".addslashes($Camarade)."') AND PHT_Album <> 'Journal'";
                         if ((!is_null($StatusDate)) && (strcmp(trim($StatusDate),"")))
                             $Query .= " AND PHT_StatusDate > '".str_replace("n"," ",$StatusDate)."'";
                     }
-                    $Query .= " ORDER BY PHT_Fichier ASC";
+                    $Query .= " ORDER BY PHT_FichierID ASC";
 
                     $Result = mysql_query(trim($Query),$Link);
                     if (mysql_num_rows($Result) == 0)
