@@ -68,7 +68,8 @@ if (!Empty($Clf)) {
                             $PhtVot = $aRow["VOT_Pos"];
                         }
                         mysql_free_result($Result);
-                        if ((isset($Ids)) && (explode('n', $Ids) == $aPht)) {
+                        rsort($aPht);
+                        if ((isset($Ids)) && (explode("n", $Ids) == $aPht)) {
                             $Reply = '{"Photos":null}';
                             break; // Same best photos (update)
                         }
