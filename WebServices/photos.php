@@ -43,6 +43,9 @@ if (!Empty($Clf)) {
 
                     if ($Best) { // Best photos
 
+                        $Query = "SELECT COUNT(*) AS PHT_Count FROM Photos WHERE PHT_Status <> 2";
+                        $PhtCnt = mysql_result(mysql_query(trim($Query),$Link),0,"PHT_Count");
+
                         $Query = "SELECT SUM(VOT_Note)+SUM(VOT_Total) AS VOT_Pos,VOT_Fichier FROM Votes";
                         $Query .= " WHERE VOT_Type=0";
                         $Query .= " GROUP BY VOT_Fichier ORDER BY VOT_Pos DESC";
@@ -57,17 +60,22 @@ if (!Empty($Clf)) {
                             if (!$PhtFirst)
                             {   if (($PhtVot != $aRow["VOT_Pos"]) && ($PhtIndex >= 3))
                                     break;
-                                $aPht[] = GetPhotoID($aRow["VOT_Fichier"]);
+                                $PhtID = GetPhotoID($aRow["VOT_Fichier"]);
+                                $aPht[] = $PhtID;
                                 $PhtIndex++;
+                                $aPhtRng[$PhtID] = "$PhtIndex/$PhtCnt";
                             }
                             else
-                            {   $aPht[] = GetPhotoID($aRow["VOT_Fichier"]);
+                            {   $PhtID = GetPhotoID($aRow["VOT_Fichier"]);
+                                $aPht[] = $PhtID;
                                 $PhtIndex++;
+                                $aPhtRng[$PhtID] = "$PhtIndex/$PhtCnt";
                                 $PhtFirst = false;
                             }
                             $PhtVot = $aRow["VOT_Pos"];
                         }
                         mysql_free_result($Result);
+
                         rsort($aPht);
                         if ((isset($Ids)) && (explode("n", $Ids) == $aPht)) {
                             $Reply = '{"Photos":null}';
@@ -106,7 +114,10 @@ if (!Empty($Clf)) {
                             $Reply .= '"Pseudo":"'.trim($aRow["PHT_Pseudo"]).'",';
                             $Reply .= '"Fichier":"'.trim($aRow["PHT_Fichier"]).'",';
                             $Reply .= '"FichierID":'.strval($aRow["PHT_FichierID"]).',';
-                            if ($Best) $Reply .= '"Best":1,';
+                            if ($Best) {
+                                $Reply .= '"Best":1,';
+                                $Reply .= '"Range":"'.trim($aPhtRng[$aRow["PHT_FichierID"]]).'",';
+                            }
                             else $Reply .= '"Best":null,';
                             $Reply .= '"Status":'.strval($aRow["PHT_Status"]).',';
                             $Reply .= '"StatusDate":"'.trim($aRow["PHT_StatusDate"]).'"}';
