@@ -103,42 +103,46 @@ if (!Empty($Clf)) {
                     case 1:
                     case 2: { ////// Select
 
-                        $Query = "SELECT * FROM Commentaires WHERE COM_ObjType = '$Type' AND COM_ObjID IN (".str_replace("n",",",$Ids).")";
-                        if ($Ope == 2) // Old
-                            $Query .= " AND COM_Date < '".str_replace("n"," ",$Date)."'";
-                        else { // New & Update
-                            if ((!is_null($StatusDate)) && (strcmp(trim($StatusDate),""))) {
-                                $Query .= " AND COM_StatusDate > '".str_replace("n"," ",$StatusDate)."'";
-                                $Query .= " AND COM_Date >= '".str_replace("n"," ",$Date)."'";
-                                if ($Ope == 3) // Update
-                                    $Query .= " AND COM_Status = 1";
+                        $aIds = explode('n', $Ids);
+                        $Reply = '';
+                        foreach ($aIds as &$Id) {
+
+                            $Query = "SELECT * FROM Commentaires WHERE COM_ObjType = '$Type' AND COM_ObjID=$Id";
+                            if ($Ope == 2) // Old
+                                $Query .= " AND COM_Date < '".str_replace("n"," ",$Date)."'";
+                            else { // New & Update
+                                if ((!is_null($StatusDate)) && (strcmp(trim($StatusDate),""))) {
+                                    $Query .= " AND COM_StatusDate > '".str_replace("n"," ",$StatusDate)."'";
+                                    $Query .= " AND COM_Date >= '".str_replace("n"," ",$Date)."'";
+                                    if ($Ope == 3) // Update
+                                        $Query .= " AND COM_Status = 1";
+                                }
+                            }
+                            $Query .= " ORDER BY COM_Date DESC";
+                            if (!Empty($Count))
+                                $Query .= " LIMIT $Count";
+
+                            $Result = mysql_query(trim($Query),$Link);
+                            if (mysql_num_rows($Result) != 0) {
+
+                                while ($aRow = mysql_fetch_array($Result)) {
+
+                                    if (strlen($Reply) == 0) $Reply .= '{"Commentaires":[';
+                                    else $Reply .= ',';
+
+                                    $Reply .= '{"ObjType":"'.trim($aRow["COM_ObjType"]).'",';
+                                    $Reply .= '"ObjID":'.strval($aRow["COM_ObjID"]).',';
+                                    $Reply .= '"Pseudo":"'.trim($aRow["COM_Pseudo"]).'",';
+                                    $Reply .= '"Date":"'.trim($aRow["COM_Date"]).'",';
+                                    $Reply .= '"Text":"'.str_replace('"','\"',str_replace("\n","\\n",str_replace("\r\n","\n",trim($aRow["COM_Text"])))).'",';
+                                    $Reply .= '"Status":'.strval($aRow["COM_Status"]).',';
+                                    $Reply .= '"StatusDate":"'.trim($aRow["COM_StatusDate"]).'"}';
+                                }
+                                $Reply .= ']}';
                             }
                         }
-                        $Query .= " ORDER BY COM_Date DESC";
-                        if (!Empty($Count))
-                            $Query .= " LIMIT $Count";
-
-                        $Result = mysql_query(trim($Query),$Link);
-                        if (mysql_num_rows($Result) == 0)
+                        if (strlen($Reply) == 0)
                             $Reply = '{"Commentaires":null}';
-                        else {
-
-                            $Reply = '';
-                            while ($aRow = mysql_fetch_array($Result)) {
-
-                                if (strlen($Reply) == 0) $Reply .= '{"Commentaires":[';
-                                else $Reply .= ',';
-
-                                $Reply .= '{"ObjType":"'.trim($aRow["COM_ObjType"]).'",';
-                                $Reply .= '"ObjID":'.strval($aRow["COM_ObjID"]).',';
-                                $Reply .= '"Pseudo":"'.trim($aRow["COM_Pseudo"]).'",';
-                                $Reply .= '"Date":"'.trim($aRow["COM_Date"]).'",';
-                                $Reply .= '"Text":"'.str_replace('"','\"',str_replace("\n","\\n",str_replace("\r\n","\n",trim($aRow["COM_Text"])))).'",';
-                                $Reply .= '"Status":'.strval($aRow["COM_Status"]).',';
-                                $Reply .= '"StatusDate":"'.trim($aRow["COM_StatusDate"]).'"}';
-                            }
-                            $Reply .= ']}';
-                        }
                         break;
                     }
                     case 5: { ////// Delete
