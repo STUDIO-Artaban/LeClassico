@@ -138,11 +138,12 @@ if (!Empty($Clf)) {
                                     $Reply .= '"Status":'.strval($aRow["COM_Status"]).',';
                                     $Reply .= '"StatusDate":"'.trim($aRow["COM_StatusDate"]).'"}';
                                 }
-                                $Reply .= ']}';
                             }
                         }
                         if (strlen($Reply) == 0)
                             $Reply = '{"Commentaires":null}';
+                        else
+                            $Reply .= ']}';
                         break;
                     }
                     case 5: { ////// Delete
