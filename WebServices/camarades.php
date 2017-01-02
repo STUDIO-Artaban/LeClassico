@@ -68,6 +68,9 @@ if (!Empty($Clf)) {
                             if (!is_null($aRow["CAM_Postal"])) $Reply .= '"Postal":"'.trim($aRow["CAM_Postal"]).'",';
                             else $Reply .= '"Postal":null,';
                             $Reply .= '"PostalUPD":"'.trim($aRow["CAM_PostalUPD"]).'",';
+                            if (!is_null($aRow["CAM_Phone"])) $Reply .= '"Phone":"'.trim($aRow["CAM_Phone"]).'",';
+                            else $Reply .= '"Phone":null,';
+                            $Reply .= '"PhoneUPD":"'.trim($aRow["CAM_PhoneUPD"]).'",';
                             if (!is_null($aRow["CAM_Email"])) $Reply .= '"Email":"'.trim($aRow["CAM_Email"]).'",';
                             else $Reply .= '"Email":null,';
                             $Reply .= '"EmailUPD":"'.trim($aRow["CAM_EmailUPD"]).'",';
