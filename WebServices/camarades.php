@@ -26,7 +26,9 @@ if (!Empty($Clf)) {
                 case 1:
                 case 2: { ////// Select
 
-                    $Query = "SELECT Camarades.* FROM Camarades INNER JOIN Abonnements ON CAM_Pseudo = ABO_Camarade AND UPPER(ABO_Pseudo) = UPPER('".addslashes($Camarade)."')";
+                    $Query = "SELECT Camarades.* FROM Camarades";
+                    //$Query .= " INNER JOIN Abonnements ON CAM_Pseudo = ABO_Camarade AND UPPER(ABO_Pseudo) = UPPER('".addslashes($Camarade)."')";
+                    // TODO: Remove comment above when more than a hundred members will be available
                     if ((!is_null($StatusDate)) && (strcmp(trim($StatusDate),"")))
                         $Query .= " WHERE CAM_StatusDate > '".str_replace("n"," ",$StatusDate)."'";
                     $Result = mysql_query(trim($Query),$Link);
