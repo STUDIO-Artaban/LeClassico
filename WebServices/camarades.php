@@ -45,14 +45,14 @@ if (!Empty($Clf)) {
 
                             $Reply .= '{"Pseudo":"'.trim($aRow["CAM_Pseudo"]).'",';
                             if (!strcmp(strtoupper($Camarade),strtoupper($aRow["CAM_Pseudo"]))) {
-                                $Reply .= '"CodeConf":"'.trim($aRow["CAM_CodeConf"]).'",';
+                                $Reply .= '"CodeConf":"'.str_replace('"','\"',trim($aRow["CAM_CodeConf"])).'",';
                                 $Reply .= '"CodeConfUPD":"'.trim($aRow["CAM_CodeConfUPD"]).'",';
                             } else // Do not return PWD if not the connected user (security reasons)
                                 $Reply .= '"CodeConf":null,';
-                            if (!is_null($aRow["CAM_Nom"])) $Reply .= '"Nom":"'.trim($aRow["CAM_Nom"]).'",';
+                            if (!is_null($aRow["CAM_Nom"])) $Reply .= '"Nom":"'.str_replace('"','\"',trim($aRow["CAM_Nom"])).'",';
                             else $Reply .= '"Nom":null,';
                             $Reply .= '"NomUPD":"'.trim($aRow["CAM_NomUPD"]).'",';
-                            if (!is_null($aRow["CAM_Prenom"])) $Reply .= '"Prenom":"'.trim($aRow["CAM_Prenom"]).'",';
+                            if (!is_null($aRow["CAM_Prenom"])) $Reply .= '"Prenom":"'.str_replace('"','\"',trim($aRow["CAM_Prenom"])).'",';
                             else $Reply .= '"Prenom":null,';
                             $Reply .= '"PrenomUPD":"'.trim($aRow["CAM_PrenomUPD"]).'",';
                             if (!is_null($aRow["CAM_Sexe"])) $Reply .= '"Sexe":'.strval($aRow["CAM_Sexe"]).',';
@@ -61,25 +61,25 @@ if (!Empty($Clf)) {
                             if (!is_null($aRow["CAM_BornDate"])) $Reply .= '"BornDate":"'.trim($aRow["CAM_BornDate"]).'",';
                             else $Reply .= '"BornDate":null,';
                             $Reply .= '"BornDateUPD":"'.trim($aRow["CAM_BornDateUPD"]).'",';
-                            if (!is_null($aRow["CAM_Adresse"])) $Reply .= '"Adresse":"'.trim($aRow["CAM_Adresse"]).'",';
+                            if (!is_null($aRow["CAM_Adresse"])) $Reply .= '"Adresse":"'.str_replace('"','\"',trim($aRow["CAM_Adresse"])).'",';
                             else $Reply .= '"Adresse":null,';
                             $Reply .= '"AdresseUPD":"'.trim($aRow["CAM_AdresseUPD"]).'",';
                             if (!is_null($aRow["CAM_Ville"])) $Reply .= '"Ville":"'.trim($aRow["CAM_Ville"]).'",';
                             else $Reply .= '"Ville":null,';
                             $Reply .= '"VilleUPD":"'.trim($aRow["CAM_VilleUPD"]).'",';
-                            if (!is_null($aRow["CAM_Postal"])) $Reply .= '"Postal":"'.trim($aRow["CAM_Postal"]).'",';
+                            if (!is_null($aRow["CAM_Postal"])) $Reply .= '"Postal":"'.str_replace('"','\"',trim($aRow["CAM_Postal"])).'",';
                             else $Reply .= '"Postal":null,';
                             $Reply .= '"PostalUPD":"'.trim($aRow["CAM_PostalUPD"]).'",';
-                            if (!is_null($aRow["CAM_Phone"])) $Reply .= '"Phone":"'.trim($aRow["CAM_Phone"]).'",';
+                            if (!is_null($aRow["CAM_Phone"])) $Reply .= '"Phone":"'.str_replace('"','\"',trim($aRow["CAM_Phone"])).'",';
                             else $Reply .= '"Phone":null,';
                             $Reply .= '"PhoneUPD":"'.trim($aRow["CAM_PhoneUPD"]).'",';
-                            if (!is_null($aRow["CAM_Email"])) $Reply .= '"Email":"'.trim($aRow["CAM_Email"]).'",';
+                            if (!is_null($aRow["CAM_Email"])) $Reply .= '"Email":"'.str_replace('"','\"',trim($aRow["CAM_Email"])).'",';
                             else $Reply .= '"Email":null,';
                             $Reply .= '"EmailUPD":"'.trim($aRow["CAM_EmailUPD"]).'",';
-                            if (!is_null($aRow["CAM_Hobbies"])) $Reply .= '"Hobbies":"'.trim($aRow["CAM_Hobbies"]).'",';
+                            if (!is_null($aRow["CAM_Hobbies"])) $Reply .= '"Hobbies":"'.str_replace('"','\"',str_replace("\n","\\n",str_replace("\r\n","\n",trim($aRow["CAM_Hobbies"])))).'",';
                             else $Reply .= '"Hobbies":null,';
                             $Reply .= '"HobbiesUPD":"'.trim($aRow["CAM_HobbiesUPD"]).'",';
-                            if (!is_null($aRow["CAM_APropos"])) $Reply .= '"APropos":"'.trim($aRow["CAM_APropos"]).'",';
+                            if (!is_null($aRow["CAM_APropos"])) $Reply .= '"APropos":"'.str_replace('"','\"',str_replace("\n","\\n",str_replace("\r\n","\n",trim($aRow["CAM_APropos"])))).'",';
                             else $Reply .= '"APropos":null,';
                             $Reply .= '"AProposUPD":"'.trim($aRow["CAM_AProposUPD"]).'",';
                             if (!is_null($aRow["CAM_LogDate"])) $Reply .= '"LogDate":"'.trim($aRow["CAM_LogDate"]).'",';
