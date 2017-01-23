@@ -53,12 +53,12 @@ if(!Empty($Clf))
                 {   // Modifie l'événement ////////////////////////////////////////////////////////////////////////////////////////////////
                     if((Empty($evenm))||(!strcmp(trim($evenm),""))) $iStatus = 21; //****** Nom invalide
                     elseif((Empty($evelieu))||(!strcmp(trim($evelieu),""))) $iStatus = 22; //****** Lieu invalide
-                    elseif((Empty($evedate))||(!strcmp(trim($evedate),""))||(!strcmp(trim($evedate),"AAAA-MM-JJ"))) $iStatus = 23; //****** Date invalide
+                    elseif((Empty($evedate))||(!strcmp(trim($evedate),""))||(!strcmp(trim($evedate),"AAAA-MM-JJ hh:mm"))) $iStatus = 23; //****** Date invalide
                     else
                     {   $aDate = sscanf(trim($evedate),"%d-%d-%d");
                         if(!checkdate($aDate[1],$aDate[2],$aDate[0])) $iStatus = 23; //****** Date invalide
                         else
-                        {   $Query = "SELECT 'X' FROM Evenements WHERE EVE_Status <> 2 AND EVE_Date = '".trim($evedate)."' AND UPPER(EVE_Nom) = UPPER('".trim($evenm)."') AND EVE_EventID <> $eveid";
+                        {   $Query = "SELECT 'X' FROM Evenements WHERE EVE_Status <> 2 AND EVE_Date = '".trim($evedate).":00' AND UPPER(EVE_Nom) = UPPER('".trim($evenm)."') AND EVE_EventID <> $eveid";
                             $Result = mysql_query(trim($Query),$Link);
                             if(mysql_num_rows($Result) != 0)
                             {  mysql_free_result($Result);
@@ -74,7 +74,7 @@ if(!Empty($Clf))
                         // Lieu
                         $Query .= "EVE_Lieu = '".addslashes($evelieu)."',";
                         // Date
-                        $Query .= "EVE_Date = '".trim($evedate)."'";
+                        $Query .= "EVE_Date = '".trim($evedate).":00'";
                         // Remark
                         if((!Empty($evermk))&&(strcmp(trim($evermk),""))) $Query .= ",EVE_Remark = '".addslashes($evermk)."'";
                         // Flyer
@@ -94,12 +94,12 @@ if(!Empty($Clf))
                 {   // Ajoute l'événement /////////////////////////////////////////////////////////////////////////////////////////////////
                     if((Empty($evenm))||(!strcmp(trim($evenm),""))) $iStatus = 21; //****** Nom invalide
                     elseif((Empty($evelieu))||(!strcmp(trim($evelieu),""))) $iStatus = 22; //****** Lieu invalide
-                    elseif((Empty($evedate))||(!strcmp(trim($evedate),""))||(!strcmp(trim($evedate),"AAAA-MM-JJ"))) $iStatus = 23; //****** Date invalide
+                    elseif((Empty($evedate))||(!strcmp(trim($evedate),""))||(!strcmp(trim($evedate),"AAAA-MM-JJ hh:mm"))) $iStatus = 23; //****** Date invalide
                     else
                     {   $aDate = sscanf(trim($evedate),"%d-%d-%d");
                         if(!checkdate($aDate[1],$aDate[2],$aDate[0])) $iStatus = 23; //****** Date invalide
                         else
-                        {   $Query = "SELECT 'X' FROM Evenements WHERE EVE_Status <> 2 AND EVE_Date = '".trim($evedate)."' AND UPPER(EVE_Nom) = UPPER('".trim($evenm)."')";
+                        {   $Query = "SELECT 'X' FROM Evenements WHERE EVE_Status <> 2 AND EVE_Date = '".trim($evedate).":00' AND UPPER(EVE_Nom) = UPPER('".trim($evenm)."')";
                             $Result = mysql_query(trim($Query),$Link);
                             if(mysql_num_rows($Result) != 0)
                             {  mysql_free_result($Result);
@@ -125,7 +125,7 @@ if(!Empty($Clf))
                             // Nom
                             $Query .= addslashes($evenm)."','";
                             // Date
-                            $Query .= trim($evedate)."','";
+                            $Query .= trim($evedate).":00','";
                             // Lieu
                             $Query .= addslashes($evelieu)."',";
                             // Remark

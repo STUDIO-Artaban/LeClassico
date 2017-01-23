@@ -359,7 +359,7 @@ function AfficherEvent(iViewYear,iViewMnth,iViewDay,sKey)
     $bContinue = true;
     $bPass = false;
     $Query = "SELECT EVE_Date,EVE_Nom,COUNT(PRE_Pseudo) AS EVE_CamCnt FROM Evenements LEFT JOIN Presents ON EVE_EventID = PRE_EventID AND PRE_Status <> 2";
-    $Query .= " WHERE EVE_Status <> 2 AND EVE_Date >= '".trim($aDate["year"])."-".trim($aDate["mon"])."-".trim($aDate["mday"])."' GROUP BY EVE_Date,EVE_Nom ORDER BY EVE_Date";
+    $Query .= " WHERE EVE_Status <> 2 AND date(EVE_Date) >= '".trim($aDate["year"])."-".trim($aDate["mon"])."-".trim($aDate["mday"])."' GROUP BY EVE_Date,EVE_Nom ORDER BY EVE_Date";
     $Result = mysql_query(trim($Query),$Link);
     if(mysql_num_rows($Result) != 0)
     {   // Evénement trouvé
@@ -419,7 +419,7 @@ function AfficherEvent(iViewYear,iViewMnth,iViewDay,sKey)
         <table border=0 width=100 cellspacing=0 cellpadding=0>
         <tr>
         <td><font ID="Title" style="font-size: 10pt">Le&nbsp;<font color="#ffff00"><?php
-        echo substr($aRow["EVE_Date"],8,10)."/".substr($aRow["EVE_Date"],5,2)."/".substr($aRow["EVE_Date"],0,4);
+        echo substr($aRow["EVE_Date"],8,2)."/".substr($aRow["EVE_Date"],5,2)."/".substr($aRow["EVE_Date"],0,4);
         ?></font></font></td>
         </tr>
         <tr>
@@ -455,7 +455,7 @@ function AfficherEvent(iViewYear,iViewMnth,iViewDay,sKey)
         $aMnDy = sscanf(substr($aRow["EVE_Date"],5,2),"%d");
         $iTmp = $aMnDy[0];
         echo "$iTmp,";
-        $aMnDy = sscanf(substr($aRow["EVE_Date"],8,10),"%d");
+        $aMnDy = sscanf(substr($aRow["EVE_Date"],8,2),"%d");
         $iTmp = $aMnDy[0];
         echo "$iTmp,";
         echo "'$Clf'";
@@ -739,7 +739,7 @@ function AfficherEvent(iViewYear,iViewMnth,iViewDay,sKey)
         <td><font ID="Title" style="font-size: 10pt">Le&nbsp;<font color=<?php
         if(!strcmp($BckColor,"#D8E1C6")) echo "\"#ff8000\">";
         else echo "\"#ffff00\">";
-        echo substr($aRow["EVE_Date"],8,10)."/".substr($aRow["EVE_Date"],5,2)."/".substr($aRow["EVE_Date"],0,4);
+        echo substr($aRow["EVE_Date"],8,2)."/".substr($aRow["EVE_Date"],5,2)."/".substr($aRow["EVE_Date"],0,4);
         ?></font></font></td>
         </tr>
         <tr>
@@ -778,7 +778,7 @@ function AfficherEvent(iViewYear,iViewMnth,iViewDay,sKey)
         $aMnDy = sscanf(substr($aRow["EVE_Date"],5,2),"%d");
         $iTmp = $aMnDy[0];
         echo "$iTmp,";
-        $aMnDy = sscanf(substr($aRow["EVE_Date"],8,10),"%d");
+        $aMnDy = sscanf(substr($aRow["EVE_Date"],8,2),"%d");
         $iTmp = $aMnDy[0];
         echo "$iTmp,";
         echo "'$Clf'";

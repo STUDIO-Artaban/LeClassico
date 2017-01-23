@@ -93,7 +93,7 @@ form {padding: 0px; margin-bottom: 0px; border: 0px}
 var sNoSave="Tu n'as pas sauvegardé les modifications apportées à\nl'événement sélectionné! Veux-tu continuer malgré tout?";
 var sNoFlySave="Tu n'as pas sauvegardé les modifications apportées au flyer\nde l'événement sélectionné! Veux-tu continuer malgré tout?";
 var sNoFlyer="Saisi le chemin du flyer à ajouter...";
-var sNoDate="AAAA-MM-JJ";
+var sNoDate="AAAA-MM-JJ hh:mm";
 var sNewLine='\n';
 var bNewEve=false;
 var bLock=false;
@@ -255,7 +255,7 @@ function ChgEventList()
                     //
                     document.getElementById("EveID").value=<?php echo $aRow["EVE_EventID"]; ?>;
                     document.getElementById("EveNom").value="<?php echo str_replace("\'","'",addslashes($aRow["EVE_Nom"])); ?>";
-                    document.getElementById("EveDate").value="<?php echo $aRow["EVE_Date"]; ?>";
+                    document.getElementById("EveDate").value="<?php echo substr($aRow["EVE_Date"],0,16); ?>";
                     document.getElementById("EveLieu").value="<?php echo str_replace("\'","'",addslashes($aRow["EVE_Lieu"])); ?>";
                     sRemark="<?php
                     if(!Empty($aRow["EVE_Remark"])) echo str_replace("\r\n","\"+sNewLine;\n\t\tsRemark+=\"",str_replace("\'","'",addslashes($aRow["EVE_Remark"])));
@@ -299,7 +299,7 @@ function ChgEventList()
                     echo $aMnDy[0];
                     ?>;
                     document.getElementById("FlyDay").value=<?php
-                    $aMnDy = sscanf(substr($aRow["EVE_Date"],8,10),"%d");
+                    $aMnDy = sscanf(substr($aRow["EVE_Date"],8,2),"%d");
                     echo $aMnDy[0];
                     ?>;
                     //
@@ -318,8 +318,8 @@ function ChgEventList()
                 <?php
                     // Tant qu'il y a des événements
                     $CntEve++;
-                    if(strlen(trim($aRow["EVE_Nom"])) <= 11) $aEveInfo[] = substr($aRow["EVE_Date"],8,10)."/".substr($aRow["EVE_Date"],5,2)."/".substr($aRow["EVE_Date"],2,2)." - ".str_replace($aSearch,$aReplace,trim($aRow["EVE_Nom"]));
-                    else $aEveInfo[] = substr($aRow["EVE_Date"],8,10)."/".substr($aRow["EVE_Date"],5,2)."/".substr($aRow["EVE_Date"],2,2)." - ".str_replace($aSearch,$aReplace,substr(trim($aRow["EVE_Nom"]),0,11))."...";
+                    if(strlen(trim($aRow["EVE_Nom"])) <= 11) $aEveInfo[] = substr($aRow["EVE_Date"],8,2)."/".substr($aRow["EVE_Date"],5,2)."/".substr($aRow["EVE_Date"],2,2)." - ".str_replace($aSearch,$aReplace,trim($aRow["EVE_Nom"]));
+                    else $aEveInfo[] = substr($aRow["EVE_Date"],8,2)."/".substr($aRow["EVE_Date"],5,2)."/".substr($aRow["EVE_Date"],2,2)." - ".str_replace($aSearch,$aReplace,substr(trim($aRow["EVE_Nom"]),0,11))."...";
                 }
                 mysql_free_result($Result);
                 ?>default:
@@ -802,7 +802,7 @@ mysql_close($Link);
             </tr>
             </table>
         </td>
-        <td align="left" width="100%"><input type="text" ID="EveDate" onchange="javascript:ChangeEveInfo()" style="font-size: 9pt; font-family: Verdana,Lucida,Courier; color: black" maxlength=10 size=20 value="AAAA-MM-JJ" disabled></td>
+        <td align="left" width="100%"><input type="text" ID="EveDate" onchange="javascript:ChangeEveInfo()" style="font-size: 9pt; font-family: Verdana,Lucida,Courier; color: black" maxlength=10 size=20 value="AAAA-MM-JJ hh:mm" disabled></td>
         </tr>
         </table>
     </td>

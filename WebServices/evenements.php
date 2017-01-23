@@ -33,32 +33,17 @@ if (!Empty($Clf)) {
 
                     break;
                 }
-                case 1:
-                case 2: { ////// Select
+                case 1: { ////// Select
 
                     $Query = "SELECT * FROM Evenements";
-                    if ($Ope == 2) { // Old
 
+                    // TODO: Return events that only follows N month B4 and after current day (keep date
+                    //       criteria defining the lastest remote DB event to get updates)
 
-                    } else { // New & Update
-                        if ((!is_null($StatusDate)) && (strcmp(trim($StatusDate),""))) {
-                            $Query .= " WHERE EVE_StatusDate > '".str_replace("n"," ",$StatusDate)."'";
-
-
-
-
-
-
-                            //$Query .= " AND COM_Date >= '".str_replace("n"," ",$Date)."'";
-
-
-
-
-
-
-                            if ($Ope == 3) // Update
-                                $Query .= " AND EVE_Status = 1";
-                        }
+                    if ((!is_null($StatusDate)) && (strcmp(trim($StatusDate),""))) {
+                        $Query .= " WHERE EVE_StatusDate > '".str_replace("n"," ",$StatusDate)."'";
+                        if ($Ope == 3) // Update
+                            $Query .= " AND EVE_Status = 1";
                     }
                     $Query .= " ORDER BY EVE_Date DESC";
 
@@ -80,6 +65,8 @@ if (!Empty($Clf)) {
                             $Reply .= '"LieuUPD":"'.trim($aRow["EVE_LieuUPD"]).'",';
                             $Reply .= '"Date":"'.str_replace('"','\"',trim($aRow["EVE_Date"])).'",';
                             $Reply .= '"DateUPD":"'.trim($aRow["EVE_DateUPD"]).'",';
+                            $Reply .= '"DateEnd":"'.str_replace('"','\"',trim($aRow["EVE_DateEnd"])).'",';
+                            $Reply .= '"DateEndUPD":"'.trim($aRow["EVE_DateEndUPD"]).'",';
                             if (!is_null($aRow["EVE_Flyer"])) $Reply .= '"Flyer":"'.str_replace('"','\"',trim($aRow["EVE_Flyer"])).'",';
                             else $Reply .= '"Flyer":null,';
                             $Reply .= '"FlyerUPD":"'.trim($aRow["EVE_FlyerUPD"]).'",';

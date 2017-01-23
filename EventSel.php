@@ -111,7 +111,7 @@ $bPass = false;
 $bPresent = false;
 $BckColor = "#D8E1C6";
 $CntView = 0;
-$Query = "SELECT EVE_EventID,EVE_Pseudo,EVE_Nom,EVE_Lieu,EVE_Flyer,EVE_Remark FROM Evenements WHERE EVE_Status <> 2 AND EVE_Date = '";
+$Query = "SELECT EVE_EventID,EVE_Pseudo,EVE_Nom,EVE_Lieu,EVE_Flyer,EVE_Remark FROM Evenements WHERE EVE_Status <> 2 AND date(EVE_Date) = '";
 if((!Empty($dy))&&(!Empty($mn))&&(!Empty($yr)))
 {   $Query .= "$yr-$mn-$dy'";
     if((strtotime("now") >= strtotime("$dy ".$aMonth[$mn-1]." $yr"))&&
