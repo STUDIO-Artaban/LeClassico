@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Dec 16, 2016 at 05:59 PM
+-- Generation Time: Jan 23, 2017 at 08:48 PM
 -- Server version: 5.5.47-0+deb7u1-log
 -- PHP Version: 5.4.45-0+deb7u2
 
@@ -195,6 +195,8 @@ CREATE TABLE IF NOT EXISTS `Camarades` (
   `CAM_VilleUPD` datetime NOT NULL,
   `CAM_Postal` varchar(5) COLLATE latin1_general_ci DEFAULT NULL,
   `CAM_PostalUPD` datetime NOT NULL,
+  `CAM_Phone` varchar(20) COLLATE latin1_general_ci DEFAULT NULL,
+  `CAM_PhoneUPD` datetime NOT NULL,
   `CAM_Email` varchar(50) COLLATE latin1_general_ci DEFAULT NULL,
   `CAM_EmailUPD` datetime NOT NULL,
   `CAM_Hobbies` text COLLATE latin1_general_ci,
@@ -338,8 +340,10 @@ CREATE TABLE IF NOT EXISTS `Evenements` (
   `EVE_NomUPD` datetime NOT NULL,
   `EVE_Lieu` varchar(40) COLLATE latin1_general_ci NOT NULL DEFAULT '',
   `EVE_LieuUPD` datetime NOT NULL,
-  `EVE_Date` date NOT NULL DEFAULT '0000-00-00',
+  `EVE_Date` datetime NOT NULL,
   `EVE_DateUPD` datetime NOT NULL,
+  `EVE_DateEnd` datetime NOT NULL,
+  `EVE_DateEndUPD` datetime NOT NULL,
   `EVE_Flyer` varchar(20) COLLATE latin1_general_ci DEFAULT NULL,
   `EVE_FlyerUPD` datetime NOT NULL,
   `EVE_Remark` text COLLATE latin1_general_ci,
