@@ -47,6 +47,7 @@ if (!Empty($Clf)) {
                     }
                     $Query .= " ORDER BY EVE_Date DESC";
 
+                    $Result = mysql_query(trim($Query),$Link);
                     if (mysql_num_rows($Result) == 0)
                         $Reply = '{"Evenements":null}';
                     else {
@@ -76,6 +77,7 @@ if (!Empty($Clf)) {
                             $Reply .= '"Status":'.strval($aRow["EVE_Status"]).',';
                             $Reply .= '"StatusDate":"'.trim($aRow["EVE_StatusDate"]).'"}';
                         }
+                        $Reply .= ']}';
                     }
                     break;
                 }
