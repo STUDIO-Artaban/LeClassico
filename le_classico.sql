@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Jan 23, 2017 at 08:48 PM
+-- Generation Time: Feb 15, 2017 at 11:40 PM
 -- Server version: 5.5.47-0+deb7u1-log
 -- PHP Version: 5.4.45-0+deb7u2
 
@@ -389,6 +389,10 @@ DELIMITER ;
 CREATE TABLE IF NOT EXISTS `FlyerNumber` (
   `FNU_FlyerID` int(4) NOT NULL DEFAULT '0'
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
+
+--
+-- Dumping data for table `FlyerNumber`
+--
 
 -- --------------------------------------------------------
 
