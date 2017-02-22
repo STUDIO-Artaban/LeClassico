@@ -6,6 +6,9 @@ $Clf = $_GET['Clf'];
 $Ope = $_GET['Ope'];
 $StatusDate = $_GET['StatusDate'];
 
+$Keys = $_POST['Keys'];
+$Status = $_POST['Status'];
+
 header('Content-Type: application/json;charset=ISO-8859-1');
 
 if (!Empty($Clf)) {
@@ -25,13 +28,86 @@ if (!Empty($Clf)) {
             $Camarade = stripslashes($aRow["CAM_Pseudo"]);
             mysql_free_result($Result);
             switch ($Ope) {
-                case 3: { ////// Update
 
-                    break;
-                }
                 case 4: { ////// Insert
 
-                    break;
+                    if (Empty($Keys)) {
+                        echo '{"Error":'.strval(constant("WEBSERVICE_ERROR_MISSING_KEYS")).'}';
+                        break;
+                    }
+                    $Keys = json_decode($Keys, true);
+                    if (json_last_error() != JSON_ERROR_NONE) {
+                        echo '{"Error":'.strval(constant("WEBSERVICE_ERROR_INVALID_KEYS")).'}';
+                        break;
+                    }
+
+                    //////
+                    $i = 0;
+                    $Lenght = count($Keys);
+
+                    $Query = "INSERT INTO Presents (PRE_EventID,PRE_Pseudo) VALUES ";
+                    for ( ; $i < $Lenght; ++$i) { // Insert loop
+
+                        if ($i == 0) $Query .= "(";
+                        else $Query .= ",(";
+                        $Query .= strval($Keys[$i]['EventID']).",'".addslashes($Keys[$i]['Pseudo'])."')";
+                    }
+                    if (!mysql_query(trim($Query),$Link)) {
+                        echo '{"Error":'.strval(constant("WEBSERVICE_ERROR_QUERY_INSERT")).'}';
+                        break;
+                    }
+                    $StatusDate = date("Y-m-d H:i:s", strtotime(getTimeStamp($Link)) - 1);
+
+                    // Let's reply with inserted records
+                    //break;
+                }
+                case 5: { ////// Delete
+                    if ($Ope == 5) {
+
+                        if (Empty($Keys)) {
+                            echo '{"Error":'.strval(constant("WEBSERVICE_ERROR_MISSING_KEYS")).'}';
+                            break;
+                        }
+                        if (Empty($Status)) {
+                            echo '{"Error":'.strval(constant("WEBSERVICE_ERROR_MISSING_STATUS")).'}';
+                            break;
+                        }
+                        $Keys = json_decode($Keys, true);
+                        if (json_last_error() != JSON_ERROR_NONE) {
+                            echo '{"Error":'.strval(constant("WEBSERVICE_ERROR_INVALID_KEYS")).'}';
+                            break;
+                        }
+                        $Status = json_decode($Status, true);
+                        if (json_last_error() != JSON_ERROR_NONE) {
+                            echo '{"Error":'.strval(constant("WEBSERVICE_ERROR_INVALID_STATUS")).'}';
+                            break;
+                        }
+
+                        //////
+                        $i = 0;
+                        $Lenght = count($Keys);
+                        for ( ; $i < $Lenght; ++$i) { // Delete loop
+
+                            $Query = "UPDATE Presents SET";
+                            $Query .= " PRE_Status = 2,";
+                            $Query .= " PRE_StatusDate = CURRENT_TIMESTAMP";
+
+                            $Query .= " WHERE";
+                            $Query .= " PRE_Pseudo='".addslashes($Keys[$i]['Pseudo'])."' AND";
+                            $Query .= " PRE_EventID=".strval($Keys[$i]['EventID'])." AND";
+                            $Query .= " PRE_StatusDate < '".trim($Status[$i]['StatusDate'])."'";
+                            if (!mysql_query(trim($Query),$Link)) {
+                                echo '{"Error":'.strval(constant("WEBSERVICE_ERROR_QUERY_DELETE")).'}';
+                                break;
+                            }
+                        }
+                        if ($i != $Lenght)
+                            break; // Error
+
+                        $StatusDate = date("Y-m-d H:i:s", strtotime(getTimeStamp($Link)) - 1);
+                    }
+                    // Let's reply with deleted records (deleted status)
+                    //break;
                 }
                 case 1: { ////// Select
 
@@ -42,8 +118,10 @@ if (!Empty($Clf)) {
 
                     if ((!is_null($StatusDate)) && (strcmp(trim($StatusDate),""))) {
                         $Query .= " WHERE PRE_StatusDate > '".str_replace("n"," ",$StatusDate)."'";
-                        if ($Ope == 3) // Update
-                            $Query .= " AND PRE_Status = 1";
+                        if ($Ope == 4) // Inserted
+                            $Query .= " AND PRE_Status = 0";
+                        if ($Ope == 5) // Deleted
+                            $Query .= " AND PRE_Status = 2";
                     }
                     $Query .= " ORDER BY PRE_EventID,PRE_Pseudo ASC";
 
@@ -65,10 +143,6 @@ if (!Empty($Clf)) {
                         }
                         $Reply .= ']}';
                     }
-                    break;
-                }
-                case 5: { ////// Delete
-
                     break;
                 }
                 default: {

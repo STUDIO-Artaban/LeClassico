@@ -392,4 +392,15 @@ function AjouteCommentaire($link,$camarade,$type,$id,$comment)
     if(!mysql_query(trim($query),$link)) return 23; // Failed to comment
     return 15; // Ok...
 }
+///////////////////////////////////
+// getTimeStamp
+///////////////////////////////////
+function getTimeStamp($link)
+{   $query = "SELECT CURRENT_TIMESTAMP";
+    if($result = mysql_query(trim($query),$link))
+    {   $row = mysql_fetch_array($result);
+        return $row["CURRENT_TIMESTAMP"];
+    }
+    return "";
+}
 ?>

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Feb 15, 2017 at 11:40 PM
+-- Generation Time: Feb 22, 2017 at 02:40 PM
 -- Server version: 5.5.47-0+deb7u1-log
 -- PHP Version: 5.4.45-0+deb7u2
 
@@ -394,6 +394,9 @@ CREATE TABLE IF NOT EXISTS `FlyerNumber` (
 -- Dumping data for table `FlyerNumber`
 --
 
+INSERT INTO `FlyerNumber` (`FNU_FlyerID`) VALUES
+(16);
+
 -- --------------------------------------------------------
 
 --
@@ -495,6 +498,13 @@ CREATE TABLE IF NOT EXISTS `MusicNumber` (
   `MNU_MusicID` int(4) NOT NULL DEFAULT '0'
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
+--
+-- Dumping data for table `MusicNumber`
+--
+
+INSERT INTO `MusicNumber` (`MNU_MusicID`) VALUES
+(25);
+
 -- --------------------------------------------------------
 
 --
@@ -538,6 +548,13 @@ DELIMITER ;
 CREATE TABLE IF NOT EXISTS `PhotoNumber` (
   `PNU_PhotoID` int(4) NOT NULL DEFAULT '0'
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
+
+--
+-- Dumping data for table `PhotoNumber`
+--
+
+INSERT INTO `PhotoNumber` (`PNU_PhotoID`) VALUES
+(234);
 
 -- --------------------------------------------------------
 
@@ -698,6 +715,7 @@ ALTER TABLE `Photos`
 -- Indexes for table `Presents`
 --
 ALTER TABLE `Presents`
+  ADD PRIMARY KEY (`PRE_EventID`,`PRE_Pseudo`),
   ADD KEY `PRE_EventID` (`PRE_EventID`);
 
 --
