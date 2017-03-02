@@ -5,6 +5,7 @@ require("constants.php");
 $Clf = $_GET['Clf'];
 $Ope = $_GET['Ope'];
 $Type = $_GET['Type'];
+$StatusDate = $_GET['StatusDate'];
 $Actu = $_GET['Actu'];
 $Count = $_GET['Count'];
 $Cmd = $_GET['Cmd'];
@@ -113,7 +114,6 @@ if (!Empty($Clf)) {
                             else { // New & Update
                                 if ((!is_null($StatusDate)) && (strcmp(trim($StatusDate),""))) {
                                     $Query .= " AND COM_StatusDate > '".str_replace("n"," ",$StatusDate)."'";
-                                    $Query .= " AND COM_Date >= '".str_replace("n"," ",$Date)."'";
                                     if ($Ope == 3) // Update
                                         $Query .= " AND COM_Status = 1";
                                 }
