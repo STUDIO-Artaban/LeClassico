@@ -6,6 +6,13 @@ $Clf = $_GET['Clf'];
 $Ope = $_GET['Ope'];
 $StatusDate = $_GET['StatusDate'];
 
+$Keys = $_POST['Keys'];
+$Updates = $_POST['Updates'];
+$Status = $_POST['Status'];
+
+if (isset($_POST['Pseudos']))
+    $Pseudos = $_POST['Pseudos'];
+
 header('Content-Type: application/json;charset=ISO-8859-1');
 
 if (!Empty($Clf)) {
@@ -23,14 +30,109 @@ if (!Empty($Clf)) {
 
             mysql_free_result($Result);
             switch ($Ope) {
-                case 1:
-                case 2: { ////// Select
+
+                case 3: { ////// Update
+
+                    if (Empty($Keys)) {
+                        echo '{"Error":'.strval(constant("WEBSERVICE_ERROR_MISSING_KEYS")).'}';
+                        break;
+                    }
+                    if (Empty($Updates)) {
+                        echo '{"Error":'.strval(constant("WEBSERVICE_ERROR_MISSING_UPDATES")).'}';
+                        break;
+                    }
+                    if (Empty($Status)) {
+                        echo '{"Error":'.strval(constant("WEBSERVICE_ERROR_MISSING_STATUS")).'}';
+                        break;
+                    }
+                    $Keys = json_decode($Keys, true);
+                    if (json_last_error() != JSON_ERROR_NONE) {
+                        echo '{"Error":'.strval(constant("WEBSERVICE_ERROR_INVALID_KEYS")).'}';
+                        break;
+                    }
+                    $Updates = json_decode($Updates, true);
+                    if (json_last_error() != JSON_ERROR_NONE) {
+                        echo '{"Error":'.strval(constant("WEBSERVICE_ERROR_INVALID_UPDATES")).'}';
+                        break;
+                    }
+                    $Status = json_decode($Status, true);
+                    if (json_last_error() != JSON_ERROR_NONE) {
+                        echo '{"Error":'.strval(constant("WEBSERVICE_ERROR_INVALID_STATUS")).'}';
+                        break;
+                    }
+
+                    //////
+                    $updatesKeys = array_keys($Updates);
+                    $updatesValues = array_values($Updates);
+                    $statusKeys = array_keys($Status);
+                    $statusValues = array_values($Status);
+
+                    $i = 0;
+                    $Lenght = count($Keys);
+                    for ( ; $i < $Lenght; ++$i) { // Keys loop
+
+                        $j = 0;
+                        $fieldsCount = count($updatesKeys);
+                        for ( ; $j < $fieldsCount; ++$j) { // update loop
+
+                            $Query = "UPDATE Camarades SET";
+                            $Query .= " CAM_".trim($updatesKeys[$j])."=";
+                            if ((!strcmp($updatesKeys[$j], "Sexe")) ||
+                                (!strcmp($updatesKeys[$j], "Located")) ||
+                                (!strcmp($updatesKeys[$j], "Admin")) ||
+                                (!strcmp($updatesKeys[$j], "Latitude")) ||
+                                (!strcmp($updatesKeys[$j], "Longitude")))
+                                $Query .= strval($updatesValues[$j]);
+                            else
+                                $Query .= "'".trim($updatesValues[$j])."'";
+
+                            $Query .= " WHERE";
+                            $Query .= " CAM_Pseudo='".trim($Keys[$i]['Pseudo'])."' AND";
+                            $Query .= " CAM_".trim($statusKeys[$j])."<'".trim($statusValues[$j])."'";
+
+                            if (!mysql_query(trim($Query),$Link)) {
+                                echo '{"Error":'.strval(constant("WEBSERVICE_ERROR_QUERY_UPDATE")).'}';
+                                break;
+                            }
+                            if ((mysql_affected_rows() == 0) && ((is_null($StatusDate)) || (strcmp($StatusDate, $statusValues[$j]) < 0)))
+                                $StatusDate = $statusValues[$j];
+                                // NB: Needed to return records updated after current request
+                        }
+                        if ($j != $fieldsCount)
+                            break; // Error
+                    }
+                    if ($i != $Lenght)
+                        break; // Error
+
+                    // Let's reply with updated records
+                    //break;
+                }
+                case 4: { ////// Insert
+
+                    if ($Ope == 4) {
+
+
+
+
+
+
+
+
+                    }
+                    // Let's reply with inserted/updated records
+                    //break;
+                }
+                case 1: { ////// Select
 
                     $Query = "SELECT Camarades.* FROM Camarades";
+                    
                     //$Query .= " INNER JOIN Abonnements ON CAM_Pseudo = ABO_Camarade AND UPPER(ABO_Pseudo) = UPPER('".addslashes($Camarade)."')";
                     // TODO: Remove comment above when more than a hundred members will be available
+
                     if ((!is_null($StatusDate)) && (strcmp(trim($StatusDate),"")))
                         $Query .= " WHERE CAM_StatusDate > '".str_replace("n"," ",$StatusDate)."'";
+                    if ((!is_null($Pseudos)) && (strcmp(trim($Pseudos),""))) // Request
+                        $Query .= " AND CAM_Pseudo IN ('".str_replace("&","','",$Pseudos)."')";
                     $Result = mysql_query(trim($Query),$Link);
 
                     if (mysql_num_rows($Result) == 0)
@@ -107,18 +209,6 @@ if (!Empty($Clf)) {
                         $Reply .= ']}';
                     }
                     echo $Reply;
-                    break;
-                }
-                case 3: { ////// Update
-
-                    break;
-                }
-                case 4: { ////// Insert
-
-                    break;
-                }
-                case 5: { ////// Delete
-
                     break;
                 }
                 default: {
