@@ -62,13 +62,20 @@ if (!Empty($Clf)) {
                     }
 
                     //////
-                    $updatesKeys = array_keys($Updates);
-                    $updatesValues = array_values($Updates);
-                    $statusKeys = array_keys($Status);
-                    $statusValues = array_values($Status);
-
+                    $Lenght = count($Updates);
+                    for ($i = 0; $i < $Lenght; ++$i) {
+                        foreach ($Updates[$i] as $key => $value) {
+                            $updatesKeys[] = $key;
+                            $updatesValues[] = $value;
+                        }
+                    }
+                    for ($i = 0; $i < $Lenght; ++$i) {
+                        foreach ($Status[$i] as $key => $value) {
+                            $statusKeys[] = $key;
+                            $statusValues[] = $value;
+                        }
+                    }
                     $i = 0;
-                    $Lenght = count($Keys);
                     for ( ; $i < $Lenght; ++$i) { // Keys loop
 
                         $j = 0;
