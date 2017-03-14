@@ -75,6 +75,9 @@ if (!Empty($Clf)) {
                             $statusValues[] = $value;
                         }
                     }
+                    $StatusDate = date("Y-m-d H:i:s", strtotime(getTimeStamp($Link)) - 1);
+                    // NB: Needed to return records updated after current request
+
                     $i = 0;
                     for ( ; $i < $Lenght; ++$i) { // Keys loop
 
@@ -101,9 +104,6 @@ if (!Empty($Clf)) {
                                 echo '{"Error":'.strval(constant("WEBSERVICE_ERROR_QUERY_UPDATE")).'}';
                                 break;
                             }
-                            if ((mysql_affected_rows() == 0) && ((is_null($StatusDate)) || (strcmp($StatusDate, $statusValues[$j]) < 0)))
-                                $StatusDate = $statusValues[$j];
-                                // NB: Needed to return records updated after current request
                         }
                         if ($j != $fieldsCount)
                             break; // Error
