@@ -94,7 +94,7 @@ if (!Empty($Clf)) {
                                 (!strcmp($updatesKeys[$j], "Longitude")))
                                 $Query .= strval($updatesValues[$j]);
                             else
-                                $Query .= "'".trim($updatesValues[$j])."'";
+                                $Query .= "'".str_replace("'","\'", utf8_decode(trim($updatesValues[$j])))."'";
 
                             $Query .= " WHERE";
                             $Query .= " CAM_Pseudo='".trim($Keys[$i]['Pseudo'])."' AND";

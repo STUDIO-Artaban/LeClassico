@@ -83,12 +83,12 @@ if(!Empty($Clf))
                 {   // Opération de MAJ des infos personnels
                     $Query = "UPDATE Camarades SET";
                     if((!Empty($nm))&&(strcmp(trim($nm),"")))
-                    {   $Query .= " CAM_Nom = '".trim($nm)."',";
+                    {   $Query .= " CAM_Nom = '".addslashes(trim($nm))."',";
                         $bModif = true;
                     }
                     else $Query .= " CAM_Nom = NULL,";
                     if((!Empty($prnm))&&(strcmp(trim($prnm),"")))
-                    {   $Query .= " CAM_Prenom = '".trim($prnm)."',";
+                    {   $Query .= " CAM_Prenom = '".addslashes(trim($prnm))."',";
                         $bModif = true;
                     }
                     else $Query .= " CAM_Prenom = NULL,";
@@ -98,37 +98,37 @@ if(!Empty($Clf))
                         $bModif = true;
                     }
                     if((!Empty($dtns))&&(strcmp(trim($dtns),""))&&(strcmp(trim($dtns),"AAAA-MM-JJ")))
-                    {   $Query .= " CAM_BornDate = '".trim($dtns)."',";
+                    {   $Query .= " CAM_BornDate = '".addslashes(trim($dtns))."',";
                         $bModif = true;
                     }
                     else $Query .= " CAM_BornDate = NULL,";
                     if((!Empty($adrs))&&(strcmp(trim($adrs),"")))
-                    {   $Query .= " CAM_Adresse = '".trim($adrs)."',";
+                    {   $Query .= " CAM_Adresse = '".addslashes(trim($adrs))."',";
                         $bModif = true;
                     }
                     else $Query .= " CAM_Adresse = NULL,";
                     if((!Empty($twn))&&(strcmp(trim($twn),"")))
-                    {   $Query .= " CAM_Ville = '".trim($twn)."',";
+                    {   $Query .= " CAM_Ville = '".addslashes(trim($twn))."',";
                         $bModif = true;
                     }
                     else $Query .= " CAM_Ville = NULL,";
                     if((!Empty($cpst))&&(strcmp(trim($cpst),"")))
-                    {   $Query .= " CAM_Postal = '".trim($cpst)."',";
+                    {   $Query .= " CAM_Postal = '".addslashes(trim($cpst))."',";
                         $bModif = true;
                     }
                     else $Query .= " CAM_Postal = NULL,";
                     if((!Empty($mail))&&(strcmp(trim($mail),"")))
-                    {   $Query .= " CAM_Email = '".trim($mail)."',";
+                    {   $Query .= " CAM_Email = '".addslashes(trim($mail))."',";
                         $bModif = true;
                     }
                     else $Query .= " CAM_Email = NULL,";
                     if((!Empty($hobbi))&&(strcmp(trim($hobbi),"")))
-                    {   $Query .= " CAM_Hobbies = '".trim($hobbi)."',";
+                    {   $Query .= " CAM_Hobbies = '".addslashes(trim($hobbi))."',";
                         $bModif = true;
                     }
                     else $Query .= " CAM_Hobbies = NULL,";
                     if((!Empty($aprop))&&(strcmp(trim($aprop),"")))
-                    {   $Query .= " CAM_APropos = '".trim($aprop)."'";
+                    {   $Query .= " CAM_APropos = '".addslashes(trim($aprop))."'";
                         $bModif = true;
                     }
                     else $Query .= " CAM_APropos = NULL";
