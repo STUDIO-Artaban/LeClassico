@@ -88,7 +88,6 @@ if (!Empty($Clf)) {
                             $Query = "UPDATE Camarades SET";
                             $Query .= " CAM_".trim($updatesKeys[$j])."=";
                             if ((!strcmp($updatesKeys[$j], "Sexe")) ||
-                                (!strcmp($updatesKeys[$j], "Located")) ||
                                 (!strcmp($updatesKeys[$j], "Admin")) ||
                                 (!strcmp($updatesKeys[$j], "Latitude")) ||
                                 (!strcmp($updatesKeys[$j], "Longitude")))
@@ -202,8 +201,12 @@ if (!Empty($Clf)) {
                             if (!is_null($aRow["CAM_Banner"])) $Reply .= '"Banner":"'.trim($aRow["CAM_Banner"]).'",';
                             else $Reply .= '"Banner":null,';
                             $Reply .= '"BannerUPD":"'.trim($aRow["CAM_BannerUPD"]).'",';
-                            $Reply .= '"Located":'.strval($aRow["CAM_Located"]).',';
-                            $Reply .= '"LocatedUPD":"'.trim($aRow["CAM_LocatedUPD"]).'",';
+                            if (!is_null($aRow["CAM_Device"])) $Reply .= '"Device":"'.str_replace('"','\"',trim($aRow["CAM_Device"])).'",';
+                            else $Reply .= '"Device":null,';
+                            $Reply .= '"DeviceUPD":"'.trim($aRow["CAM_DeviceUPD"]).'",';
+                            if (!is_null($aRow["CAM_DevId"])) $Reply .= '"DevId":"'.str_replace('"','\"',trim($aRow["CAM_DevId"])).'",';
+                            else $Reply .= '"DevId":null,';
+                            $Reply .= '"DevIdUPD":"'.trim($aRow["CAM_DevIdUPD"]).'",';
                             if (!is_null($aRow["CAM_Latitude"])) $Reply .= '"Latitude":'.strval($aRow["CAM_Latitude"]).',';
                             else $Reply .= '"Latitude":null,';
                             $Reply .= '"LatitudeUPD":"'.trim($aRow["CAM_LatitudeUPD"]).'",';

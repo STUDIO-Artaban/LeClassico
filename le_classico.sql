@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Feb 22, 2017 at 02:40 PM
+-- Generation Time: Mar 20, 2017 at 11:42 AM
 -- Server version: 5.5.47-0+deb7u1-log
 -- PHP Version: 5.4.45-0+deb7u2
 
@@ -211,8 +211,10 @@ CREATE TABLE IF NOT EXISTS `Camarades` (
   `CAM_ProfileUPD` datetime NOT NULL,
   `CAM_Banner` varchar(20) COLLATE latin1_general_ci DEFAULT NULL,
   `CAM_BannerUPD` datetime NOT NULL,
-  `CAM_Located` tinyint(1) NOT NULL DEFAULT '0',
-  `CAM_LocatedUPD` datetime NOT NULL,
+  `CAM_Device` varchar(256) COLLATE latin1_general_ci DEFAULT NULL,
+  `CAM_DeviceUPD` datetime NOT NULL,
+  `CAM_DevId` varchar(256) COLLATE latin1_general_ci DEFAULT NULL,
+  `CAM_DevIdUPD` datetime NOT NULL,
   `CAM_Latitude` double DEFAULT NULL,
   `CAM_LatitudeUPD` datetime NOT NULL,
   `CAM_Longitude` double DEFAULT NULL,
@@ -275,8 +277,11 @@ END IF;
 IF OLD.CAM_Banner NOT LIKE NEW.CAM_Banner OR OLD.CAM_Banner <> NEW.CAM_Banner OR (OLD.CAM_Banner IS NULL AND NEW.CAM_Banner IS NOT NULL) OR (OLD.CAM_Banner IS NOT NULL AND NEW.CAM_Banner IS NULL) THEN
 SET NEW.CAM_BannerUPD = CURRENT_TIMESTAMP;
 END IF;
-IF OLD.CAM_Located <> NEW.CAM_Located THEN
-SET NEW.CAM_LocatedUPD = CURRENT_TIMESTAMP;
+IF OLD.CAM_Device NOT LIKE BINARY NEW.CAM_Device OR OLD.CAM_Device <> NEW.CAM_Device OR (OLD.CAM_Device IS NULL AND NEW.CAM_Device IS NOT NULL) OR (OLD.CAM_Device IS NOT NULL AND NEW.CAM_Device IS NULL) THEN
+SET NEW.CAM_DeviceUPD = CURRENT_TIMESTAMP;
+END IF;
+IF OLD.CAM_DevId NOT LIKE BINARY NEW.CAM_DevId OR OLD.CAM_DevId <> NEW.CAM_DevId OR (OLD.CAM_DevId IS NULL AND NEW.CAM_DevId IS NOT NULL) OR (OLD.CAM_DevId IS NOT NULL AND NEW.CAM_DevId IS NULL) THEN
+SET NEW.CAM_DevIdUPD = CURRENT_TIMESTAMP;
 END IF;
 IF OLD.CAM_Latitude <> NEW.CAM_Latitude OR (OLD.CAM_Latitude IS NULL AND NEW.CAM_Latitude IS NOT NULL) OR (OLD.CAM_Latitude IS NOT NULL AND NEW.CAM_Latitude IS NULL) THEN
 SET NEW.CAM_LatitudeUPD = CURRENT_TIMESTAMP;
@@ -503,7 +508,7 @@ CREATE TABLE IF NOT EXISTS `MusicNumber` (
 --
 
 INSERT INTO `MusicNumber` (`MNU_MusicID`) VALUES
-(25);
+(1);
 
 -- --------------------------------------------------------
 
@@ -554,7 +559,7 @@ CREATE TABLE IF NOT EXISTS `PhotoNumber` (
 --
 
 INSERT INTO `PhotoNumber` (`PNU_PhotoID`) VALUES
-(234);
+(1);
 
 -- --------------------------------------------------------
 
