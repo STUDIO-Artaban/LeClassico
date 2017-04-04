@@ -87,7 +87,9 @@ if (!Empty($Clf)) {
 
                             $Query = "UPDATE Camarades SET";
                             $Query .= " CAM_".trim($updatesKeys[$j])."=";
-                            if ((!strcmp($updatesKeys[$j], "Sexe")) ||
+                            if (is_null($updatesValues[$j]))
+                                $Query .= "NULL";
+                            else if ((!strcmp($updatesKeys[$j], "Sexe")) ||
                                 (!strcmp($updatesKeys[$j], "Admin")) ||
                                 (!strcmp($updatesKeys[$j], "Latitude")) ||
                                 (!strcmp($updatesKeys[$j], "Longitude")))
