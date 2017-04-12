@@ -90,9 +90,7 @@ if (!Empty($Clf)) {
                             if (is_null($updatesValues[$j]))
                                 $Query .= "NULL";
                             else if ((!strcmp($updatesKeys[$j], "Sexe")) ||
-                                (!strcmp($updatesKeys[$j], "Admin")) ||
-                                (!strcmp($updatesKeys[$j], "Latitude")) ||
-                                (!strcmp($updatesKeys[$j], "Longitude")))
+                                (!strcmp($updatesKeys[$j], "Admin")))
                                 $Query .= strval($updatesValues[$j]);
                             else
                                 $Query .= "'".str_replace("'","\'", utf8_decode(trim($updatesValues[$j])))."'";
@@ -209,12 +207,6 @@ if (!Empty($Clf)) {
                             if (!is_null($aRow["CAM_DevId"])) $Reply .= '"DevId":"'.str_replace('"','\"',trim($aRow["CAM_DevId"])).'",';
                             else $Reply .= '"DevId":null,';
                             $Reply .= '"DevIdUPD":"'.trim($aRow["CAM_DevIdUPD"]).'",';
-                            if (!is_null($aRow["CAM_Latitude"])) $Reply .= '"Latitude":'.strval($aRow["CAM_Latitude"]).',';
-                            else $Reply .= '"Latitude":null,';
-                            $Reply .= '"LatitudeUPD":"'.trim($aRow["CAM_LatitudeUPD"]).'",';
-                            if (!is_null($aRow["CAM_Longitude"])) $Reply .= '"Longitude":'.strval($aRow["CAM_Longitude"]).',';
-                            else $Reply .= '"Longitude":null,';
-                            $Reply .= '"LongitudeUPD":"'.trim($aRow["CAM_LongitudeUPD"]).'",';
                             $Reply .= '"Status":'.strval($aRow["CAM_Status"]).',';
                             $Reply .= '"StatusDate":"'.trim($aRow["CAM_StatusDate"]).'"}';
                         }

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Mar 20, 2017 at 11:42 AM
+-- Generation Time: Apr 12, 2017 at 12:26 PM
 -- Server version: 5.5.47-0+deb7u1-log
 -- PHP Version: 5.4.45-0+deb7u2
 
@@ -215,10 +215,6 @@ CREATE TABLE IF NOT EXISTS `Camarades` (
   `CAM_DeviceUPD` datetime NOT NULL,
   `CAM_DevId` varchar(256) COLLATE latin1_general_ci DEFAULT NULL,
   `CAM_DevIdUPD` datetime NOT NULL,
-  `CAM_Latitude` double DEFAULT NULL,
-  `CAM_LatitudeUPD` datetime NOT NULL,
-  `CAM_Longitude` double DEFAULT NULL,
-  `CAM_LongitudeUPD` datetime NOT NULL,
   `CAM_Status` int(1) NOT NULL DEFAULT '0',
   `CAM_StatusDate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
@@ -282,12 +278,6 @@ SET NEW.CAM_DeviceUPD = CURRENT_TIMESTAMP;
 END IF;
 IF OLD.CAM_DevId NOT LIKE BINARY NEW.CAM_DevId OR OLD.CAM_DevId <> NEW.CAM_DevId OR (OLD.CAM_DevId IS NULL AND NEW.CAM_DevId IS NOT NULL) OR (OLD.CAM_DevId IS NOT NULL AND NEW.CAM_DevId IS NULL) THEN
 SET NEW.CAM_DevIdUPD = CURRENT_TIMESTAMP;
-END IF;
-IF OLD.CAM_Latitude <> NEW.CAM_Latitude OR (OLD.CAM_Latitude IS NULL AND NEW.CAM_Latitude IS NOT NULL) OR (OLD.CAM_Latitude IS NOT NULL AND NEW.CAM_Latitude IS NULL) THEN
-SET NEW.CAM_LatitudeUPD = CURRENT_TIMESTAMP;
-END IF;
-IF OLD.CAM_Longitude <> NEW.CAM_Longitude OR (OLD.CAM_Longitude IS NULL AND NEW.CAM_Longitude IS NOT NULL) OR (OLD.CAM_Longitude IS NOT NULL AND NEW.CAM_Longitude IS NULL) THEN
-SET NEW.CAM_LongitudeUPD = CURRENT_TIMESTAMP;
 END IF;
 END
 $$
@@ -418,6 +408,20 @@ CREATE TABLE IF NOT EXISTS `Forum` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `Locations`
+--
+
+CREATE TABLE IF NOT EXISTS `Locations` (
+  `LOC_Pseudo` varchar(30) CHARACTER SET latin1 COLLATE latin1_general_ci NOT NULL,
+  `LOC_Latitude` double NOT NULL,
+  `LOC_Longitude` double NOT NULL,
+  `LOC_Status` int(1) NOT NULL DEFAULT '0',
+  `LOC_StatusDate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `Messagerie`
 --
 
@@ -508,7 +512,7 @@ CREATE TABLE IF NOT EXISTS `MusicNumber` (
 --
 
 INSERT INTO `MusicNumber` (`MNU_MusicID`) VALUES
-(1);
+(25);
 
 -- --------------------------------------------------------
 
@@ -559,7 +563,7 @@ CREATE TABLE IF NOT EXISTS `PhotoNumber` (
 --
 
 INSERT INTO `PhotoNumber` (`PNU_PhotoID`) VALUES
-(1);
+(234);
 
 -- --------------------------------------------------------
 
@@ -679,6 +683,12 @@ ALTER TABLE `FlyerNumber`
 --
 ALTER TABLE `Forum`
   ADD KEY `FRM_Date` (`FRM_Date`,`FRM_Time`);
+
+--
+-- Indexes for table `Locations`
+--
+ALTER TABLE `Locations`
+  ADD PRIMARY KEY (`LOC_Pseudo`);
 
 --
 -- Indexes for table `Messagerie`

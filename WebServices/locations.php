@@ -1,0 +1,75 @@
+<?php
+require("../Package.php");
+require("constants.php");
+
+$Clf = $_GET['Clf'];
+$Ope = $_GET['Ope'];
+$StatusDate = $_GET['StatusDate'];
+
+header('Content-Type: application/json;charset=ISO-8859-1');
+
+if (!Empty($Clf)) {
+    // Connexion
+    $Link = @mysql_connect(GetMySqlLocalhost(),GetMySqlUser(),GetMySqlPassword());
+    if (Empty($Link))
+        echo '{"Error":'.strval(constant("WEBSERVICE_ERROR_SERVER_UNAVAILABLE")).'}';
+    else {
+
+        $Camarade = UserKeyIdentifier($Clf);
+        mysql_select_db(GetMySqlDB(),$Link);
+        $Query = "SELECT CAM_Pseudo FROM Camarades WHERE CAM_Status <> 2 AND UPPER(CAM_Pseudo) = UPPER('".addslashes($Camarade)."')";
+        $Result = mysql_query(trim($Query),$Link);
+        if (mysql_num_rows($Result) != 0) {
+
+            mysql_free_result($Result);
+            switch ($Ope) {
+                case 3: { ////// Update
+
+                    break;
+                }
+                case 4: { ////// Insert
+
+                    break;
+                }
+                case 1: { ////// Select
+
+                    $Query = "SELECT * FROM Locations WHERE UPPER(LOC_Pseudo) = UPPER('".addslashes($Camarade)."')";
+                    if ((!is_null($StatusDate)) && (strcmp(trim($StatusDate),"")))
+                        $Query .= " AND LOC_StatusDate > '".str_replace("n"," ",$StatusDate)."'";
+
+                    $Result = mysql_query(trim($Query),$Link);
+                    if (mysql_num_rows($Result) == 0)
+                        $Reply = '{"Locations":null}';
+                    else {
+
+                        $Reply = '';
+                        while ($aRow = mysql_fetch_array($Result)) {
+
+                            if (strlen($Reply) == 0) $Reply .= '{"Locations":[';
+                            else $Reply .= ',';
+
+                            $Reply .= '{"Pseudo":"'.trim($aRow["LOC_Pseudo"]).'",';
+                            $Reply .= '"Latitude":'.strval($aRow["LOC_Latitude"]).',';
+                            $Reply .= '"Longitude":'.strval($aRow["LOC_Longitude"]).',';
+                            $Reply .= '"Status":'.strval($aRow["LOC_Status"]).',';
+                            $Reply .= '"StatusDate":"'.trim($aRow["LOC_StatusDate"]).'"}';
+                        }
+                        $Reply .= ']}';
+                    }
+                    echo $Reply;
+                    break;
+                }
+                default: {
+                    echo '{"Error":'.strval(constant("WEBSERVICE_ERROR_INVALID_OPERATION")).'}';
+                    break;
+                }
+            }
+        }
+        else
+            echo '{"Error":'.strval(constant("WEBSERVICE_ERROR_INVALID_USER")).'}';
+        mysql_close($Link);
+    }
+}
+else
+    echo '{"Error":'.strval(constant("WEBSERVICE_ERROR_INVALID_TOKEN")).'}';
+?>
