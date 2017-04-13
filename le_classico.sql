@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Apr 12, 2017 at 12:26 PM
+-- Generation Time: Apr 13, 2017 at 05:28 PM
 -- Server version: 5.5.47-0+deb7u1-log
 -- PHP Version: 5.4.45-0+deb7u2
 
@@ -418,6 +418,19 @@ CREATE TABLE IF NOT EXISTS `Locations` (
   `LOC_Status` int(1) NOT NULL DEFAULT '0',
   `LOC_StatusDate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Triggers `Locations`
+--
+DELIMITER $$
+CREATE TRIGGER `LOC_STATUS_UPDATE` BEFORE UPDATE ON `Locations`
+ FOR EACH ROW BEGIN
+IF NEW.LOC_Status <> 2 THEN
+SET NEW.LOC_Status = 1, NEW.LOC_StatusDate = CURRENT_TIMESTAMP;
+END IF;
+END
+$$
+DELIMITER ;
 
 -- --------------------------------------------------------
 
