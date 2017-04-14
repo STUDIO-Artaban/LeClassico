@@ -26,7 +26,8 @@ if (!Empty($Clf)) {
 
             mysql_free_result($Result);
             switch ($Ope) {
-                case 3: { ////// Update
+                case 3: ////// Update
+                case 4: { ////// Insert
 
                     if (Empty($Keys)) {
                         echo '{"Error":'.strval(constant("WEBSERVICE_ERROR_MISSING_KEYS")).'}';
@@ -50,33 +51,31 @@ if (!Empty($Clf)) {
                     //////
                     $i = 0;
                     $Lenght = count($Keys);
-                    for ( ; $i < $Lenght; ++$i) { // Update loop
+                    for ( ; $i < $Lenght; ++$i) { // Entries loop
 
-                        $Query = "UPDATE Locations SET";
-                        $Query .= " LOC_Latitude=".strval($Updates[$i]['Latitude']).",";
-                        $Query .= " LOC_Longitude=".strval($Updates[$i]['Longitude']);
-                        $Query .= " WHERE";
-                        $Query .= " LOC_Pseudo='".trim($Keys[$i]['Pseudo'])."'";
+                        if ($Ope == 3) { // Update
+                            $Query = "UPDATE Locations SET";
+                            $Query .= " LOC_Latitude=".strval($Updates[$i]['Latitude']).",";
+                            $Query .= " LOC_Longitude=".strval($Updates[$i]['Longitude']);
+                            $Query .= " WHERE";
+                            $Query .= " LOC_Pseudo='".trim($Keys[$i]['Pseudo'])."'";
 
+                        } else { // Insert
+                            $Query = "INSERT INTO Locations (LOC_Pseudo,LOC_Latitude,LOC_Longitude) VALUES (";
+                            $Query .= "'".addslashes($Keys[$i]['Pseudo'])."',";
+                            $Query .= strval($Updates[$i]['Latitude']).",";
+                            $Query .= strval($Updates[$i]['Longitude']).")";
+                        }
                         if (!mysql_query(trim($Query),$Link)) {
-                            echo '{"Error":'.strval(constant("WEBSERVICE_ERROR_QUERY_UPDATE")).'}';
+                            if ($Ope == 3)
+                                echo '{"Error":'.strval(constant("WEBSERVICE_ERROR_QUERY_UPDATE")).'}';
+                            else
+                                echo '{"Error":'.strval(constant("WEBSERVICE_ERROR_QUERY_INSERT")).'}';
                             break;
                         }
                     }
                     if ($i != $Lenght)
                         break; // Error
-
-                    // Let's reply with updated records
-                    //break;
-                }
-                case 4: { ////// Insert
-
-                    if ($Ope != 3) {
-
-
-
-
-                    }
 
                     // Let's reply with inserted or updated records
                     //break;
@@ -84,10 +83,10 @@ if (!Empty($Clf)) {
                 case 1: { ////// Select
 
                     $Query = "SELECT * FROM Locations"
-                    if (($Ope == 3) || ($Ope == 4)) {
+                    if (($Ope == 3) || ($Ope == 4)) { // Update or insert
                         $Query .= " WHERE LOC_Pseudo = UPPER('".addslashes($Camarade)."')";
 
-                    } else {
+                    } else { // Select
                         $Query .= " INNER JOIN Abonnements ON ABO_Pseudo = UPPER('".addslashes($Camarade)."') AND ABO_Camarade = LOC_Pseudo";
                         if ((!is_null($StatusDate)) && (strcmp(trim($StatusDate),"")))
                             $Query .= " WHERE LOC_StatusDate > '".str_replace("n"," ",$StatusDate)."'";
