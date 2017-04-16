@@ -26,6 +26,7 @@ if (!Empty($Clf)) {
 
             mysql_free_result($Result);
             switch ($Ope) {
+
                 case 3: ////// Update
                 case 4: { ////// Insert
 
@@ -60,18 +61,21 @@ if (!Empty($Clf)) {
                             $Query .= " WHERE";
                             $Query .= " LOC_Pseudo='".trim($Keys[$i]['Pseudo'])."'";
 
+                            if (!mysql_query(trim($Query),$Link)) {
+                                echo '{"Error":'.strval(constant("WEBSERVICE_ERROR_QUERY_UPDATE")).'}';
+                                break;
+                            }
+                            
                         } else { // Insert
                             $Query = "INSERT INTO Locations (LOC_Pseudo,LOC_Latitude,LOC_Longitude) VALUES (";
                             $Query .= "'".addslashes($Keys[$i]['Pseudo'])."',";
                             $Query .= strval($Updates[$i]['Latitude']).",";
                             $Query .= strval($Updates[$i]['Longitude']).")";
-                        }
-                        if (!mysql_query(trim($Query),$Link)) {
-                            if ($Ope == 3)
-                                echo '{"Error":'.strval(constant("WEBSERVICE_ERROR_QUERY_UPDATE")).'}';
-                            else
+
+                            if (!mysql_query(trim($Query),$Link)) {
                                 echo '{"Error":'.strval(constant("WEBSERVICE_ERROR_QUERY_INSERT")).'}';
-                            break;
+                                break;
+                            }
                         }
                     }
                     if ($i != $Lenght)
@@ -82,7 +86,7 @@ if (!Empty($Clf)) {
                 }
                 case 1: { ////// Select
 
-                    $Query = "SELECT * FROM Locations"
+                    $Query = "SELECT * FROM Locations";
                     if (($Ope == 3) || ($Ope == 4)) { // Update or insert
                         $Query .= " WHERE LOC_Pseudo = UPPER('".addslashes($Camarade)."')";
 
